@@ -1,7 +1,7 @@
 # BlueLoop System Architecture Document
 
-## 1. Executive Summary & Purpose
-**BlueLoop** is a Water Reuse Intelligence and Procurement Optimisation Platform designed for the *Heat and Water* environmental track. The platform addresses industrial freshwater exhaustion by enabling direct, certified water reuse between industrial effluent producers (suppliers) and commercial water consumers (buyers).
+## 1. Executive Summary & Core Philosophy
+**BlueLoop** is a Water Reuse Intelligence and Procurement Optimisation Platform designed for the *Heat and Water* environmental track. The platform facilitates direct water reuse between industrial effluent producers (suppliers) and commercial water consumers (buyers).
 
 The core technical philosophy of BlueLoop is **deterministic explainability**:
 - Water quality compliance is verified via explicit mathematical rules against codified standards.
@@ -10,42 +10,47 @@ The core technical philosophy of BlueLoop is **deterministic explainability**:
 
 ---
 
-## 2. High-Level System Architecture
+## 2. Layered Architecture (Stage 2 Implementation)
 
 ```
 +---------------------------------------------------------------------------------------+
 |                                    CLIENT TIER                                        |
-|                                                                                       |
 |   React 18 SPA (TypeScript + Vite + Tailwind CSS + Lucide Icons)                       |
-|   - Buyer Portal (Demand Requests, Threshold Tolerances, Match Inspection)            |
-|   - Supplier Portal (Listing Management, Volume Availability, Lab Certs)              |
-|   - Operations & Audit Dashboard (Allocation Traces, Delivery Verification)           |
+|   - Editorial Dashboard (Regional Balance & Architecture Flow)                        |
+|   - Deterministic Quality Gatekeeper Inspector                                        |
+|   - Allocation Comparison & Ledger Preview                                            |
 +-------------------------------------------+-------------------------------------------+
                                             | HTTPS / REST
                                             v
 +---------------------------------------------------------------------------------------+
-|                                  API & COMPUTE TIER                                   |
+|                                  API & ROUTING TIER                                   |
+|   FastAPI Application (Python 3.11)                                                   |
+|   - app.api.v1.endpoints: suppliers, supplies, demands, compatibility, health        |
+|   - app.schemas: Pydantic v2 Request & Response Contract Models                       |
++-------------------------------------------+-------------------------------------------+
+                                            |
+                                            v
++---------------------------------------------------------------------------------------+
+|                                 DOMAIN SERVICES TIER                                  |
+|   app.services.quality: QualityCompatibilityService                                    |
+|   - Parameter-by-parameter constraint evaluation (pH, TDS, COD, BOD, TSS, Turbidity)  |
+|   - Missing measurement = UNKNOWN policy                                              |
+|   - Strict linear safety margins & screening disclaimer                               |
++-------------------------------------------+-------------------------------------------+
+                                            |
+                                            v
++---------------------------------------------------------------------------------------+
+|                                 REPOSITORIES & STORAGE                                |
+|   Local Stage 2 Reality: In-Memory Thread-Safe Repositories (app.repositories.memory) |
+|   - OrganisationRepository, SupplierFacilityRepository, SupplyListingRepository       |
+|   - DemandRequestRepository, QualityEvidenceRepository                                |
+|   - Mutation-isolated model copying (deep copies)                                     |
+|   - Seeded via app.core.seeds.seed_demonstration_data()                               |
 |                                                                                       |
-|   Amazon API Gateway (REST API Routes, Throttling, CORS, Auth Validation)             |
-|                                           |                                           |
-|                                           v                                           |
-|   AWS Lambda Compute (Python 3.11 + FastAPI via Mangum ASGI Adapter)                  |
-|   +-------------------------------------------------------------------------------+   |
-|   | app.core (Settings, CORS, Security)                                           |   |
-|   | app.api.v1 (Endpoints & Input Validation)                                      |   |
-|   | app.services.quality (Deterministic Water Quality Verification Engine)        |   |
-|   | app.services.allocation (Constrained Supply Allocation Optimizer)             |   |
-|   | app.services.impact (Freshwater Displacement & Economic Delta Calculator)     |   |
-|   +-------------------------------------------------------------------------------+   |
-+------------------------------------+--------------+-----------------------------------+
-                                     |              |
-                                     v              v
-+---------------------------------------------------+-----------------------------------+
-|                                   DATA & STORAGE TIER                                 |
-|                                                                                       |
-|   Amazon DynamoDB (Single-Table Design)           Amazon S3 Buckets                   |
-|   - PK/SK Partition Strategy                      - Quality Lab Test PDF Certs        |
-|   - Suppliers, Demands, Allocations, Deliveries   - Static SPA Distribution (CloudFront)
+|   Target AWS Production Architecture (Planned for Deployment):                        |
+|   - Amazon DynamoDB Single-Table Design (`blueloop-core`)                             |
+|   - Amazon S3 Encrypted Document Store (`blueloop-quality-docs`)                      |
+|   - AWS Lambda Runtime via Mangum ASGI Adapter                                        |
 +---------------------------------------------------------------------------------------+
 ```
 
@@ -53,47 +58,33 @@ The core technical philosophy of BlueLoop is **deterministic explainability**:
 
 ## 3. Tier Responsibilities
 
-### 3.1 Frontend Tier (Single Page Application)
-- **Framework**: React 18 with TypeScript and Vite bundler.
-- **Styling**: Restrained enterprise B2B styling utilizing Tailwind CSS (slate/warm-neutral base with deep teal accents).
-- **Navigation**: Client-side routing via React Router DOM (`/`, `/suppliers`, `/demands`, `/allocations`, `/deliveries`, `/impact`, `/settings`).
-- **State & Service Layer**: Typed fetch clients (`src/lib/api.ts`) communicating with the backend REST endpoints.
-- **Operational Safety**: Prominent UI indicators ensuring users clearly distinguish synthetic development data from verified real-world operational records.
+### 3.1 Domain & Entity Models (`app/models/`)
+- Encapsulates core business entities: `Organisation`, `SupplierFacility`, `SupplyListing`, `DemandRequest`, `QualityEvidence`, `WaterQualityMeasurements`, `QualityLimits`, `AllocationCandidate`, `DeliveryRecord`, `AuditEvent`.
+- Enforces strict data types, explicit physical units (`_kl`, `_mg_l`, `_ntu`, `_km`), and validation invariants (e.g. `min_ph <= max_ph`, volume > 0, price &ge; 0).
 
-### 3.2 API & Business Logic Tier (FastAPI + AWS Lambda)
-- **Framework**: FastAPI (Python 3.11) with Pydantic v2 schemas for strict contract validation.
-- **Serverless Adapter**: Mangum ASGI handler translating AWS API Gateway events to FastAPI requests without modification of native ASGI code.
-- **Quality Engine (`QualityValidationService`)**:
-  - Deterministic evaluation of water quality parameters: pH, Total Dissolved Solids (TDS), Chemical Oxygen Demand (COD), Biochemical Oxygen Demand (BOD), Total Suspended Solids (TSS), Turbidity, Heavy Metals.
-  - Fail-closed validation: If any single parameter violates buyer tolerance, the candidate match is rejected.
-- **Allocation Engine (`AllocationService`)**:
-  - Solves the multi-supplier to multi-buyer supply allocation problem.
-  - Objective: Maximize freshwater displacement while minimizing transport distances and delivered cost under capacity limits.
-- **Impact Accounting (`DisplacementCalculationService`)**:
-  - Explicit arithmetic computation of virgin freshwater saved (kL/day, annualized displacement).
-  - Net economic difference calculation against regional municipal water tariffs.
+### 3.2 Quality Compatibility Service (`app/services/quality.py`)
+- Independent, deterministic business service.
+- Evaluates candidate measurements against buyer limits.
+- Treats missing required values as `UNKNOWN`, refusing to certify compliance on missing data.
+- Generates parameter-by-parameter reason strings with quantitative buffer margins.
 
-### 3.3 Data & Storage Tier (Target Architecture)
-- **Amazon DynamoDB**: Single-table design (`blueloop-core`) storing multi-entity items:
-  - `SUPPLIER#<id>`: Supplier profiles and facility capabilities.
-  - `LISTING#<id>`: Available water batches and chemical parameters.
-  - `DEMAND#<id>`: Buyer water specifications and volume requests.
-  - `ALLOCATION#<id>`: Optimized allocation results and constraint logs.
-  - `DELIVERY#<id>`: Custody transfer and delivery receipts.
-- **Amazon S3**:
-  - `blueloop-web-frontend`: Hosting built frontend assets behind Amazon CloudFront.
-  - `blueloop-quality-docs`: Immutable storage for certified laboratory test reports and chain-of-custody transfer receipts.
+### 3.3 In-Memory Repository Abstraction (`app/repositories/`)
+- Generic `IRepository[T]` interface isolating persistence mechanics from business logic.
+- `InMemoryRepository[T]` uses thread-safe dictionaries with deep copying, preventing in-memory mutations.
+- Enables complete test isolation and rapid local execution without cloud or database dependencies.
+- Standardized CRUD interface makes future migration to Amazon DynamoDB straightforward.
 
 ---
 
 ## 4. Implementation Status Matrix
 
-| Component | Architecture Role | Current Status (Initialisation) | Next Milestone |
+| Component | Architecture Role | Stage 2 Status | Next Milestone |
 | :--- | :--- | :--- | :--- |
-| **Frontend Shell** | React SPA, Navigation, Shell Layout | **Implemented & Verified** | Feature Forms & Grids |
-| **Backend Core** | FastAPI App, Settings, Health API | **Implemented & Verified** | Quality & Allocation Engine |
-| **Lambda Adapter** | Mangum ASGI bridge | **Configured in main.py** | Packaging & SAM/CDK template |
-| **Quality Engine** | Parameter Threshold Validation | Planned (Interface defined) | Unit tests & Standard limits |
-| **Allocation Solver** | Constrained Supply Optimizer | Planned (Interface defined) | Multi-facility solver |
-| **DynamoDB Store** | Single-table persistence | Planned (Schema defined) | Repository implementation |
-| **Amazon S3 Docs** | Lab report document store | Planned (Schema defined) | Presigned URL upload API |
+| **Frontend Shell & UI** | React 18 SPA, Navigation, Editorial Design | **Implemented & Verified** | Interactive Form Mutations |
+| **Backend API Core** | FastAPI Application & Router | **Implemented & Verified** | Mutation Endpoints |
+| **Domain Models & Enums** | Core Data Entities & Validations | **Implemented & Verified** | Stage 3 Persistence Schema |
+| **Compatibility Service** | Deterministic Quality Screening | **Implemented & Verified** | Multi-Parameter Rule Enhancements |
+| **In-Memory Repository** | Thread-Safe Local Data Layer | **Implemented & Verified** | DynamoDB Single-Table Adapter |
+| **Synthetic Seed Fixtures** | Reproducible Hackathon Baseline | **Implemented & Verified** | Expanded Regional Fixtures |
+| **Allocation Solver** | Multi-Facility Constrained Optimizer | *Planned (Phase 3)* | Linear Programming Implementation |
+| **AWS Cloud Infrastructure** | API Gateway, Lambda, DynamoDB, S3 | *Planned (Phase 5)* | Infrastructure as Code (SAM/CDK) |

@@ -213,14 +213,17 @@ npm run build
 | Capability | Current Status | Description |
 | :--- | :--- | :--- |
 | **Repository Foundation** | **Implemented** | Monorepo layout, .gitignore, .env.example, MIT license |
-| **Frontend Shell** | **Implemented** | Responsive layout, navigation, design tokens, route placeholders |
-| **Backend API Core** | **Implemented** | FastAPI app, CORS middleware, Mangum adapter, GET /api/v1/health |
-| **Automated Testing** | **Implemented** | Pytest health and CORS tests; TypeScript typechecking |
-| **Documentation** | **Implemented** | Architecture, API contracts, data model, development plan |
-| **Quality Validation Engine** | *Planned (Phase 2)* | Deterministic threshold checking (pH, TDS, COD, BOD, Turbidity) |
-| **Constrained Allocation Solver** | *Planned (Phase 2)* | Mathematical optimization matching suppliers to buyers |
-| **Displacement & Cost Engine** | *Planned (Phase 2)* | Audited freshwater displacement and economic savings math |
-| **Synthetic Fixtures & DB Store** | *Planned (Phase 3)* | Controlled synthetic dataset and DynamoDB single-table persistence |
+| **Frontend Shell & UI** | **Implemented** | Responsive layout, navigation, design tokens, route placeholders |
+| **Backend API Core** | **Implemented** | FastAPI app, CORS middleware, Mangum adapter, health endpoint |
+| **Domain Entities & Models** | **Implemented** | Typed models for organisations, facilities, listings, demands, evidence |
+| **Quality Screening Engine** | **Implemented** | Deterministic threshold checking (pH, TDS, COD, BOD, TSS, Turbidity) |
+| **In-Memory Repositories** | **Implemented** | Thread-safe local CRUD repositories with mutation isolation |
+| **Synthetic Demo Dataset** | **Implemented** | Reproducible multi-facility seed fixtures with verified & mismatch cases |
+| **Domain REST Endpoints** | **Implemented** | GET /suppliers, GET /supplies, GET /demands, POST /compatibility/evaluate |
+| **Automated Testing Suite** | **Implemented** | 34 automated unit & integration tests covering models, service & API |
+| **Constrained Allocation Solver** | *Planned (Phase 3)* | Mathematical optimization matching suppliers to buyers |
+| **Displacement & Cost Engine** | *Planned (Phase 3)* | Audited freshwater displacement and economic savings math |
+| **DynamoDB Persistence** | *Planned (Phase 4)* | Transition in-memory store to DynamoDB single-table persistence |
 | **AWS Cloud Deployment** | *Planned (Phase 5)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
 
 ---

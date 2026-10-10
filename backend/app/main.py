@@ -10,12 +10,14 @@ from mangum import Mangum
 
 from app.api.v1.router import api_v1_router
 from app.core.config import settings
+from app.core.errors import BlueLoopError, EntityNotFoundError, InvalidConstraintError
+from app.core.seeds import seed_demonstration_data
 
 
 def create_application() -> FastAPI:
     """
     Application factory initializing FastAPI with configuration,
-    CORS middleware, error handling, and routing.
+    CORS middleware, error handling, seed fixtures, and routing.
     """
     application = FastAPI(
         title=f"{settings.app_name} API",
@@ -38,6 +40,47 @@ def create_application() -> FastAPI:
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
+
+    # Seed demonstration fixtures for local MVP
+    if settings.use_synthetic_data:
+        seed_demonstration_data()
+
+    # Domain error handlers
+    @application.exception_handler(EntityNotFoundError)
+    async def entity_not_found_handler(request: Request, exc: EntityNotFoundError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "error": "EntityNotFound",
+                "message": exc.message,
+                "details": exc.details,
+                "path": request.url.path,
+            },
+        )
+
+    @application.exception_handler(InvalidConstraintError)
+    async def invalid_constraint_handler(request: Request, exc: InvalidConstraintError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "error": "InvalidConstraint",
+                "message": exc.message,
+                "details": exc.details,
+                "path": request.url.path,
+            },
+        )
+
+    @application.exception_handler(BlueLoopError)
+    async def blueloop_error_handler(request: Request, exc: BlueLoopError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "error": "DomainError",
+                "message": exc.message,
+                "details": exc.details,
+                "path": request.url.path,
+            },
+        )
 
     # Standardized unhandled exception handler
     @application.exception_handler(Exception)

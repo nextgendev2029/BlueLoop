@@ -1,0 +1,95 @@
+"""
+BlueLoop Domain Enumerations
+"""
+
+from enum import Enum
+
+
+class OrgType(str, Enum):
+    SUPPLIER = "SUPPLIER"
+    BUYER = "BUYER"
+    PLATFORM_OPERATOR = "PLATFORM_OPERATOR"
+
+
+class VerificationStatus(str, Enum):
+    UNVERIFIED = "UNVERIFIED"
+    PENDING_REVIEW = "PENDING_REVIEW"
+    VERIFIED_DEMO = "VERIFIED_DEMO"
+    CERTIFIED = "CERTIFIED"
+
+
+class FacilityType(str, Enum):
+    CETP = "CETP"  # Common Effluent Treatment Plant
+    INDUSTRIAL_STP = "INDUSTRIAL_STP"  # Industrial Sewage Treatment Plant
+    MANUFACTURING_WWTP = "MANUFACTURING_WWTP"  # On-site Manufacturing Wastewater Treatment Plant
+    MUNICIPAL_TERTIARY = "MUNICIPAL_TERTIARY"  # Municipal Tertiary Treatment Facility
+
+
+class WaterGrade(str, Enum):
+    RO_PERMEATE = "RO_PERMEATE"  # Reverse Osmosis Permeate (TDS < 500 mg/L)
+    TERTIARY_POLISHED = "TERTIARY_POLISHED"  # Filtered & Disinfected (TDS 500-1500 mg/L)
+    SECONDARY_CLARIFIED = "SECONDARY_CLARIFIED"  # Clarified biological effluent (TDS > 1500 mg/L)
+    INDUSTRIAL_RECYCLED = "INDUSTRIAL_RECYCLED"  # Segregated process recycle stream
+
+
+class EvidenceType(str, Enum):
+    CERTIFIED_LAB_REPORT = "CERTIFIED_LAB_REPORT"
+    INLINE_SENSOR_TELEMETRY = "INLINE_SENSOR_TELEMETRY"
+    SELF_REPORTED = "SELF_REPORTED"
+
+
+class ListingStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    COMMITTED = "COMMITTED"
+    PAUSED = "PAUSED"
+    EXPIRED = "EXPIRED"
+
+
+class IntendedUse(str, Enum):
+    COOLING_TOWER = "COOLING_TOWER"
+    BOILER_FEED = "BOILER_FEED"
+    INDUSTRIAL_PROCESS = "INDUSTRIAL_PROCESS"
+    CONSTRUCTION_BATCHING = "CONSTRUCTION_BATCHING"
+    LANDSCAPE_IRRIGATION = "LANDSCAPE_IRRIGATION"
+    NON_POTABLE_FLUSHING = "NON_POTABLE_FLUSHING"
+
+
+class DemandStatus(str, Enum):
+    OPEN = "OPEN"
+    ALLOCATED = "ALLOCATED"
+    PARTIALLY_ALLOCATED = "PARTIALLY_ALLOCATED"
+    CANCELLED = "CANCELLED"
+
+
+class ParameterStatus(str, Enum):
+    PASS = "PASS"
+    FAIL = "FAIL"
+    UNKNOWN = "UNKNOWN"
+    SKIPPED = "SKIPPED"
+
+
+class EligibilityStatus(str, Enum):
+    ELIGIBLE = "ELIGIBLE"
+    INELIGIBLE = "INELIGIBLE"
+    REQUIRES_FURTHER_TESTING = "REQUIRES_FURTHER_TESTING"
+
+
+class DeliveryLifecycleStatus(str, Enum):
+    SCHEDULED = "SCHEDULED"
+    DISPATCHED = "DISPATCHED"
+    IN_TRANSIT = "IN_TRANSIT"
+    DELIVERED_SAMPLE_PENDING = "DELIVERED_SAMPLE_PENDING"
+    ACCEPTED_CONFIRMED = "ACCEPTED_CONFIRMED"
+    REJECTED_QUALITY_FAILURE = "REJECTED_QUALITY_FAILURE"
+
+
+class DeliveryMode(str, Enum):
+    PIPELINE = "PIPELINE"
+    DEDICATED_TANKER = "DEDICATED_TANKER"
+
+
+class ActorType(str, Enum):
+    SYSTEM_DETERMINISTIC_ENGINE = "SYSTEM_DETERMINISTIC_ENGINE"
+    USER_OPERATOR = "USER_OPERATOR"
+    BUYER = "BUYER"
+    SUPPLIER = "SUPPLIER"

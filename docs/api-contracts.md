@@ -4,97 +4,127 @@
 BlueLoop exposes a standardized RESTful API over HTTP/JSON.
 - **Base URL (Local)**: `http://localhost:8000/api/v1`
 - **Data Format**: `application/json; charset=utf-8`
-- **Date/Time Standard**: ISO 8601 UTC timestamps (e.g., `2026-10-11T02:30:00Z`)
+- **Date/Time Standard**: ISO 8601 UTC timestamps (e.g., `2026-01-10T10:30:00Z`)
 - **Error Format Standard**: RFC 7807 compliant error object structure
 
 ```json
 {
   "error": "ErrorTypeIdentifier",
   "message": "Human-readable explanation of error condition",
-  "details": [],
+  "details": {},
   "path": "/api/v1/requested-path"
 }
 ```
 
 ---
 
-## 2. Implemented Endpoints (Current Foundation Status)
+## 2. Implemented Endpoints (Stage 2 Operational Status)
 
-### 2.1 Root Information Endpoint
-- **Method**: `GET /`
-- **Status Code**: `200 OK`
-- **Description**: Returns root service metadata and documentation links.
-- **Response Example**:
-```json
-{
-  "name": "BlueLoop",
-  "version": "0.1.0",
-  "description": "Water Reuse Intelligence and Procurement Optimisation Platform",
-  "health": "/api/v1/health",
-  "docs": "/docs"
-}
-```
-
-### 2.2 System Health Check
+### 2.1 System Health Check
 - **Method**: `GET /api/v1/health`
 - **Status Code**: `200 OK`
-- **Description**: Returns real-time health status, software version, running environment, and synthetic data mode indicator.
-- **Response Schema (`HealthResponse`)**:
+- **Response**: `HealthResponse` (`status`, `app_name`, `version`, `environment`, `timestamp`, `synthetic_data_mode`)
+
+### 2.2 List Supplier Facilities
+- **Method**: `GET /api/v1/suppliers`
+- **Query Parameters**:
+  - `city` (optional, string): Filter by municipal city (e.g. `Chennai`)
+  - `facility_type` (optional, `FacilityType`): `CETP`, `INDUSTRIAL_STP`, `MANUFACTURING_WWTP`, `MUNICIPAL_TERTIARY`
+- **Status Code**: `200 OK`
+- **Response**: `SupplierListResponse` (`items: [SupplierFacilityResponse]`, `total: int`, `is_synthetic: bool`)
+
+### 2.3 Get Supplier Facility Detail
+- **Method**: `GET /api/v1/suppliers/{facility_id}`
+- **Status Code**: `200 OK` (or `404 Not Found`)
+- **Response**: `SupplierFacilityResponse`
+
+### 2.4 List Supply Batches
+- **Method**: `GET /api/v1/supplies`
+- **Query Parameters**:
+  - `water_grade` (optional, `WaterGrade`): `RO_PERMEATE`, `TERTIARY_POLISHED`, `SECONDARY_CLARIFIED`, `INDUSTRIAL_RECYCLED`
+  - `min_volume_kl` (optional, float &ge; 0): Minimum available volume in kilolitres
+  - `max_price_per_kl` (optional, float &ge; 0): Maximum unit price per kilolitre
+- **Status Code**: `200 OK`
+- **Response**: `SupplyListResponse` (`items: [SupplyListingResponse]`, `total: int`, `is_synthetic: bool`)
+
+### 2.5 Get Supply Batch Detail
+- **Method**: `GET /api/v1/supplies/{listing_id}`
+- **Status Code**: `200 OK` (or `404 Not Found`)
+- **Response**: `SupplyListingResponse`
+
+### 2.6 List Buyer Demand Requests
+- **Method**: `GET /api/v1/demands`
+- **Query Parameters**:
+  - `intended_use` (optional, `IntendedUse`): `COOLING_TOWER`, `BOILER_FEED`, `INDUSTRIAL_PROCESS`, `CONSTRUCTION_BATCHING`, etc.
+  - `status` (optional, `DemandStatus`): `OPEN`, `ALLOCATED`, `PARTIALLY_ALLOCATED`, `CANCELLED`
+- **Status Code**: `200 OK`
+- **Response**: `DemandListResponse` (`items: [DemandRequestResponse]`, `total: int`, `is_synthetic: bool`)
+
+### 2.7 Get Demand Request Detail
+- **Method**: `GET /api/v1/demands/{demand_id}`
+- **Status Code**: `200 OK` (or `404 Not Found`)
+- **Response**: `DemandRequestResponse`
+
+### 2.8 Evaluate Deterministic Quality Compatibility
+- **Method**: `POST /api/v1/compatibility/evaluate`
+- **Request Body**: `CompatibilityEvaluationRequest`
+  - Either (`listing_id` and `demand_id`)
+  - Or (`custom_measurements` and `custom_limits`)
+- **Status Code**: `200 OK` (or `400 Bad Request` if invalid arguments, `404 Not Found` if entity missing)
+- **Response**: `CompatibilityEvaluationResponse`:
 ```json
 {
-  "status": "ok",
-  "app_name": "BlueLoop",
-  "version": "0.1.0",
-  "environment": "development",
-  "timestamp": "2026-10-11T02:30:00Z",
-  "synthetic_data_mode": true
+  "listing_id": "SYNTH-LIST-01",
+  "demand_id": "SYNTH-DEM-01",
+  "is_eligible": true,
+  "decision_summary": "Eligible: All 7 evaluated parameters satisfy buyer tolerance limits.",
+  "parameter_results": [
+    {
+      "parameter_name": "Hydrogen-Ion Concentration (pH)",
+      "measured_value": 7.35,
+      "unit": "pH scale",
+      "buyer_min": 6.5,
+      "buyer_max": 8.5,
+      "status": "PASS",
+      "reason": "pH 7.35 satisfies required range [6.5 – 8.5]."
+    },
+    {
+      "parameter_name": "Total Dissolved Solids (TDS)",
+      "measured_value": 980.0,
+      "unit": "mg/L",
+      "buyer_min": null,
+      "buyer_max": 1200.0,
+      "status": "PASS",
+      "reason": "Total Dissolved Solids (TDS) of 980.0 mg/L satisfies threshold <= 1200.0 mg/L (buffer: 220.0 mg/L, 18.3% safety margin)."
+    }
+  ],
+  "failed_parameters": [],
+  "unknown_parameters": [],
+  "disclaimer": "BlueLoop Screening Tool Notice: This evaluation compares supplied laboratory measurements against buyer-specified boundaries. It does not certify regulatory compliance, plant process fitness, or guarantee water safety.",
+  "evaluated_at": "2026-01-10T10:30:00Z",
+  "is_synthetic": true
 }
 ```
 
 ---
 
-## 3. Planned Endpoints (Scheduled for Implementation in Subsequent Stages)
+## 3. Planned Endpoints (Scheduled for Subsequent Stages)
 
-> **IMPORTANT:**
-> The endpoints listed in this section describe the contract specifications planned for subsequent development stages.
-> They are **not yet active** in the current repository initialisation stage.
+> **STATUS NOTE:**
+> The following endpoints are planned for Phase 3 and beyond. They are not active in Stage 2.
 
-### 3.1 Water Supplier Endpoints (Planned)
-- `POST /api/v1/suppliers`
-  - Register a new industrial wastewater treatment facility.
-- `GET /api/v1/suppliers`
-  - Query supplier facilities with geographical radius and treatment capacity filters.
-- `GET /api/v1/suppliers/{supplier_id}`
-  - Retrieve supplier profile and facility accreditation.
-- `POST /api/v1/suppliers/{supplier_id}/listings`
-  - Register available treated water volume batch with certified water quality parameters (pH, TDS, COD, BOD, Turbidity).
-- `GET /api/v1/suppliers/{supplier_id}/listings`
-  - List active water batches and pricing for a supplier.
+### 3.1 Entity Mutation Endpoints (Planned)
+- `POST /api/v1/suppliers`: Register a new treatment plant.
+- `POST /api/v1/supplies`: Register a new water batch with laboratory certificate.
+- `POST /api/v1/demands`: Submit a buyer demand request.
 
-### 3.2 Buyer Demand Requests (Planned)
-- `POST /api/v1/demands`
-  - Submit buyer demand request specifying required volume (kL/day), required duration, application type (cooling, boiler, flushing, irrigation), and maximum allowable contaminant thresholds.
-- `GET /api/v1/demands`
-  - List buyer demand requests and status.
-- `GET /api/v1/demands/{demand_id}`
-  - Retrieve demand request detail and compatibility evaluation status.
+### 3.2 Multi-Facility Allocation Optimization (Planned)
+- `POST /api/v1/matching/run-allocation`: Execute linear programming solver allocating multiple sources to multiple consumers under capacity and logistics distance constraints.
+- `GET /api/v1/matching/allocations/{allocation_id}`: Retrieve optimization results and constraint traces.
 
-### 3.3 Quality Eligibility & Matching Engine (Planned)
-- `POST /api/v1/matching/evaluate-eligibility`
-  - Deterministic evaluation test: checks whether a specific supplier water listing satisfies a buyer demand's parameter threshold limits. Returns pass/fail with exact parameter delta explanation.
-- `POST /api/v1/matching/run-allocation`
-  - Triggers the multi-facility allocation optimization algorithm. Returns optimal supply allocations, delivered cost estimations, and explanation traces.
-- `GET /api/v1/matching/allocations/{allocation_id}`
-  - Retrieve details, decision rationale, and freshwater displacement metrics for an allocation plan.
+### 3.3 Physical Delivery & Custody Tracking (Planned)
+- `POST /api/v1/deliveries`: Schedule delivery dispatch.
+- `PATCH /api/v1/deliveries/{id}/status`: Transition custody lifecycle (`DISPATCHED` &rarr; `IN_TRANSIT` &rarr; `ACCEPTED_CONFIRMED`).
 
-### 3.4 Delivery & Verification (Planned)
-- `POST /api/v1/deliveries`
-  - Create scheduled delivery batch based on an approved allocation.
-- `PATCH /api/v1/deliveries/{delivery_id}/status`
-  - Update delivery milestone (`DISPATCHED`, `IN_TRANSIT`, `DELIVERED`, `ACCEPTED`).
-- `POST /api/v1/deliveries/{delivery_id}/verify`
-  - Buyer digital signature and quality sample verification upon physical delivery.
-
-### 3.5 Impact Analytics (Planned)
-- `GET /api/v1/impact/summary`
-  - Aggregate verified freshwater displacement (kL), groundwater stress reduction index, and procurement cost savings across all verified deliveries.
+### 3.4 Impact Accounting (Planned)
+- `GET /api/v1/impact/summary`: Aggregate verified cubic meters of virgin freshwater displaced.
