@@ -106,25 +106,118 @@ BlueLoop exposes a standardized RESTful API over HTTP/JSON.
 }
 ```
 
+### 2.9 Execute Deterministic Allocation Run
+- **Method**: `POST /api/v1/allocations/run`
+- **Status Code**: `200 OK`
+- **Request Body**: `AllocationRunRequest` (optional)
+```json
+{
+  "demand_ids": ["SYNTH-DEM-01", "SYNTH-DEM-02"],
+  "listing_ids": ["SYNTH-LIST-01", "SYNTH-LIST-02"],
+  "substitution_ratio": 1.0,
+  "transport_rate_per_kl_km": 0.015
+}
+```
+- **Response**: `AllocationRunResponse`:
+```json
+{
+  "run_id": "RUN-20261011030000-A1B2C3",
+  "run_timestamp": "2026-10-11T03:00:00Z",
+  "status": "PROPOSED",
+  "algorithm_info": {
+    "name": "BlueLoop Deterministic Constrained Allocation Solver",
+    "version": "1.0.0",
+    "strategy": "Deterministic Constrained Prioritization (Lowest Unit Cost & Distance)"
+  },
+  "totals": {
+    "total_requested_volume_kl": 4500.0,
+    "total_available_volume_kl": 7700.0,
+    "total_allocated_volume_kl": 4500.0,
+    "total_unfulfilled_volume_kl": 0.0,
+    "overall_fulfillment_rate": 100.0,
+    "total_supplier_cost": 4125.0,
+    "total_delivered_cost": 5580.45,
+    "is_delivered_cost_fully_known": true,
+    "total_potential_displacement_kl": 4500.0
+  },
+  "proposed_allocations": [
+    {
+      "candidate_id": "CAND-SYNTH-LIST-01-SYNTH-DEM-01",
+      "listing_id": "SYNTH-LIST-01",
+      "facility_id": "SYNTH-FAC-01",
+      "demand_id": "SYNTH-DEM-01",
+      "water_grade": "TERTIARY_POLISHED",
+      "allocated_volume_kl": 3000.0,
+      "cost_estimate": {
+        "allocated_volume_kl": 3000.0,
+        "unit_supplier_price_per_kl": 0.78,
+        "supplier_subtotal": 2340.0,
+        "distance_km": 29.64,
+        "transport_rate_per_kl_km": 0.015,
+        "is_transport_cost_known": true,
+        "transport_subtotal": 1333.80,
+        "unit_transport_cost_per_kl": 0.44,
+        "total_delivered_cost": 3673.80,
+        "delivered_cost_per_kl": 1.22
+      },
+      "impact_estimate": {
+        "allocated_volume_kl": 3000.0,
+        "substitution_ratio": 1.0,
+        "potential_freshwater_displacement_kl": 3000.0,
+        "impact_lifecycle_stage": "POTENTIAL_PROPOSED"
+      },
+      "decision_reasons": [
+        "Water-quality screening passed: all required chemical and physical limits satisfied.",
+        "Allocated 3,000.0 kL based on available supplier capacity and buyer intake demand.",
+        "Ex-works price: 0.78/kL.",
+        "One-way transport distance: 29.6 km (within buyer limit)."
+      ],
+      "reason_codes": [
+        "QUALITY_ELIGIBLE",
+        "CAPACITY_CONSTRAINTS_SATISFIED",
+        "PRIORITY_COST_OPTIMIZED"
+      ]
+    }
+  ],
+  "rejected_candidates": [],
+  "demand_fulfillment": [],
+  "supply_utilization": [],
+  "assumptions": [
+    "Freshwater substitution ratio modeled at 1.00 per kL of treated water.",
+    "Logistics transport tariff modeled at 0.0150/kL-km where distances are known.",
+    "Algorithm strictly excludes pairs violating quality constraints or with missing required laboratory evidence.",
+    "Supply volumes are allocated under linear capacity constraints without double-counting."
+  ],
+  "disclaimer": "BlueLoop Allocation Screening Tool Notice: Proposed allocations represent screened compatibility matches and mathematical volume sharing. They do not constitute binding legal contracts, regulatory water safety certification, or confirmed physical delivery.",
+  "is_synthetic": true
+}
+```
+
+### 2.10 Inspect Allocation Run Detail
+- **Method**: `GET /api/v1/allocations/{run_id}`
+- **Status Code**: `200 OK` (or `404 Not Found`)
+- **Response**: `AllocationRunResponse`
+
+### 2.11 List Stored Allocation Runs
+- **Method**: `GET /api/v1/allocations`
+- **Status Code**: `200 OK`
+- **Response**: `List[AllocationRunResponse]`
+
 ---
 
 ## 3. Planned Endpoints (Scheduled for Subsequent Stages)
 
 > **STATUS NOTE:**
-> The following endpoints are planned for Phase 3 and beyond. They are not active in Stage 2.
+> The following endpoints are planned for Stage 4 and beyond.
 
 ### 3.1 Entity Mutation Endpoints (Planned)
 - `POST /api/v1/suppliers`: Register a new treatment plant.
 - `POST /api/v1/supplies`: Register a new water batch with laboratory certificate.
 - `POST /api/v1/demands`: Submit a buyer demand request.
 
-### 3.2 Multi-Facility Allocation Optimization (Planned)
-- `POST /api/v1/matching/run-allocation`: Execute linear programming solver allocating multiple sources to multiple consumers under capacity and logistics distance constraints.
-- `GET /api/v1/matching/allocations/{allocation_id}`: Retrieve optimization results and constraint traces.
-
-### 3.3 Physical Delivery & Custody Tracking (Planned)
+### 3.2 Physical Delivery & Custody Tracking (Planned)
 - `POST /api/v1/deliveries`: Schedule delivery dispatch.
 - `PATCH /api/v1/deliveries/{id}/status`: Transition custody lifecycle (`DISPATCHED` &rarr; `IN_TRANSIT` &rarr; `ACCEPTED_CONFIRMED`).
 
-### 3.4 Impact Accounting (Planned)
-- `GET /api/v1/impact/summary`: Aggregate verified cubic meters of virgin freshwater displaced.
+### 3.3 Historical Audit Trail (Planned)
+- `GET /api/v1/audit/events`: Retrieve immutable chronological ledger of screening and allocation decisions.

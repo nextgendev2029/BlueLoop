@@ -124,6 +124,13 @@ class AllocationRunRepository(InMemoryRepository[AllocationRun]):
         super().__init__(id_field_name="run_id", entity_name="AllocationRun")
 
 
+class AllocationProposalRepository(InMemoryRepository):
+    """Stores full AllocationRunResponse proposals for inspection."""
+
+    def __init__(self):
+        super().__init__(id_field_name="run_id", entity_name="AllocationProposal")
+
+
 class DeliveryRepository(InMemoryRepository[DeliveryRecord]):
     def __init__(self):
         super().__init__(id_field_name="id", entity_name="DeliveryRecord")
@@ -145,6 +152,7 @@ class RepositoryContainer:
         self.demands = DemandRequestRepository()
         self.evidences = QualityEvidenceRepository()
         self.allocation_runs = AllocationRunRepository()
+        self.allocation_proposals = AllocationProposalRepository()
         self.deliveries = DeliveryRepository()
         self.audit_events = AuditEventRepository()
 
@@ -157,6 +165,7 @@ class RepositoryContainer:
         self.demands.clear()
         self.evidences.clear()
         self.allocation_runs.clear()
+        self.allocation_proposals.clear()
         self.deliveries.clear()
         self.audit_events.clear()
 

@@ -220,11 +220,12 @@ npm run build
 | **In-Memory Repositories** | **Implemented** | Thread-safe local CRUD repositories with mutation isolation |
 | **Synthetic Demo Dataset** | **Implemented** | Reproducible multi-facility seed fixtures with verified & mismatch cases |
 | **Domain REST Endpoints** | **Implemented** | GET /suppliers, GET /supplies, GET /demands, POST /compatibility/evaluate |
-| **Automated Testing Suite** | **Implemented** | 34 automated unit & integration tests covering models, service & API |
-| **Constrained Allocation Solver** | *Planned (Phase 3)* | Mathematical optimization matching suppliers to buyers |
-| **Displacement & Cost Engine** | *Planned (Phase 3)* | Audited freshwater displacement and economic savings math |
-| **DynamoDB Persistence** | *Planned (Phase 4)* | Transition in-memory store to DynamoDB single-table persistence |
-| **AWS Cloud Deployment** | *Planned (Phase 5)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
+| **Constrained Allocation Solver** | **Implemented** | Deterministic solver enforcing capacity limits and competing demand sharing |
+| **Displacement & Cost Engine** | **Implemented** | Dedicated cost calculator and audited freshwater displacement metrics |
+| **Allocation REST Endpoints** | **Implemented** | POST /allocations/run, GET /allocations/{id}, GET /allocations |
+| **Automated Testing Suite** | **Implemented** | 57 automated unit & integration tests passing with 100% success rate |
+| **DynamoDB Persistence** | *Planned (Stage 4)* | Transition in-memory store to DynamoDB single-table persistence |
+| **AWS Cloud Deployment** | *Planned (Stage 5)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
 
 ---
 
