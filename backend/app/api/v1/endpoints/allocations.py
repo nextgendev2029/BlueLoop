@@ -3,11 +3,12 @@ BlueLoop Allocation Optimization API Endpoints
 Deterministic multi-facility matching, feasibility screening, and constrained volume allocation.
 """
 
+import uuid
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, status
 
-from app.models.entities import AllocationCandidate, AllocationRun
-from app.models.enums import DemandStatus, EligibilityStatus, ListingStatus
+from app.models.entities import AllocationCandidate, AllocationRun, AuditEvent
+from app.models.enums import ActorType, DemandStatus, EligibilityStatus, ListingStatus
 from app.repositories.memory import get_repository_container
 from app.schemas.allocation import (
     AllocationRunRequest,
@@ -138,8 +139,112 @@ async def get_allocation_run(run_id: str) -> AllocationRunResponse:
     summary="List Stored Allocation Runs",
     description="Returns all allocation proposal runs stored in memory during the current session.",
 )
-async def list_allocation_runs() -> List[AllocationRunResponse]:
+async def list_allocation_runs(
+    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    offset: int = Query(0, ge=0, description="Offset index for pagination"),
+) -> List[AllocationRunResponse]:
     container = get_repository_container()
     runs = container.allocation_proposals.list()
     # Sort newest first
-    return sorted(runs, key=lambda r: r.run_timestamp, reverse=True)
+    sorted_runs = sorted(runs, key=lambda r: r.run_timestamp, reverse=True)
+    return sorted_runs[offset : offset + limit]
+
+
+@router.post(
+    "/{run_id}/accept",
+    response_model=AllocationRunResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Accept Allocation Proposal",
+    description=(
+        "Transitions an allocation proposal from PROPOSED to ACCEPTED. "
+        "Does not fabricate physical delivery records. Prevents accepting already rejected runs."
+    ),
+)
+async def accept_allocation_proposal(run_id: str) -> AllocationRunResponse:
+    container = get_repository_container()
+    proposal = container.allocation_proposals.get(run_id)
+    if not proposal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Allocation run '{run_id}' not found.",
+        )
+
+    if proposal.status == "REJECTED":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot accept allocation proposal '{run_id}' because it has already been rejected.",
+        )
+
+    if proposal.status != "ACCEPTED":
+        proposal.status = "ACCEPTED"
+        container.allocation_proposals.update(proposal)
+
+        domain_run = container.allocation_runs.get(run_id)
+        if domain_run:
+            domain_run.status = "ACCEPTED"
+            container.allocation_runs.update(domain_run)
+
+        # Record immutable audit event
+        container.audit_events.create(
+            AuditEvent(
+                event_id=f"AUD-{uuid.uuid4().hex[:8].upper()}",
+                entity_type="AllocationRun",
+                entity_id=run_id,
+                actor_type=ActorType.USER_OPERATOR,
+                action="ACCEPT_PROPOSAL",
+                explanation=f"Allocation proposal '{run_id}' accepted by operator for subsequent delivery scheduling.",
+                metadata={"total_allocated_kl": proposal.totals.total_allocated_volume_kl},
+            )
+        )
+
+    return proposal
+
+
+@router.post(
+    "/{run_id}/reject",
+    response_model=AllocationRunResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Reject Allocation Proposal",
+    description=(
+        "Transitions an allocation proposal from PROPOSED to REJECTED. "
+        "Prevents rejecting an already accepted allocation run."
+    ),
+)
+async def reject_allocation_proposal(run_id: str) -> AllocationRunResponse:
+    container = get_repository_container()
+    proposal = container.allocation_proposals.get(run_id)
+    if not proposal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Allocation run '{run_id}' not found.",
+        )
+
+    if proposal.status == "ACCEPTED":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cannot reject allocation proposal '{run_id}' because it has already been accepted.",
+        )
+
+    if proposal.status != "REJECTED":
+        proposal.status = "REJECTED"
+        container.allocation_proposals.update(proposal)
+
+        domain_run = container.allocation_runs.get(run_id)
+        if domain_run:
+            domain_run.status = "REJECTED"
+            container.allocation_runs.update(domain_run)
+
+        # Record immutable audit event
+        container.audit_events.create(
+            AuditEvent(
+                event_id=f"AUD-{uuid.uuid4().hex[:8].upper()}",
+                entity_type="AllocationRun",
+                entity_id=run_id,
+                actor_type=ActorType.USER_OPERATOR,
+                action="REJECT_PROPOSAL",
+                explanation=f"Allocation proposal '{run_id}' rejected by operator.",
+                metadata={"run_id": run_id},
+            )
+        )
+
+    return proposal

@@ -29,6 +29,8 @@ class DemandRequestResponse(BaseModel):
 class DemandListResponse(BaseModel):
     items: List[DemandRequestResponse]
     total: int
+    limit: Optional[int] = Field(None, description="Maximum number of items requested")
+    offset: Optional[int] = Field(None, description="Offset index requested")
     is_synthetic: bool = Field(
         default=True,
         description="True indicates response contains synthetic demonstration fixtures.",

@@ -219,12 +219,14 @@ npm run build
 | **Quality Screening Engine** | **Implemented** | Deterministic threshold checking (pH, TDS, COD, BOD, TSS, Turbidity) |
 | **In-Memory Repositories** | **Implemented** | Thread-safe local CRUD repositories with mutation isolation |
 | **Synthetic Demo Dataset** | **Implemented** | Reproducible multi-facility seed fixtures with verified & mismatch cases |
-| **Domain REST Endpoints** | **Implemented** | GET /suppliers, GET /supplies, GET /demands, POST /compatibility/evaluate |
+| **Domain REST Endpoints** | **Implemented** | GET /suppliers, GET /supplies, GET /demands, POST /compatibility/evaluate (with bounded pagination & filters) |
 | **Constrained Allocation Solver** | **Implemented** | Deterministic solver enforcing capacity limits and competing demand sharing |
 | **Displacement & Cost Engine** | **Implemented** | Dedicated cost calculator and audited freshwater displacement metrics |
-| **Allocation REST Endpoints** | **Implemented** | POST /allocations/run, GET /allocations/{id}, GET /allocations |
-| **Automated Testing Suite** | **Implemented** | 57 automated unit & integration tests passing with 100% success rate |
-| **DynamoDB Persistence** | *Planned (Stage 4)* | Transition in-memory store to DynamoDB single-table persistence |
+| **Allocation REST Endpoints** | **Implemented** | POST /allocations/run, GET /allocations/{id}, accept/reject proposals |
+| **Delivery & Custody Tracking** | **Implemented** | GET/POST /deliveries, PATCH /deliveries/{id}/status with strict lifecycle validation |
+| **Impact Analytics API** | **Implemented** | Multi-tier displacement reporting (potential, accepted, confirmed, verified) |
+| **Automated Testing Suite** | **Implemented** | 65 automated unit & integration tests passing with 100% success rate |
+| **DynamoDB Persistence** | *Planned (Stage 5)* | Transition in-memory store to DynamoDB single-table persistence |
 | **AWS Cloud Deployment** | *Planned (Stage 5)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
 
 ---

@@ -3,12 +3,14 @@ BlueLoop Demand Requests API Endpoints
 """
 
 from typing import Optional
+import logging
 from fastapi import APIRouter, HTTPException, Query, status
 from app.models.enums import DemandStatus, IntendedUse
 from app.repositories.memory import get_repository_container
 from app.schemas.demand import DemandListResponse, DemandRequestResponse
 
 router = APIRouter()
+logger = logging.getLogger("blueloop.api.demands")
 
 
 @router.get(
@@ -25,6 +27,11 @@ async def list_demands(
     demand_status: Optional[DemandStatus] = Query(
         None, alias="status", description="Filter by demand lifecycle status"
     ),
+    max_distance_km: Optional[float] = Query(
+        None, ge=0.0, description="Filter demands accepting at least this transport distance"
+    ),
+    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    offset: int = Query(0, ge=0, description="Offset index for pagination"),
 ) -> DemandListResponse:
     container = get_repository_container()
 
@@ -33,14 +40,22 @@ async def list_demands(
             return False
         if demand_status and d.status != demand_status:
             return False
+        if max_distance_km and (d.max_distance_km is None or d.max_distance_km < max_distance_km):
+            return False
         return True
 
     demands = container.demands.list(filter_fn)
-    items = [DemandRequestResponse.model_validate(d) for d in demands]
+    total_count = len(demands)
+    paginated_demands = demands[offset : offset + limit]
+
+    items = [DemandRequestResponse.model_validate(d) for d in paginated_demands]
+    logger.debug("Listed %d demand requests (total: %d)", len(items), total_count)
 
     return DemandListResponse(
         items=items,
-        total=len(items),
+        total=total_count,
+        limit=limit,
+        offset=offset,
         is_synthetic=True,
     )
 

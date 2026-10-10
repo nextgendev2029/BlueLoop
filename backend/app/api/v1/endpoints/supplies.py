@@ -3,12 +3,14 @@ BlueLoop Supply Listings API Endpoints
 """
 
 from typing import Optional
+import logging
 from fastapi import APIRouter, HTTPException, Query, status
-from app.models.enums import WaterGrade
+from app.models.enums import ListingStatus, VerificationStatus, WaterGrade
 from app.repositories.memory import get_repository_container
 from app.schemas.supply import SupplyListingResponse, SupplyListResponse
 
 router = APIRouter()
+logger = logging.getLogger("blueloop.api.supplies")
 
 
 @router.get(
@@ -20,27 +22,42 @@ router = APIRouter()
 )
 async def list_supplies(
     water_grade: Optional[WaterGrade] = Query(None, description="Filter by water quality grade"),
+    listing_status: Optional[ListingStatus] = Query(
+        None, alias="status", description="Filter by supply listing status (ACTIVE, DEPLETED, SUSPENDED)"
+    ),
     min_volume_kl: Optional[float] = Query(
         None, ge=0.0, description="Minimum available capacity in kilolitres"
     ),
     max_price_per_kl: Optional[float] = Query(
         None, ge=0.0, description="Maximum acceptable price per kilolitre"
     ),
+    quality_evidence_status: Optional[VerificationStatus] = Query(
+        None, description="Filter by laboratory verification accreditation status"
+    ),
+    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    offset: int = Query(0, ge=0, description="Offset index for pagination"),
 ) -> SupplyListResponse:
     container = get_repository_container()
 
     def filter_fn(listing):
         if water_grade and listing.water_grade != water_grade:
             return False
+        if listing_status and listing.status != listing_status:
+            return False
         if min_volume_kl and listing.available_volume_kl < min_volume_kl:
             return False
         if max_price_per_kl and listing.price_per_kl > max_price_per_kl:
             return False
+        if quality_evidence_status and listing.quality_evidence_status != quality_evidence_status:
+            return False
         return True
 
     listings = container.listings.list(filter_fn)
+    total_count = len(listings)
+    paginated_listings = listings[offset : offset + limit]
+
     items = []
-    for l in listings:
+    for l in paginated_listings:
         fac = container.facilities.get(l.facility_id)
         fac_name = fac.name if fac else None
         item = SupplyListingResponse(
@@ -62,9 +79,12 @@ async def list_supplies(
         )
         items.append(item)
 
+    logger.debug("Listed %d supply listings (total: %d)", len(items), total_count)
     return SupplyListResponse(
         items=items,
-        total=len(items),
+        total=total_count,
+        limit=limit,
+        offset=offset,
         is_synthetic=True,
     )
 

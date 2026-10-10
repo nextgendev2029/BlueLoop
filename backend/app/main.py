@@ -3,7 +3,8 @@ BlueLoop - Water Reuse Intelligence & Procurement Optimisation Platform
 Backend Application Entry Point
 """
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mangum import Mangum
@@ -78,6 +79,39 @@ def create_application() -> FastAPI:
                 "error": "DomainError",
                 "message": exc.message,
                 "details": exc.details,
+                "path": request.url.path,
+            },
+        )
+
+    @application.exception_handler(HTTPException)
+    async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+        error_type = "ClientError"
+        if exc.status_code == 404:
+            error_type = "ResourceNotFound"
+        elif exc.status_code == 400:
+            error_type = "BadRequest"
+        elif exc.status_code == 422:
+            error_type = "UnprocessableEntity"
+
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": error_type,
+                "message": str(exc.detail),
+                "detail": exc.detail,
+                "path": request.url.path,
+            },
+            headers=exc.headers,
+        )
+
+    @application.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "error": "ValidationError",
+                "message": "Request validation failed. Verify parameters and payload structure.",
+                "detail": exc.errors(),
                 "path": request.url.path,
             },
         )

@@ -25,7 +25,7 @@ The core technical philosophy of BlueLoop is **deterministic explainability**:
 +---------------------------------------------------------------------------------------+
 |                                  API & ROUTING TIER                                   |
 |   FastAPI Application (Python 3.11)                                                   |
-|   - app.api.v1.endpoints: suppliers, supplies, demands, compatibility, allocations, health
+|   - app.api.v1.endpoints: suppliers, supplies, demands, compatibility, allocations, deliveries, impact, health
 |   - app.schemas: Pydantic v2 Request & Response Contract Models                       |
 +-------------------------------------------+-------------------------------------------+
                                             |
@@ -46,6 +46,7 @@ The core technical philosophy of BlueLoop is **deterministic explainability**:
 |   Local Reality: In-Memory Thread-Safe Repositories (app.repositories.memory)         |
 |   - OrganisationRepository, SupplierFacilityRepository, SupplyListingRepository       |
 |   - DemandRequestRepository, QualityEvidenceRepository, AllocationProposalRepository |
+|   - DeliveryRecordRepository, AuditEventRepository                                    |
 |   - Mutation-isolated model copying (deep copies)                                     |
 |   - Seeded via app.core.seeds.seed_demonstration_data()                               |
 |                                                                                       |
@@ -53,7 +54,7 @@ The core technical philosophy of BlueLoop is **deterministic explainability**:
 |   - Amazon DynamoDB Single-Table Design (`blueloop-core`)                             |
 |   - Amazon S3 Encrypted Document Store (`blueloop-quality-docs`)                      |
 |   - AWS Lambda Runtime via Mangum ASGI Adapter                                        |
-+---------------------------------------------------------------------------------------+
++-------------------------------------------+-------------------------------------------+
 ```
 
 ---
@@ -91,10 +92,12 @@ The core technical philosophy of BlueLoop is **deterministic explainability**:
 | Component | Architecture Role | Status | Verification |
 | :--- | :--- | :--- | :--- |
 | **Frontend Shell & UI** | React 18 SPA, Navigation, Nature-Inspired Luxury UI | **Implemented** | TypeScript & Vite Build Passing |
-| **Backend API Core** | FastAPI Application & API v1 Router | **Implemented** | 57 Automated Tests Passing |
+| **Backend API Core** | FastAPI Application & API v1 Router | **Implemented** | 65 Automated Tests Passing |
 | **Domain Models & Enums** | Core Data Entities & Validations | **Implemented** | Unit & Invariant Tests Passing |
 | **Compatibility Service** | Deterministic Quality Screening (Fail-Closed) | **Implemented** | Quality Suite Passing |
 | **Allocation Engine** | Constrained Optimizer, Cost & Impact Engine | **Implemented** | Allocation & Scarcity Tests Passing |
-| **Allocation API** | `POST /allocations/run`, `GET /allocations/{id}` | **Implemented** | API Integration Tests Passing |
+| **Allocation API** | `POST /allocations/run`, `GET /allocations/{id}`, accept/reject | **Implemented** | API Integration Tests Passing |
+| **Delivery Tracking API** | Custody lifecycle tracking (`GET`, `POST`, `PATCH /deliveries`) | **Implemented** | Lifecycle Progression Tests Passing |
+| **Impact Analytics API** | Multi-tier displacement reporting (`GET /impact/summary`) | **Implemented** | Accounting Policy Tests Passing |
 | **In-Memory Repository** | Thread-Safe Local Data Layer & Seed Fixtures | **Implemented** | Deep Copy Isolation Passing |
 | **AWS Cloud Infrastructure** | API Gateway, Lambda, DynamoDB, S3 | *Planned (Stage 5)* | Infrastructure as Code |

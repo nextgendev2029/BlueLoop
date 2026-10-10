@@ -3,12 +3,14 @@ BlueLoop Suppliers API Endpoints
 """
 
 from typing import Optional
+import logging
 from fastapi import APIRouter, HTTPException, Query, status
-from app.models.enums import FacilityType
+from app.models.enums import FacilityType, VerificationStatus
 from app.repositories.memory import get_repository_container
 from app.schemas.supplier import SupplierFacilityResponse, SupplierListResponse
 
 router = APIRouter()
+logger = logging.getLogger("blueloop.api.suppliers")
 
 
 @router.get(
@@ -20,22 +22,35 @@ router = APIRouter()
 )
 async def list_suppliers(
     city: Optional[str] = Query(None, description="Filter by municipal city"),
+    state: Optional[str] = Query(None, description="Filter by state / province"),
     facility_type: Optional[FacilityType] = Query(
         None, description="Filter by facility classification (CETP, STP, etc.)"
     ),
+    verification_status: Optional[VerificationStatus] = Query(
+        None, description="Filter by accreditation status"
+    ),
+    limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
+    offset: int = Query(0, ge=0, description="Offset index for pagination"),
 ) -> SupplierListResponse:
     container = get_repository_container()
 
     def filter_fn(fac):
         if city and fac.city.lower() != city.lower():
             return False
+        if state and fac.state.lower() != state.lower():
+            return False
         if facility_type and fac.facility_type != facility_type:
+            return False
+        if verification_status and fac.verification_status != verification_status:
             return False
         return True
 
     facilities = container.facilities.list(filter_fn)
+    total_count = len(facilities)
+    paginated_facilities = facilities[offset : offset + limit]
+
     items = []
-    for fac in facilities:
+    for fac in paginated_facilities:
         org = container.organisations.get(fac.org_id)
         org_name = org.name if org else None
         item = SupplierFacilityResponse(
@@ -56,9 +71,12 @@ async def list_suppliers(
         )
         items.append(item)
 
+    logger.debug("Listed %d suppliers (total: %d)", len(items), total_count)
     return SupplierListResponse(
         items=items,
-        total=len(items),
+        total=total_count,
+        limit=limit,
+        offset=offset,
         is_synthetic=True,
     )
 

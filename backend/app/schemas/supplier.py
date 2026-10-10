@@ -30,6 +30,8 @@ class SupplierFacilityResponse(BaseModel):
 class SupplierListResponse(BaseModel):
     items: List[SupplierFacilityResponse]
     total: int
+    limit: Optional[int] = Field(None, description="Maximum number of items requested")
+    offset: Optional[int] = Field(None, description="Offset index requested")
     is_synthetic: bool = Field(
         default=True,
         description="True indicates response contains synthetic demonstration fixtures.",

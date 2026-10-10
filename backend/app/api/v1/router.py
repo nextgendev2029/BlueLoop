@@ -6,8 +6,10 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     allocations,
     compatibility,
+    deliveries,
     demands,
     health,
+    impact,
     suppliers,
     supplies,
 )
@@ -24,4 +26,10 @@ api_v1_router.include_router(
 )
 api_v1_router.include_router(
     allocations.router, prefix="/allocations", tags=["Allocation Engine"]
+)
+api_v1_router.include_router(
+    deliveries.router, prefix="/deliveries", tags=["Delivery Logistics"]
+)
+api_v1_router.include_router(
+    impact.router, prefix="/impact", tags=["Impact Analytics"]
 )
