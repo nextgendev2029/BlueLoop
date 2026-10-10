@@ -20,6 +20,7 @@ echo ""
 echo "=== [2/2] Running Frontend Verification ==="
 cd "$REPO_ROOT/frontend"
 npm run typecheck
+npm test
 npm run build
 echo "✓ Frontend verification passed."
 
