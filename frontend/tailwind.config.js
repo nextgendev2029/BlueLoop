@@ -23,6 +23,12 @@ export default {
           light: '#23A292',
           wash: '#EBF5F3',
         },
+        river: {
+          DEFAULT: '#397FA3',
+          dark: '#286280',
+          light: '#5396BA',
+          tint: '#EAF3F6',
+        },
         mist: {
           DEFAULT: '#D9E8DF',
           light: '#EAF2ED',

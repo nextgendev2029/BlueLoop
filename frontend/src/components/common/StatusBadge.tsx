@@ -5,10 +5,13 @@ export type StatusType =
   | 'CONFIRMED'
   | 'PENDING'
   | 'UNVERIFIED'
+  | 'SELF_REPORTED'
   | 'REJECTED'
   | 'ESTIMATED'
   | 'ACTIVE'
-  | 'IDLE';
+  | 'IDLE'
+  | 'SCREENING_PASS'
+  | 'RIVER';
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -28,35 +31,49 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
     { defaultLabel: string; bg: string; text: string; border: string; dot: string }
   > = {
     DEMO: {
-      defaultLabel: 'Demo Spec',
+      defaultLabel: 'Synthetic Demonstration Record',
       bg: 'bg-[#F2F6F3]',
       text: 'text-[#174D3A]',
       border: 'border-[#D9E8DF]',
       dot: 'bg-[#174D3A]',
     },
-    CONFIRMED: {
-      defaultLabel: 'Lab Certified',
+    SCREENING_PASS: {
+      defaultLabel: 'Quality Screening Passed',
       bg: 'bg-[#EDF6F1]',
       text: 'text-[#10392B]',
       border: 'border-[#C2E0D0]',
-      dot: 'bg-[#10392B]',
+      dot: 'bg-[#168779]',
+    },
+    CONFIRMED: {
+      defaultLabel: 'Transfer Confirmed',
+      bg: 'bg-[#EDF6F1]',
+      text: 'text-[#10392B]',
+      border: 'border-[#C2E0D0]',
+      dot: 'bg-[#168779]',
     },
     PENDING: {
-      defaultLabel: 'Pending Audit',
+      defaultLabel: 'Evidence Pending',
       bg: 'bg-[#F7F6F1]',
       text: 'text-[#69736B]',
       border: 'border-[#E2DFD2]',
       dot: 'bg-[#929D94]',
     },
     UNVERIFIED: {
-      defaultLabel: 'Self-Reported',
+      defaultLabel: 'Self-Reported Profile',
+      bg: 'bg-[#FAF6EC]',
+      text: 'text-[#8A641B]',
+      border: 'border-[#EBDCBA]',
+      dot: 'bg-[#C49537]',
+    },
+    SELF_REPORTED: {
+      defaultLabel: 'Self-Reported Profile',
       bg: 'bg-[#FAF6EC]',
       text: 'text-[#8A641B]',
       border: 'border-[#EBDCBA]',
       dot: 'bg-[#C49537]',
     },
     REJECTED: {
-      defaultLabel: 'Exceeds Tolerance',
+      defaultLabel: 'Tolerance Exceeded',
       bg: 'bg-[#FDF3F2]',
       text: 'text-[#972B28]',
       border: 'border-[#F4D1CE]',
@@ -70,7 +87,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       dot: 'bg-[#168779]',
     },
     ACTIVE: {
-      defaultLabel: 'Operational',
+      defaultLabel: 'Active Stream',
       bg: 'bg-[#EDF6F1]',
       text: 'text-[#174D3A]',
       border: 'border-[#C2E0D0]',
@@ -82,6 +99,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       text: 'text-[#8C978F]',
       border: 'border-[#E0E5DF]',
       dot: 'bg-[#A8B3AB]',
+    },
+    RIVER: {
+      defaultLabel: 'Water River Loop',
+      bg: 'bg-[#EAF3F6]',
+      text: 'text-[#286280]',
+      border: 'border-[#D0E2EB]',
+      dot: 'bg-[#397FA3]',
     },
   };
 

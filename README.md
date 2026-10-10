@@ -213,7 +213,7 @@ npm run build
 | Capability | Current Status | Description |
 | :--- | :--- | :--- |
 | **Repository Foundation** | **Implemented** | Monorepo layout, .gitignore, .env.example, MIT license |
-| **Frontend Shell & UI** | **Implemented** | Responsive layout, navigation, design tokens, route placeholders |
+| **Frontend Platform & UX** | **Implemented** | React 18 SPA, Full REST API integration, Nature-Inspired Luxury UI, River Blue accents |
 | **Backend API Core** | **Implemented** | FastAPI app, CORS middleware, Mangum adapter, health endpoint |
 | **Domain Entities & Models** | **Implemented** | Typed models for organisations, facilities, listings, demands, evidence |
 | **Quality Screening Engine** | **Implemented** | Deterministic threshold checking (pH, TDS, COD, BOD, TSS, Turbidity) |
@@ -226,8 +226,8 @@ npm run build
 | **Delivery & Custody Tracking** | **Implemented** | GET/POST /deliveries, PATCH /deliveries/{id}/status with strict lifecycle validation |
 | **Impact Analytics API** | **Implemented** | Multi-tier displacement reporting (potential, accepted, confirmed, verified) |
 | **Automated Testing Suite** | **Implemented** | 65 automated unit & integration tests passing with 100% success rate |
-| **DynamoDB Persistence** | *Planned (Stage 5)* | Transition in-memory store to DynamoDB single-table persistence |
-| **AWS Cloud Deployment** | *Planned (Stage 5)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
+| **DynamoDB Persistence** | *Planned (Stage 6)* | Transition in-memory store to DynamoDB single-table persistence |
+| **AWS Cloud Deployment** | *Planned (Stage 6)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
 
 ---
 
