@@ -8,8 +8,56 @@
   }
 
   body {
-    background-color: #fafaf9; /* warm-neutral stone-50 */
-    color: #0f172a; /* slate-900 */
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #F7F7F2; /* Warm ivory */
+    color: #202A24; /* Primary ink */
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+    letter-spacing: -0.011em;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #202A24;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Tabular figures for technical data & measurements */
+.tabular-data {
+  font-family: 'JetBrains Mono', monospace;
+  font-feature-settings: "tnum";
+}
+
+/* Subtle waterflow architectural gradient */
+.water-gradient-subtle {
+  background: linear-gradient(135deg, rgba(22, 135, 121, 0.05) 0%, rgba(217, 232, 223, 0.2) 100%);
+}
+
+.surface-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E5DF;
+  box-shadow: 0 1px 2px 0 rgba(23, 77, 58, 0.03);
+}
+
+.surface-ivory {
+  background-color: #F7F7F2;
+  border: 1px solid #E0E5DF;
+}
+
+/* Custom restrained scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7F7F2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D9E8DF;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #CBD3CA;
 }

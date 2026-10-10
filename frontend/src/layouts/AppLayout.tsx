@@ -8,35 +8,35 @@ import {
   Truck,
   BarChart3,
   Settings,
-  Droplets,
   Menu,
   X,
   ShieldCheck,
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  Droplet,
 } from 'lucide-react';
 import { NavItem } from '../types/navigation';
-import { Badge } from '../components/common/Badge';
+import { StatusBadge } from '../components/common/StatusBadge';
 
 const navigationItems: NavItem[] = [
   {
     title: 'Dashboard',
     path: '/',
     icon: LayoutDashboard,
-    description: 'Platform overview & system status',
+    description: 'Regional water balance & system status',
   },
   {
     title: 'Suppliers',
     path: '/suppliers',
     icon: Factory,
-    description: 'Treated water sources & listings',
+    description: 'Treated effluent streams & lab profiles',
   },
   {
     title: 'Demand Requests',
     path: '/demands',
     icon: FileSpreadsheet,
-    description: 'Buyer specifications & volume requests',
+    description: 'Intake volumes & parameter tolerances',
   },
   {
     title: 'Allocations',
@@ -48,7 +48,7 @@ const navigationItems: NavItem[] = [
     title: 'Deliveries',
     path: '/deliveries',
     icon: Truck,
-    description: 'Dispatch & chain of custody verification',
+    description: 'Chain of custody & physical transfer logs',
   },
   {
     title: 'Impact Reports',
@@ -60,7 +60,7 @@ const navigationItems: NavItem[] = [
     title: 'Settings',
     path: '/settings',
     icon: Settings,
-    description: 'Environment & platform configurations',
+    description: 'Cloud environment & security parameters',
   },
 ];
 
@@ -115,39 +115,39 @@ export const AppLayout: React.FC = () => {
   ) || navigationItems[0];
 
   return (
-    <div className="min-vh-100 flex min-h-screen bg-stone-50 font-sans text-slate-900">
+    <div className="min-h-screen flex bg-[#F7F7F2] font-sans text-[#202A24]">
       {/* Mobile Backdrop */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-none md:hidden"
+          className="fixed inset-0 z-40 bg-[#202A24]/40 backdrop-blur-xs md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
-      {/* Sidebar Navigation */}
+      {/* Compact Editorial Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-stone-200 bg-white transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-0 -translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[#E0E5DF] bg-[#FFFFFF] transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
-        <div className="flex h-16 items-center justify-between border-b border-stone-200 px-5">
+        <div className="flex h-16 items-center justify-between border-b border-[#E0E5DF] px-5">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-teal-800 text-white shadow-xs">
-              <Droplets className="h-5 w-5" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#174D3A] text-white shadow-xs">
+              <Droplet className="h-4 w-4 text-[#D9E8DF]" />
             </div>
             <div>
-              <span className="text-base font-bold tracking-tight text-slate-900">
+              <span className="text-base font-bold tracking-tight text-[#202A24]">
                 BlueLoop
               </span>
-              <span className="block text-[11px] font-medium text-stone-500">
+              <span className="block text-[10px] font-medium uppercase tracking-wider text-[#69736B]">
                 Water Reuse Platform
               </span>
             </div>
           </div>
           <button
             type="button"
-            className="text-stone-400 hover:text-stone-600 md:hidden"
+            className="text-[#69736B] hover:text-[#202A24] md:hidden"
             onClick={() => setMobileMenuOpen(false)}
             aria-label="Close menu"
           >
@@ -156,19 +156,17 @@ export const AppLayout: React.FC = () => {
         </div>
 
         {/* Environment Tag */}
-        <div className="border-b border-stone-100 bg-stone-50/70 px-5 py-2">
+        <div className="border-b border-[#ECEFEA] bg-[#F7F7F2] px-5 py-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">
-              Data Mode
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#69736B]">
+              Environment
             </span>
-            <Badge variant="brand" size="sm">
-              Synthetic Baseline
-            </Badge>
+            <StatusBadge status="DEMO" label="Demo Safe Mode" size="xs" />
           </div>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        {/* Navigation Items */}
+        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -177,10 +175,10 @@ export const AppLayout: React.FC = () => {
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={({ isActive }) =>
-                  `group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  `group flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-teal-50 text-teal-900 font-semibold'
-                      : 'text-stone-600 hover:bg-stone-100 hover:text-slate-900'
+                      ? 'bg-[#EDF6F1] text-[#174D3A] font-semibold shadow-xs'
+                      : 'text-[#69736B] hover:bg-[#F7F7F2] hover:text-[#202A24]'
                   }`
                 }
               >
@@ -189,8 +187,8 @@ export const AppLayout: React.FC = () => {
                     <Icon
                       className={`h-4 w-4 shrink-0 transition-colors ${
                         isActive
-                          ? 'text-teal-700'
-                          : 'text-stone-400 group-hover:text-stone-600'
+                          ? 'text-[#174D3A]'
+                          : 'text-[#8C978F] group-hover:text-[#69736B]'
                       }`}
                     />
                     <span className="truncate">{item.title}</span>
@@ -201,43 +199,42 @@ export const AppLayout: React.FC = () => {
           })}
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="border-t border-stone-200 bg-stone-50/50 p-4">
-          <div className="rounded-md border border-stone-200 bg-white p-3 text-xs text-stone-600 shadow-2xs">
-            <div className="flex items-center gap-1.5 font-medium text-slate-800">
-              <ShieldCheck className="h-4 w-4 text-teal-700" />
-              <span>Deterministic Core</span>
+        {/* Sidebar Footer Callout */}
+        <div className="border-t border-[#E0E5DF] bg-[#F7F7F2]/60 p-4">
+          <div className="rounded-md border border-[#E0E5DF] bg-white p-3 text-xs shadow-card">
+            <div className="flex items-center gap-1.5 font-semibold text-[#174D3A]">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#168779]" />
+              <span className="text-[11px]">Deterministic Logic</span>
             </div>
-            <p className="mt-1 text-[11px] leading-relaxed text-stone-500">
-              Explicit engineering logic enforces compliance. AI does not replace
-              mandatory quality validation.
+            <p className="mt-1 text-[11px] leading-relaxed text-[#69736B]">
+              Explicit physical parameter math. AI does not replace mandatory quality validation.
             </p>
           </div>
-          <div className="mt-3 flex items-center justify-between text-[11px] text-stone-400">
+          <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-[#8C978F]">
             <span>Version 0.1.0</span>
-            <span>AWS Target Arch</span>
+            <span>AWS Target</span>
           </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Main Viewport */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-stone-200 bg-white px-4 sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#E0E5DF] bg-white px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="text-stone-500 hover:text-slate-900 md:hidden"
+              className="text-[#69736B] hover:text-[#202A24] md:hidden"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open sidebar"
             >
               <Menu className="h-5 w-5" />
             </button>
             <div>
-              <h1 className="text-base font-semibold text-slate-900">
+              <h1 className="text-sm font-bold text-[#202A24] tracking-tight">
                 {currentNav.title}
               </h1>
-              <p className="hidden text-xs text-stone-500 sm:block">
+              <p className="hidden text-[11px] text-[#69736B] sm:block">
                 {currentNav.description}
               </p>
             </div>
@@ -245,41 +242,41 @@ export const AppLayout: React.FC = () => {
 
           {/* Right Header Indicators */}
           <div className="flex items-center gap-3">
-            {/* Backend API Status Pill */}
-            <div className="flex items-center gap-2 rounded-md border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs">
-              <span className="text-stone-500">API:</span>
+            {/* Live Backend API Pill */}
+            <div className="flex items-center gap-2 rounded-md border border-[#E0E5DF] bg-[#F7F7F2] px-2.5 py-1 text-xs">
+              <span className="text-[11px] text-[#69736B]">FastAPI:</span>
               {backendHealth.status === 'online' ? (
-                <span className="inline-flex items-center gap-1 text-teal-800 font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-teal-600" />
-                  Online
+                <span className="inline-flex items-center gap-1 text-[#174D3A] font-medium text-[11px]">
+                  <CheckCircle2 className="h-3 w-3 text-[#168779]" />
+                  Active (200 OK)
                 </span>
               ) : backendHealth.status === 'checking' ? (
-                <span className="inline-flex items-center gap-1 text-stone-500">
-                  <RefreshCw className="h-3 w-3 animate-spin text-stone-400" />
+                <span className="inline-flex items-center gap-1 text-[#69736B] text-[11px]">
+                  <RefreshCw className="h-3 w-3 animate-spin text-[#8C978F]" />
                   Checking
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-stone-600">
-                  <AlertCircle className="h-3.5 w-3.5 text-stone-400" />
+                <span className="inline-flex items-center gap-1 text-[#8C978F] text-[11px]">
+                  <AlertCircle className="h-3 w-3 text-[#8C978F]" />
                   Offline
                 </span>
               )}
               <button
                 type="button"
                 onClick={checkBackendHealth}
-                className="text-stone-400 hover:text-stone-600 ml-1"
+                className="text-[#8C978F] hover:text-[#202A24] ml-1 transition-colors"
                 title="Refresh backend status"
               >
                 <RefreshCw className="h-3 w-3" />
               </button>
             </div>
 
-            <Badge variant="neutral">Initialisation Phase</Badge>
+            <StatusBadge status="DEMO" label="Synthetic Baseline" size="sm" />
           </div>
         </header>
 
-        {/* Main Viewport Content */}
-        <main className="flex-1 overflow-y-auto bg-stone-50 p-4 sm:p-6 lg:p-8">
+        {/* Viewport Content */}
+        <main className="flex-1 overflow-y-auto bg-[#F7F7F2] p-4 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>

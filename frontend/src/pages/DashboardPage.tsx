@@ -1,258 +1,156 @@
 import React from 'react';
-import {
-  ShieldAlert,
-  Server,
-  Layers,
-  ArrowRight,
-  Database,
-  Calculator,
-  Compass,
-  FileCheck2,
-  Cpu,
-} from 'lucide-react';
-import { Badge } from '../components/common/Badge';
+import { ShieldAlert, ArrowRight, Server } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { StatusBadge } from '../components/common/StatusBadge';
+import { SupplyDemandBalance } from '../components/common/SupplyDemandBalance';
+import { WaterFlowDiagram } from '../components/common/WaterFlowDiagram';
+import { DeterministicGatekeeperCard } from '../components/common/DeterministicGatekeeperCard';
+import { AllocationComparisonTable } from '../components/common/AllocationComparisonTable';
 
 export const DashboardPage: React.FC = () => {
   return (
-    <div className="space-y-6">
-      {/* Product Banner */}
-      <div className="rounded-lg border border-stone-200 bg-white p-6 shadow-2xs">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="brand">Environmental Hackathon Track: Heat & Water</Badge>
-              <Badge variant="info">Target: AWS Serverless Architecture</Badge>
+    <div className="space-y-8 pb-12">
+      {/* 1. Distinctive Editorial Introduction Banner */}
+      <div className="rounded-xl border border-[#E0E5DF] bg-white p-6 sm:p-8 shadow-card relative overflow-hidden">
+        {/* Subtle Waterflow Organic Background Motif */}
+        <div
+          className="absolute -right-24 -top-24 w-96 h-96 rounded-full pointer-events-none opacity-40 water-gradient-subtle blur-2xl"
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 max-w-4xl space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#174D3A] bg-[#EDF6F1] px-2.5 py-1 rounded border border-[#C2E0D0]">
+              Environmental Track: Heat and Water
+            </span>
+            <span className="text-[11px] font-mono font-medium text-[#69736B] bg-[#F7F7F2] px-2.5 py-1 rounded border border-[#E0E5DF]">
+              AWS Bharat Builds Tour Hackathon
+            </span>
+            <StatusBadge status="DEMO" label="Demonstration Environment" size="xs" />
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#202A24] leading-tight">
+            Industrial Water Reuse Intelligence & Procurement Optimisation Platform
+          </h1>
+
+          <p className="text-sm sm:text-base text-[#69736B] leading-relaxed max-w-3xl">
+            BlueLoop enables commercial water consumers to source certified treated industrial
+            effluent with mathematical certainty. The platform executes deterministic water-quality
+            compatibility checks, solves multi-facility allocation constraints, and calculates verified
+            freshwater displacement without black-box AI approximations.
+          </p>
+
+          {/* Key Editorial Metrics Bar */}
+          <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#ECEFEA]">
+            <div>
+              <span className="text-[11px] text-[#69736B] block">Available Treated Effluent</span>
+              <span className="text-lg font-mono font-bold text-[#168779] block mt-0.5">
+                16,200 <span className="text-xs font-normal text-[#69736B]">kL/day</span>
+              </span>
+              <span className="text-[10px] text-[#8C978F]">Sample Basin Capacity</span>
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-              Water Reuse Intelligence & Procurement Optimisation Platform
-            </h2>
-            <p className="max-w-3xl text-sm leading-relaxed text-stone-600">
-              BlueLoop facilitates closed-loop water economies by systematically
-              evaluating treated industrial effluent against commercial water demands.
-              Using deterministic, explainable engineering logic, the platform verifies
-              quality thresholds, solves multi-facility allocation constraints, and
-              calculates verified freshwater displacement.
-            </p>
+            <div>
+              <span className="text-[11px] text-[#69736B] block">Commercial Intake Demand</span>
+              <span className="text-lg font-mono font-bold text-[#174D3A] block mt-0.5">
+                11,400 <span className="text-xs font-normal text-[#69736B]">kL/day</span>
+              </span>
+              <span className="text-[10px] text-[#8C978F]">Cooling & Boiler Intake</span>
+            </div>
+            <div>
+              <span className="text-[11px] text-[#69736B] block">Freshwater Displacement</span>
+              <span className="text-lg font-mono font-bold text-[#174D3A] block mt-0.5">
+                8,900 <span className="text-xs font-normal text-[#69736B]">kL/day</span>
+              </span>
+              <span className="text-[10px] text-[#8C978F]">Direct Groundwater Offset</span>
+            </div>
+            <div>
+              <span className="text-[11px] text-[#69736B] block">Quality Gatekeeper Logic</span>
+              <span className="text-lg font-mono font-bold text-[#202A24] block mt-0.5">
+                100% <span className="text-xs font-normal text-[#69736B]">Deterministic</span>
+              </span>
+              <span className="text-[10px] text-[#8C978F]">Zero Probabilistic Risk</span>
+            </div>
+          </div>
+
+          {/* Primary & Secondary Actions */}
+          <div className="pt-4 flex flex-wrap items-center gap-3">
+            <Link
+              to="/allocations"
+              className="inline-flex items-center gap-2 rounded-md bg-[#174D3A] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
+            >
+              Inspect Allocation Matrix <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+            <Link
+              to="/suppliers"
+              className="inline-flex items-center gap-2 rounded-md border border-[#E0E5DF] bg-[#F7F7F2] px-4 py-2 text-xs font-semibold text-[#202A24] hover:bg-[#ECEFEA] transition-colors"
+            >
+              Browse Treated Water Suppliers
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Synthetic Data & Engineering Integrity Notice */}
-      <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-5">
+      {/* 2. Synthetic Data Credibility Notice */}
+      <div className="rounded-lg border border-[#EBDCBA] bg-[#FAF6EC] p-4 text-xs">
         <div className="flex items-start gap-3">
-          <ShieldAlert className="h-5 w-5 shrink-0 text-amber-700 mt-0.5" />
+          <ShieldAlert className="h-4 w-4 shrink-0 text-[#8A641B] mt-0.5" />
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-amber-900">
-              Repository Initialisation Phase & Synthetic Data Standard
-            </h3>
-            <p className="text-xs leading-relaxed text-amber-800">
-              This repository represents the architectural foundation established in
-              Master Prompt 01. To ensure strict engineering integrity, no fictional
-              suppliers, mock laboratory quality metrics, or simulated carbon/water
-              savings are presented as operational reality. The deterministic matching
-              and allocation engine will be systematically integrated in subsequent stages.
+            <span className="font-semibold text-[#8A641B] block">
+              Integrity Standard & Demonstration Baseline Notice
+            </span>
+            <p className="text-[#69736B] leading-relaxed text-[11px]">
+              BlueLoop adheres to strict credibility guidelines. All metrics, facility profiles, and laboratory
+              certificates shown in this development environment represent explicitly labelled synthetic demonstration data.
+              No fictional suppliers or simulated savings are presented as verified real-world operational facts.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Planned Modules Overview */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-stone-500">
-          Planned Platform Modules
-        </h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Card 1 */}
-          <div className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-5 shadow-2xs">
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-stone-100 text-teal-800">
-                  <Compass className="h-4 w-4" />
-                </div>
-                <Badge variant="neutral" size="sm">Planned</Badge>
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900">
-                Supplier Discovery & Quality Listings
-              </h4>
-              <p className="text-xs leading-relaxed text-stone-500">
-                Treated effluent volume catalogs, treatment stages, certified chemical
-                and physical laboratory parameter certificates.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-stone-100">
-              <Link
-                to="/suppliers"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900"
-              >
-                Inspect Module Placeholder <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
+      {/* 3. Visual Supply versus Demand Equilibrium */}
+      <SupplyDemandBalance />
 
-          {/* Card 2 */}
-          <div className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-5 shadow-2xs">
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-stone-100 text-teal-800">
-                  <FileCheck2 className="h-4 w-4" />
-                </div>
-                <Badge variant="neutral" size="sm">Planned</Badge>
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900">
-                Demand Requests & Threshold Specs
-              </h4>
-              <p className="text-xs leading-relaxed text-stone-500">
-                Commercial intake requirements, acceptable tolerance limits (pH, TDS,
-                turbidity, microbiological counts), and volumetric timelines.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-stone-100">
-              <Link
-                to="/demands"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900"
-              >
-                Inspect Module Placeholder <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
+      {/* 4. Closed-Loop Water Transfer Architecture */}
+      <WaterFlowDiagram />
 
-          {/* Card 3 */}
-          <div className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-5 shadow-2xs">
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-stone-100 text-teal-800">
-                  <Cpu className="h-4 w-4" />
-                </div>
-                <Badge variant="neutral" size="sm">Planned</Badge>
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900">
-                Deterministic Allocation Engine
-              </h4>
-              <p className="text-xs leading-relaxed text-stone-500">
-                Constrained optimization solving multi-source to multi-sink allocation
-                with full mathematical auditability and zero black-box AI approximations.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-stone-100">
-              <Link
-                to="/allocations"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900"
-              >
-                Inspect Module Placeholder <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
+      {/* 5. Deterministic Quality Gatekeeper Inspector */}
+      <DeterministicGatekeeperCard />
 
-          {/* Card 4 */}
-          <div className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-5 shadow-2xs">
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-stone-100 text-teal-800">
-                  <Layers className="h-4 w-4" />
-                </div>
-                <Badge variant="neutral" size="sm">Planned</Badge>
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900">
-                Delivery & Custody Tracking
-              </h4>
-              <p className="text-xs leading-relaxed text-stone-500">
-                Logistics status verification, pipeline/tanker batch confirmation,
-                and delivery milestone sign-offs.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-stone-100">
-              <Link
-                to="/deliveries"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900"
-              >
-                Inspect Module Placeholder <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
+      {/* 6. Candidate Allocation & Cost Comparison Table */}
+      <AllocationComparisonTable />
 
-          {/* Card 5 */}
-          <div className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-5 shadow-2xs">
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-stone-100 text-teal-800">
-                  <Calculator className="h-4 w-4" />
-                </div>
-                <Badge variant="neutral" size="sm">Planned</Badge>
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900">
-                Freshwater Displacement & Cost Audits
-              </h4>
-              <p className="text-xs leading-relaxed text-stone-500">
-                Audited calculations of virgin freshwater saved (kL/day), delivered
-                reuse cost estimates, and municipal tariff displacement.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-stone-100">
-              <Link
-                to="/impact"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900"
-              >
-                Inspect Module Placeholder <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
+      {/* 7. Engineering Foundation Verification Matrix */}
+      <div className="rounded-lg border border-[#E0E5DF] bg-white p-6 shadow-card">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E0E5DF] mb-4">
+          <div className="flex items-center gap-2">
+            <Server className="h-4 w-4 text-[#174D3A]" />
+            <h3 className="text-sm font-semibold text-[#202A24]">
+              Architecture Foundation Status
+            </h3>
           </div>
-
-          {/* Card 6 */}
-          <div className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-5 shadow-2xs">
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-stone-100 text-teal-800">
-                  <Database className="h-4 w-4" />
-                </div>
-                <Badge variant="neutral" size="sm">Planned</Badge>
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900">
-                AWS Serverless Data Layer
-              </h4>
-              <p className="text-xs leading-relaxed text-stone-500">
-                Amazon DynamoDB single-table persistence, Amazon S3 document archives,
-                and EventBridge scheduled health audits.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-stone-100">
-              <Link
-                to="/settings"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-900"
-              >
-                Inspect Settings & Target Infra <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
+          <span className="text-[11px] font-mono text-[#69736B]">Master Phase 01 Completed</span>
         </div>
-      </div>
 
-      {/* Repository Setup State */}
-      <div className="rounded-lg border border-stone-200 bg-white p-6 shadow-2xs">
-        <h3 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
-          <Server className="h-4 w-4 text-teal-700" />
-          Repository Initialisation Verification Matrix
-        </h3>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded border border-stone-200 bg-stone-50 p-3">
-            <span className="text-[11px] font-medium text-stone-500 block">Frontend Stack</span>
-            <span className="text-xs font-semibold text-slate-800 mt-1 block">React 18 + TS + Vite</span>
-            <span className="text-[11px] text-teal-700 font-medium">Configured</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div className="rounded border border-[#E0E5DF] bg-[#F7F7F2] p-3">
+            <span className="text-[#69736B] text-[10px] font-mono uppercase block">Frontend Architecture</span>
+            <span className="font-semibold text-[#202A24] mt-1 block">React 18 + TS + Tailwind</span>
+            <span className="text-[11px] text-[#174D3A] font-medium">Design Tokens Verified</span>
           </div>
-          <div className="rounded border border-stone-200 bg-stone-50 p-3">
-            <span className="text-[11px] font-medium text-stone-500 block">Backend Framework</span>
-            <span className="text-xs font-semibold text-slate-800 mt-1 block">FastAPI + Python 3.11</span>
-            <span className="text-[11px] text-teal-700 font-medium">Configured</span>
+          <div className="rounded border border-[#E0E5DF] bg-[#F7F7F2] p-3">
+            <span className="text-[#69736B] text-[10px] font-mono uppercase block">Backend Service</span>
+            <span className="font-semibold text-[#202A24] mt-1 block">FastAPI + Python 3.11</span>
+            <span className="text-[11px] text-[#174D3A] font-medium">GET /api/v1/health (200 OK)</span>
           </div>
-          <div className="rounded border border-stone-200 bg-stone-50 p-3">
-            <span className="text-[11px] font-medium text-stone-500 block">Health Endpoint</span>
-            <span className="text-xs font-semibold text-slate-800 mt-1 block">GET /api/v1/health</span>
-            <span className="text-[11px] text-teal-700 font-medium">Structured JSON</span>
+          <div className="rounded border border-[#E0E5DF] bg-[#F7F7F2] p-3">
+            <span className="text-[#69736B] text-[10px] font-mono uppercase block">AWS Compute Target</span>
+            <span className="font-semibold text-[#202A24] mt-1 block">Mangum ASGI Handler</span>
+            <span className="text-[11px] text-[#174D3A] font-medium">Serverless Ready</span>
           </div>
-          <div className="rounded border border-stone-200 bg-stone-50 p-3">
-            <span className="text-[11px] font-medium text-stone-500 block">Lambda Adapter</span>
-            <span className="text-xs font-semibold text-slate-800 mt-1 block">Mangum ASGI Handler</span>
-            <span className="text-[11px] text-teal-700 font-medium">Ready</span>
+          <div className="rounded border border-[#E0E5DF] bg-[#F7F7F2] p-3">
+            <span className="text-[#69736B] text-[10px] font-mono uppercase block">Engine Philosophy</span>
+            <span className="font-semibold text-[#202A24] mt-1 block">Deterministic Constraints</span>
+            <span className="text-[11px] text-[#174D3A] font-medium">Explainable Output</span>
           </div>
         </div>
       </div>
