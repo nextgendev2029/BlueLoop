@@ -7,18 +7,28 @@
     color-scheme: light;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    background-color: #F7F7F2; /* Warm ivory */
-    color: #202A24; /* Primary ink */
+    background-color: #FAFBF9; /* Warm white canvas */
+    color: #172B36; /* Primary ocean ink */
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
     letter-spacing: -0.011em;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #202A24;
-    letter-spacing: -0.02em;
+    color: #172B36;
+    letter-spacing: -0.025em;
   }
+}
+
+/* Editorial display font utility */
+.font-editorial {
+  font-family: 'Instrument Serif', Georgia, serif;
 }
 
 /* Tabular figures for technical data & measurements */
@@ -27,20 +37,39 @@
   font-feature-settings: "tnum";
 }
 
-/* Subtle waterflow architectural gradient */
-.water-gradient-subtle {
-  background: linear-gradient(135deg, rgba(22, 135, 121, 0.05) 0%, rgba(217, 232, 223, 0.2) 100%);
+/* Water glassmorphism card */
+.glass-water {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 231, 235, 0.8);
+}
+
+.glass-nav {
+  background: rgba(250, 251, 249, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(220, 231, 235, 0.7);
+}
+
+/* Subtle waterflow architectural gradients */
+.bg-water-gradient {
+  background: linear-gradient(180deg, #E8F5F8 0%, #FAFBF9 100%);
+}
+
+.bg-hero-glow {
+  background: radial-gradient(circle at 50% 20%, rgba(36, 184, 199, 0.12) 0%, rgba(22, 119, 184, 0.05) 45%, transparent 70%);
 }
 
 .surface-card {
   background-color: #FFFFFF;
-  border: 1px solid #E0E5DF;
-  box-shadow: 0 1px 2px 0 rgba(23, 77, 58, 0.03);
+  border: 1px solid #DCE7EB;
+  box-shadow: 0 1px 3px 0 rgba(18, 59, 86, 0.04);
 }
 
-.surface-ivory {
-  background-color: #F7F7F2;
-  border: 1px solid #E0E5DF;
+.surface-canvas {
+  background-color: #FAFBF9;
+  border: 1px solid #DCE7EB;
 }
 
 /* Custom restrained scrollbar */
@@ -50,14 +79,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F7F7F2;
+  background: #FAFBF9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D9E8DF;
+  background: #DCE7EB;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #CBD3CA;
+  background: #C5D6DC;
 }

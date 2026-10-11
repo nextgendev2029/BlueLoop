@@ -14,7 +14,7 @@ export const NotFoundPage: React.FC = () => {
       </p>
       <div className="mt-6">
         <Link
-          to="/"
+          to="/app/dashboard"
           className="inline-flex items-center gap-2 rounded-md bg-[#174D3A] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Return to Regional Dashboard

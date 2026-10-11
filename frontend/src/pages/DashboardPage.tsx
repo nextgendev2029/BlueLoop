@@ -128,19 +128,19 @@ export const DashboardPage: React.FC = () => {
           {/* Primary & Secondary Actions */}
           <div className="pt-4 flex flex-wrap items-center gap-3">
             <Link
-              to="/allocations"
+              to="/app/allocations"
               className="inline-flex items-center gap-2 rounded-md bg-[#174D3A] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
             >
               Inspect Allocation Matrix <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <Link
-              to="/suppliers"
+              to="/app/suppliers"
               className="inline-flex items-center gap-2 rounded-md border border-[#E0E5DF] bg-[#F7F7F2] px-4 py-2 text-xs font-semibold text-[#202A24] hover:bg-[#ECEFEA] transition-colors"
             >
               Browse Treated Water Suppliers
             </Link>
             <Link
-              to="/impact"
+              to="/app/impact"
               className="inline-flex items-center gap-1.5 text-xs font-medium text-[#397FA3] hover:text-[#286280] ml-2"
             >
               <Leaf className="h-3.5 w-3.5" /> View Impact Ledger

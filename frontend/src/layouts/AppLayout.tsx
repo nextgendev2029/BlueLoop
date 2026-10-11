@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   Factory,
@@ -16,51 +16,51 @@ import {
   RefreshCw,
   Droplet,
   Info,
+  ExternalLink,
 } from 'lucide-react';
 import { NavItem } from '../types/navigation';
-import { StatusBadge } from '../components/common/StatusBadge';
 import { fetchHealth, HealthStatus } from '../services/health';
 
 const navigationItems: NavItem[] = [
   {
     title: 'Dashboard',
-    path: '/',
+    path: '/app/dashboard',
     icon: LayoutDashboard,
     description: 'Regional water balance & operational workspace',
   },
   {
     title: 'Suppliers',
-    path: '/suppliers',
+    path: '/app/suppliers',
     icon: Factory,
     description: 'Treated effluent streams & laboratory profiles',
   },
   {
     title: 'Demand Requests',
-    path: '/demands',
+    path: '/app/demands',
     icon: FileSpreadsheet,
     description: 'Intake volumes & parameter tolerances',
   },
   {
     title: 'Allocations',
-    path: '/allocations',
+    path: '/app/allocations',
     icon: GitMerge,
     description: 'Deterministic supply-demand matching console',
   },
   {
     title: 'Deliveries',
-    path: '/deliveries',
+    path: '/app/deliveries',
     icon: Truck,
     description: 'Chain of custody & physical transfer logs',
   },
   {
     title: 'Impact Reports',
-    path: '/impact',
+    path: '/app/impact',
     icon: BarChart3,
     description: 'Audited freshwater displacement ledger',
   },
   {
     title: 'Settings',
-    path: '/settings',
+    path: '/app/settings',
     icon: Settings,
     description: 'Cloud environment & system configuration',
   },
@@ -102,58 +102,46 @@ export const AppLayout: React.FC = () => {
     checkBackendHealth();
   }, []);
 
-  const currentNav = navigationItems.find((item) =>
-    item.path === '/'
-      ? location.pathname === '/'
-      : location.pathname.startsWith(item.path)
-  ) || navigationItems[0];
+  const currentNav =
+    navigationItems.find((item) => location.pathname === item.path) ||
+    navigationItems[0];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7F7F2] font-sans text-[#202A24] antialiased">
-      {/* Persistent Synthetic Demonstration Notice Banner */}
-      <div className="bg-[#FAF6EC] border-b border-[#EBDCBA] px-4 py-1.5 text-xs text-[#8A641B] flex items-center justify-between z-40">
-        <div className="flex items-center gap-2 mx-auto max-w-7xl w-full">
-          <Info className="h-3.5 w-3.5 shrink-0 text-[#8A641B]" />
-          <span className="text-[11px] leading-tight font-medium">
-            <strong className="font-semibold">Demonstration Mode:</strong> All facility streams, laboratory certificates, and allocations represent explicitly labelled synthetic sample records. No fictional entries are represented as verified real-world data.
-          </span>
-        </div>
-      </div>
-
+    <div className="min-h-screen flex flex-col bg-canvas font-sans text-ink antialiased">
       <div className="flex flex-1 overflow-hidden">
         {/* Mobile Backdrop */}
         {mobileMenuOpen && (
           <div
-            className="fixed inset-0 z-40 bg-[#202A24]/40 backdrop-blur-xs md:hidden"
+            className="fixed inset-0 z-40 bg-ocean-950/50 backdrop-blur-xs md:hidden"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
         )}
 
-        {/* Compact Editorial Sidebar */}
+        {/* Art-Directed Clean Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[#E0E5DF] bg-[#FFFFFF] transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           {/* Brand Header */}
-          <div className="flex h-16 items-center justify-between border-b border-[#E0E5DF] px-5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#174D3A] text-white shadow-xs">
-                <Droplet className="h-4 w-4 text-[#D9E8DF]" />
+          <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ocean-900 text-white shadow-xs group-hover:bg-water-600 transition-colors">
+                <Droplet className="h-4 w-4 text-aqua-300" />
               </div>
               <div>
-                <span className="text-base font-bold tracking-tight text-[#202A24]">
+                <span className="text-base font-bold tracking-tight text-ink">
                   BlueLoop
                 </span>
-                <span className="block text-[10px] font-medium uppercase tracking-wider text-[#397FA3]">
-                  Water Reuse Platform
+                <span className="block text-[10px] font-mono uppercase tracking-wider text-water-600">
+                  Reuse Intelligence
                 </span>
               </div>
-            </div>
+            </Link>
             <button
               type="button"
-              className="text-[#69736B] hover:text-[#202A24] md:hidden p-1 rounded-md"
+              className="text-slate-400 hover:text-slate-700 md:hidden p-1 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Close menu"
             >
@@ -161,18 +149,21 @@ export const AppLayout: React.FC = () => {
             </button>
           </div>
 
-          {/* Environment Status Tag */}
-          <div className="border-b border-[#ECEFEA] bg-[#F7F7F2] px-5 py-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#69736B]">
-                Environment
+          {/* Quick Landing Page Shortcut */}
+          <div className="border-b border-slate-100 bg-slate-50/80 px-4 py-2">
+            <Link
+              to="/"
+              className="flex items-center justify-between text-[11px] text-slate-500 hover:text-water-700 transition-colors"
+            >
+              <span className="font-medium">Public Overview</span>
+              <span className="inline-flex items-center gap-0.5 text-[10px] font-mono text-slate-400">
+                View Site <ExternalLink className="h-3 w-3" />
               </span>
-              <StatusBadge status="DEMO" label="Local Dev" size="xs" />
-            </div>
+            </Link>
           </div>
 
           {/* Navigation Items */}
-          <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3" aria-label="Main Navigation">
+          <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Main Navigation">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -181,10 +172,10 @@ export const AppLayout: React.FC = () => {
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    `group flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                    `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-all ${
                       isActive
-                        ? 'bg-[#EDF6F1] text-[#174D3A] font-semibold shadow-xs'
-                        : 'text-[#69736B] hover:bg-[#F7F7F2] hover:text-[#202A24]'
+                        ? 'bg-water-50 text-water-900 font-semibold shadow-xs border-l-2 border-water-600'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-ink'
                     }`
                   }
                 >
@@ -193,8 +184,8 @@ export const AppLayout: React.FC = () => {
                       <Icon
                         className={`h-4 w-4 shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#174D3A]'
-                            : 'text-[#8C978F] group-hover:text-[#69736B]'
+                            ? 'text-water-600'
+                            : 'text-slate-400 group-hover:text-slate-600'
                         }`}
                       />
                       <span className="truncate">{item.title}</span>
@@ -206,19 +197,19 @@ export const AppLayout: React.FC = () => {
           </nav>
 
           {/* Sidebar Footer Callout */}
-          <div className="border-t border-[#E0E5DF] bg-[#F7F7F2]/60 p-4">
-            <div className="rounded-md border border-[#E0E5DF] bg-white p-3 text-xs shadow-card">
-              <div className="flex items-center gap-1.5 font-semibold text-[#174D3A]">
-                <ShieldCheck className="h-3.5 w-3.5 text-[#168779]" />
+          <div className="border-t border-slate-200 bg-slate-50/50 p-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 text-xs shadow-xs">
+              <div className="flex items-center gap-1.5 font-semibold text-ocean-900">
+                <ShieldCheck className="h-4 w-4 text-forest-600 shrink-0" />
                 <span className="text-[11px]">Deterministic Logic</span>
               </div>
-              <p className="mt-1 text-[11px] leading-relaxed text-[#69736B]">
-                Explicit parameter math against codified buyer tolerances. AI does not replace mandatory quality gates.
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                Algorithmic chemical compatibility & least-cost allocation. Zero speculative multipliers.
               </p>
             </div>
-            <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-[#8C978F]">
-              <span>v0.1.0 (Stage 4 APIs)</span>
-              <span>In-Memory Repos</span>
+            <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
+              <span>v0.1 (Stage 4)</span>
+              <span>FastAPI + In-Memory</span>
             </div>
           </div>
         </aside>
@@ -226,21 +217,21 @@ export const AppLayout: React.FC = () => {
         {/* Main Viewport */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Top Header */}
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#E0E5DF] bg-white px-4 sm:px-6">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 backdrop-blur-sm px-4 sm:px-6">
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                className="text-[#69736B] hover:text-[#202A24] md:hidden p-1 rounded-md"
+                className="text-slate-500 hover:text-ink md:hidden p-1 rounded-md"
                 onClick={() => setMobileMenuOpen(true)}
                 aria-label="Open sidebar"
               >
                 <Menu className="h-5 w-5" />
               </button>
               <div>
-                <h1 className="text-sm font-bold text-[#202A24] tracking-tight">
+                <h1 className="text-sm font-bold text-ink tracking-tight">
                   {currentNav.title}
                 </h1>
-                <p className="hidden text-[11px] text-[#69736B] sm:block">
+                <p className="hidden text-[11px] text-slate-500 sm:block">
                   {currentNav.description}
                 </p>
               </div>
@@ -249,28 +240,28 @@ export const AppLayout: React.FC = () => {
             {/* Right Header Indicators */}
             <div className="flex items-center gap-2.5 sm:gap-3">
               {/* Live Backend API Status Pill */}
-              <div className="flex items-center gap-2 rounded-md border border-[#E0E5DF] bg-[#F7F7F2] px-2.5 py-1 text-xs">
-                <span className="text-[11px] text-[#69736B]">API:</span>
+              <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs">
+                <span className="text-[11px] text-slate-500 font-mono">API:</span>
                 {backendHealth.status === 'online' ? (
-                  <span className="inline-flex items-center gap-1 text-[#174D3A] font-medium text-[11px]">
-                    <CheckCircle2 className="h-3 w-3 text-[#168779]" />
-                    Active (200 OK)
+                  <span className="inline-flex items-center gap-1 text-forest-700 font-medium text-[11px]">
+                    <CheckCircle2 className="h-3 w-3 text-forest-600" />
+                    Online
                   </span>
                 ) : backendHealth.status === 'checking' ? (
-                  <span className="inline-flex items-center gap-1 text-[#69736B] text-[11px]">
-                    <RefreshCw className="h-3 w-3 animate-spin text-[#8C978F]" />
-                    Connecting...
+                  <span className="inline-flex items-center gap-1 text-slate-500 text-[11px]">
+                    <RefreshCw className="h-3 w-3 animate-spin text-slate-400" />
+                    Checking
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[#972B28] text-[11px] font-medium">
-                    <AlertCircle className="h-3 w-3 text-[#972B28]" />
-                    Unavailable
+                  <span className="inline-flex items-center gap-1 text-red-700 text-[11px] font-medium">
+                    <AlertCircle className="h-3 w-3 text-red-600" />
+                    Offline
                   </span>
                 )}
                 <button
                   type="button"
                   onClick={checkBackendHealth}
-                  className="text-[#8C978F] hover:text-[#202A24] ml-0.5 transition-colors p-0.5"
+                  className="text-slate-400 hover:text-slate-700 ml-0.5 transition-colors p-0.5"
                   title="Check backend health"
                   aria-label="Refresh backend health"
                 >
@@ -278,12 +269,31 @@ export const AppLayout: React.FC = () => {
                 </button>
               </div>
 
-              <StatusBadge status="DEMO" label="Synthetic Demo Mode" size="sm" />
+              {/* Compact Demo Mode Badge with Popover (Replaces Intrusive Top Strip) */}
+              <div className="relative group">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-ice-500/20 border border-ice-500/40 text-ocean-900 text-[11px] font-mono font-medium cursor-help hover:bg-ice-500/30 transition-colors">
+                  <span className="h-1.5 w-1.5 rounded-full bg-water-500 animate-pulse" />
+                  <span>DEMO MODE</span>
+                  <Info className="h-3 w-3 text-ocean-600 ml-0.5" />
+                </div>
+
+                {/* Hover Popover */}
+                <div className="absolute right-0 top-full mt-2 w-72 p-3.5 bg-white border border-slate-200 shadow-xl rounded-xl text-xs hidden group-hover:block z-50">
+                  <div className="font-semibold text-ink mb-1 flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-forest-600" />
+                    <span>Synthetic Demonstration Sandbox</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-slate-500">
+                    Showing synthetic industrial facilities, laboratory certificates, and allocations.
+                    No real customer data is accessed.
+                  </p>
+                </div>
+              </div>
             </div>
           </header>
 
           {/* Viewport Content */}
-          <main className="flex-1 overflow-y-auto bg-[#F7F7F2] p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 overflow-y-auto bg-canvas p-4 sm:p-6 lg:p-8">
             <div className="mx-auto max-w-7xl">
               <Outlet />
             </div>

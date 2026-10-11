@@ -68,7 +68,7 @@ export const AllocationComparisonTable: React.FC = () => {
             <span className="hidden sm:inline">Refresh</span>
           </button>
           <Link
-            to="/allocations"
+            to="/app/allocations"
             className="inline-flex items-center gap-1 text-xs font-semibold text-[#174D3A] hover:text-[#10392B]"
           >
             Open Console <ArrowRight className="h-3.5 w-3.5" />
