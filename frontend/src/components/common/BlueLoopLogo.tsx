@@ -97,7 +97,7 @@ export const BlueLoopLogo: React.FC<BlueLoopLogoProps> = ({
             </span>
           </div>
           {showSubtitle && (
-            <span className={`font-mono uppercase tracking-wider font-semibold -mt-0.5 ${dimensions.sub} ${subColor}`}>
+            <span className={`font-mono uppercase tracking-wider font-semibold -mt-0.5 hidden sm:block ${dimensions.sub} ${subColor}`}>
               Water Reuse Intelligence
             </span>
           )}

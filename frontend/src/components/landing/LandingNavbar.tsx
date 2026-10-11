@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Menu, X } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { BlueLoopLogo } from '../common/BlueLoopLogo';
 
 export const LandingNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const demoDestination = isAuthenticated ? '/app/dashboard' : '/login?demo=true';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,7 +89,7 @@ export const LandingNavbar: React.FC = () => {
               Sign In
             </Link>
             <Link
-              to="/app/dashboard"
+              to={demoDestination}
               className="inline-flex items-center gap-1.5 rounded-lg bg-ocean-900 hover:bg-ocean-800 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all group"
             >
               <span>Explore Demo</span>
@@ -95,17 +98,17 @@ export const LandingNavbar: React.FC = () => {
           </div>
 
           {/* Mobile Hamburger Button */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2 md:hidden shrink-0">
             <Link
-              to="/app/dashboard"
-              className="inline-flex items-center gap-1 rounded-md bg-ocean-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xs"
+              to={demoDestination}
+              className="inline-flex items-center gap-1 rounded-md bg-ocean-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xs shrink-0"
             >
               Demo
             </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 text-slate-600 hover:text-ink rounded-md"
+              className="p-1.5 text-slate-600 hover:text-ink rounded-md shrink-0"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -155,7 +158,7 @@ export const LandingNavbar: React.FC = () => {
                 Sign In
               </Link>
               <Link
-                to="/app/dashboard"
+                to={demoDestination}
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-2 text-xs font-semibold text-white bg-ocean-900 rounded-lg hover:bg-ocean-800"
               >

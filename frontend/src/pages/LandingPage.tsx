@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, ExternalLink, Factory, Building2, Droplets } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { LandingNavbar } from '../components/landing/LandingNavbar';
 import { WaterFlowScene } from '../components/landing/WaterFlowScene';
 import { TheProblemSection } from '../components/landing/TheProblemSection';
@@ -10,143 +11,105 @@ import { ImpactTransparencySection } from '../components/landing/ImpactTranspare
 import { LandingFooter } from '../components/landing/LandingFooter';
 
 export const LandingPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const demoEntryDestination = isAuthenticated ? '/app/dashboard' : '/login?demo=true';
+
   return (
-    <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900">
+    <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900 overflow-x-hidden">
       {/* Navigation */}
       <LandingNavbar />
 
-      {/* Hero Section: Perfectly Balanced 2-Column Composition with Zero Canvas Overlap */}
-      <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#EDF6FA] via-[#FAFBF9] to-canvas border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Hero Copy & Actions */}
-            <div className="lg:col-span-7 z-10 space-y-6">
-              {/* Product Badge */}
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs text-xs text-slate-700">
-                <span className="flex h-2 w-2 rounded-full bg-water-600 animate-pulse" />
-                <span className="font-semibold text-ocean-950">BlueLoop Platform</span>
-                <span className="text-slate-300">|</span>
-                <span className="text-slate-600 font-medium text-[11px]">Industrial Water Reuse Intelligence</span>
+      {/* Hero Section: Full-Background Interactive Water Scene with High Contrast Editorial Foreground */}
+      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#EDF6FA] via-[#FAFBF9] to-canvas border-b border-slate-200/60">
+        {/* Full-Background Three.js Animated Water Flow Scene */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+          <WaterFlowScene className="w-full h-full" />
+        </div>
+
+        {/* Soft radial and linear gradient scrims to ensure high text contrast while letting the water flow shine through */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-canvas/95 via-canvas/75 to-transparent lg:w-7/12 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-canvas to-transparent pointer-events-none" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="max-w-2xl space-y-6">
+            {/* Product Badge */}
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-2xs text-xs text-slate-700">
+              <span className="flex h-2 w-2 rounded-full bg-water-600 animate-pulse" />
+              <span className="font-semibold text-ocean-950">BlueLoop Platform</span>
+              <span className="text-slate-300">|</span>
+              <span className="text-slate-600 font-medium text-[11px]">Industrial Water Reuse Intelligence</span>
+            </div>
+
+            {/* Editorial Display Headline */}
+            <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-ink leading-[1.08]">
+              Give industrial water <br />
+              <span className="italic text-water-700 font-normal">another useful life.</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-sans max-w-xl">
+              Connect certified treated-effluent suppliers with commercial consumers. Optimize supply
+              allocation with deterministic water-quality screening, transport economics, and
+              audit-ready custody tracking.
+            </p>
+
+            {/* Primary Action Buttons: Exactly Two Primary Actions */}
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+              <Link
+                to={demoEntryDestination}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-ocean-950 hover:bg-ocean-900 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <span>Explore Live Demo</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+
+              <Link
+                to="/signup"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm border border-slate-300 shadow-xs hover:border-slate-400 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <span>Create an Account</span>
+                <ArrowRight className="h-4 w-4 text-slate-400" />
+              </Link>
+            </div>
+
+            {/* Product Metric Strip with Transparent Demonstration Disclosures */}
+            <div className="pt-8 border-t border-slate-200/90 grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <span className="block text-2xl font-editorial font-bold text-ocean-950">
+                  3 Streams
+                </span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
+                  Certified Effluent
+                </span>
               </div>
-
-              {/* Editorial Display Headline */}
-              <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-ink leading-[1.08]">
-                Give industrial water <br />
-                <span className="italic text-water-700 font-normal">another useful life.</span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-sans max-w-xl">
-                Connect certified treated-effluent suppliers with commercial consumers. Optimize supply
-                allocation with deterministic water-quality screening, transport economics, and
-                audit-ready custody tracking.
-              </p>
-
-              {/* Primary Action Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-3.5">
-                <Link
-                  to="/app/dashboard"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-ocean-950 hover:bg-ocean-900 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <span>Explore Live Demo</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-
-                <Link
-                  to="/app/allocations"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm border border-slate-300 shadow-xs hover:border-slate-400 transition-all"
-                >
-                  <span>Inspect Matching Console</span>
-                  <ExternalLink className="h-4 w-4 text-slate-400" />
-                </Link>
-
-                <Link
-                  to="/login"
-                  className="inline-flex items-center px-4 py-3.5 text-xs font-semibold text-slate-700 hover:text-ink transition-colors underline-offset-4 hover:underline"
-                >
-                  Sign In
-                </Link>
+              <div>
+                <span className="block text-2xl font-editorial font-bold text-ocean-950">
+                  100% Match
+                </span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
+                  Fail-Closed Gate
+                </span>
               </div>
-
-              {/* Product Metric Strip with Transparent Demonstration Disclosures */}
-              <div className="pt-8 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div>
-                  <span className="block text-2xl font-editorial font-bold text-ocean-950">
-                    3 Streams
-                  </span>
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                    Certified Effluent
-                  </span>
-                </div>
-                <div>
-                  <span className="block text-2xl font-editorial font-bold text-ocean-950">
-                    100% Match
-                  </span>
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                    Fail-Closed Gate
-                  </span>
-                </div>
-                <div>
-                  <span className="block text-2xl font-editorial font-bold text-ocean-950">
-                    4 Tiers
-                  </span>
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                    Audit Provenance
-                  </span>
-                </div>
-                <div>
-                  <span className="block text-2xl font-editorial font-bold text-forest-700">
-                    -40% Cost
-                  </span>
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                    Tariff Savings
-                  </span>
-                </div>
+              <div>
+                <span className="block text-2xl font-editorial font-bold text-ocean-950">
+                  4 Tiers
+                </span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
+                  Audit Provenance
+                </span>
               </div>
-
-              <div className="text-[11px] text-slate-400 italic">
-                Demonstration platform showing preloaded industrial water streams and facilities.
+              <div>
+                <span className="block text-2xl font-editorial font-bold text-forest-700">
+                  -40% Cost
+                </span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
+                  Tariff Savings
+                </span>
               </div>
             </div>
 
-            {/* Right Column: Three.js Interactive Water Visual in an Elegant Framed Card */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl border border-slate-200/90 bg-white/80 backdrop-blur-sm p-4 sm:p-6 shadow-elevated overflow-hidden">
-                {/* Visual Header */}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-2">
-                  <div className="flex items-center gap-2">
-                    <Droplets className="h-4 w-4 text-water-600" />
-                    <span className="text-xs font-semibold text-ocean-950">
-                      Closed-Loop Water Circulation
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono uppercase text-water-700 bg-water-50 px-2 py-0.5 rounded border border-water-200/60 font-semibold">
-                    Real-Time 3D Flow
-                  </span>
-                </div>
-
-                {/* 3D Canvas Viewport: Transparent, Contained, Zero Click Interception */}
-                <div className="relative h-72 sm:h-96 w-full rounded-2xl bg-gradient-to-b from-slate-50/50 to-water-50/30 overflow-hidden flex items-center justify-center">
-                  <WaterFlowScene className="w-full h-full" />
-
-                  {/* Minimal Flow Overlay Labels */}
-                  <div className="absolute top-3 left-3 px-2 py-1 rounded bg-white/90 border border-slate-200 text-[10px] font-mono text-slate-700 shadow-2xs pointer-events-none flex items-center gap-1.5">
-                    <Factory className="h-3 w-3 text-water-600" />
-                    <span>Tertiary STP Source</span>
-                  </div>
-
-                  <div className="absolute bottom-3 right-3 px-2 py-1 rounded bg-white/90 border border-slate-200 text-[10px] font-mono text-slate-700 shadow-2xs pointer-events-none flex items-center gap-1.5">
-                    <Building2 className="h-3 w-3 text-aqua-600" />
-                    <span>Industrial Intake</span>
-                  </div>
-                </div>
-
-                {/* Caption Footer */}
-                <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-100">
-                  <span>Continuous batch conveyance</span>
-                  <span className="font-mono text-forest-700 font-medium">100% Compatible SLA</span>
-                </div>
-              </div>
+            <div className="text-[11px] text-slate-400 italic">
+              Demonstration platform showing preloaded industrial water streams and facilities.
             </div>
           </div>
         </div>
@@ -186,7 +149,7 @@ export const LandingPage: React.FC = () => {
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/app/dashboard"
+              to={demoEntryDestination}
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-water-600 hover:bg-water-700 text-white font-semibold text-sm shadow-md transition-colors"
             >
               <span>Explore Live Sandbox Workspace</span>

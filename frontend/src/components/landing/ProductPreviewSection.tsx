@@ -121,7 +121,7 @@ export const ProductPreviewSection: React.FC = () => {
               </div>
 
               {/* Candidates Table Preview */}
-              <div className="rounded-xl border border-[#DCE7EB] bg-white overflow-hidden text-xs">
+              <div className="rounded-xl border border-[#DCE7EB] bg-white overflow-x-auto text-xs">
                 <table className="w-full text-left">
                   <thead className="bg-[#FAFBF9] border-b border-[#DCE7EB] text-[11px] font-semibold text-[#637680]">
                     <tr>
@@ -187,7 +187,7 @@ export const ProductPreviewSection: React.FC = () => {
                   <div className="p-2 rounded-lg bg-[#FAFBF9] border border-[#DCE7EB]">
                     <span className="text-[#637680] block text-[10px]">pH</span>
                     <span className="font-semibold text-[#172B36]">7.2</span>
-                    <span className="text-[9px] text-[#168779] block">Pass (6.5–8.5)</span>
+                    <span className="text-[9px] text-[#168779] block">Pass (6.5-8.5)</span>
                   </div>
                   <div className="p-2 rounded-lg bg-[#FAFBF9] border border-[#DCE7EB]">
                     <span className="text-[#637680] block text-[10px]">TDS</span>

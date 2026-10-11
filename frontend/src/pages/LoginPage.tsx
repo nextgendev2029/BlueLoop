@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Eye,
   EyeOff,
@@ -16,6 +16,8 @@ import { BlueLoopLogo } from '../components/common/BlueLoopLogo';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isDemoMode = new URLSearchParams(location.search).get('demo') === 'true' || location.hash === '#demo';
   const { login, quickLogin, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -125,17 +127,32 @@ export const LoginPage: React.FC = () => {
       <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-16">
         <div className="w-full max-w-md">
           {/* Quick Demo Access Callout */}
-          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-water-50 to-aqua-50 border border-water-200/80 shadow-xs">
+          <div
+            className={`mb-6 p-5 rounded-2xl border shadow-xs transition-all ${
+              isDemoMode
+                ? 'bg-gradient-to-r from-water-50 via-white to-aqua-50 border-water-400 ring-2 ring-water-500/25 shadow-sm'
+                : 'bg-gradient-to-r from-water-50 to-aqua-50 border-water-200/80'
+            }`}
+          >
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 rounded-lg bg-water-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-water-900">
-                  Quick Demo Access
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-water-900">
+                    {isDemoMode ? 'Live Demo Sandbox Entry' : 'Quick Demo Access'}
+                  </h3>
+                  {isDemoMode && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-water-600 text-white font-semibold">
+                      1-Click Role Access
+                    </span>
+                  )}
+                </div>
                 <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                  Authenticate instantly using seeded test profiles with verified permissions:
+                  {isDemoMode
+                    ? 'Select a preloaded profile below to enter the live BlueLoop demonstration workspace:'
+                    : 'Authenticate instantly using seeded test profiles with verified permissions:'}
                 </p>
 
                 <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
