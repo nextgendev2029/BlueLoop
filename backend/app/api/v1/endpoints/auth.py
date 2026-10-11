@@ -19,6 +19,7 @@ from app.core.auth import (
 )
 from app.core.config import settings
 from app.core.security import (
+    create_access_token,
     generate_session_token,
     hash_password,
     validate_email_format,
@@ -130,8 +131,15 @@ async def signup(payload: SignupRequest, response: Response) -> AuthResponse:
     created_user = container.users.create(user)
 
     # 7. Create Session
-    token = generate_session_token()
     expires_at = now + timedelta(hours=settings.session_expiry_hours)
+    token = create_access_token(
+        user_id=user_id,
+        email=created_user.email,
+        role=clean_role,
+        org_id=org_id,
+        name=created_user.name,
+        expires_delta=timedelta(hours=settings.session_expiry_hours),
+    )
     container.sessions.create_session(token, user_id, expires_at)
 
     # 8. Set HTTP-only Cookie
@@ -216,8 +224,15 @@ async def login(payload: LoginRequest, response: Response) -> AuthResponse:
 
     # 5. Issue session
     now = datetime.now(timezone.utc)
-    token = generate_session_token()
     expires_at = now + timedelta(hours=settings.session_expiry_hours)
+    token = create_access_token(
+        user_id=user.id,
+        email=user.email,
+        role=user.role,
+        org_id=user.org_id,
+        name=user.name,
+        expires_delta=timedelta(hours=settings.session_expiry_hours),
+    )
     container.sessions.create_session(token, user.id, expires_at)
 
     # 6. Set HTTP-only Cookie

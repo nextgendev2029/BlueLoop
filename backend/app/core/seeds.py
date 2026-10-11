@@ -8,6 +8,7 @@ from datetime import datetime, timezone, timedelta
 from app.core.security import hash_password
 from app.models.entities import (
     DemandRequest,
+    DeliveryRecord,
     Organisation,
     QualityEvidence,
     QualityLimits,
@@ -18,6 +19,8 @@ from app.models.entities import (
 )
 from app.models.enums import (
     DemandStatus,
+    DeliveryLifecycleStatus,
+    DeliveryMode,
     EvidenceType,
     FacilityType,
     IntendedUse,
@@ -501,6 +504,57 @@ def get_demo_users() -> list[User]:
     ]
 
 
+def get_demo_deliveries() -> list[DeliveryRecord]:
+    now = datetime(2026, 3, 1, 0, 0, 0, tzinfo=timezone.utc)
+    return [
+        DeliveryRecord(
+            id="SYNTH-DEL-01",
+            allocation_candidate_id=None,
+            listing_id="SYNTH-LIST-01",
+            demand_id="SYNTH-DEM-01",
+            dispatched_volume_kl=450.0,
+            delivered_volume_kl=None,
+            scheduled_date=now - timedelta(hours=6),
+            delivery_mode=DeliveryMode.DEDICATED_TANKER,
+            lifecycle_status=DeliveryLifecycleStatus.IN_TRANSIT,
+            verification_status=VerificationStatus.VERIFIED_DEMO,
+            is_synthetic=True,
+            created_at=now - timedelta(hours=8),
+            updated_at=now - timedelta(hours=2),
+        ),
+        DeliveryRecord(
+            id="SYNTH-DEL-02",
+            allocation_candidate_id=None,
+            listing_id="SYNTH-LIST-02",
+            demand_id="SYNTH-DEM-03",
+            dispatched_volume_kl=600.0,
+            delivered_volume_kl=None,
+            scheduled_date=now - timedelta(days=2),
+            delivery_mode=DeliveryMode.DEDICATED_TANKER,
+            lifecycle_status=DeliveryLifecycleStatus.DELIVERED_SAMPLE_PENDING,
+            verification_status=VerificationStatus.VERIFIED_DEMO,
+            is_synthetic=True,
+            created_at=now - timedelta(days=2, hours=4),
+            updated_at=now - timedelta(days=1),
+        ),
+        DeliveryRecord(
+            id="SYNTH-DEL-03",
+            allocation_candidate_id=None,
+            listing_id="SYNTH-LIST-03",
+            demand_id="SYNTH-DEM-02",
+            dispatched_volume_kl=350.0,
+            delivered_volume_kl=None,
+            scheduled_date=now + timedelta(hours=12),
+            delivery_mode=DeliveryMode.PIPELINE,
+            lifecycle_status=DeliveryLifecycleStatus.DISPATCHED,
+            verification_status=VerificationStatus.VERIFIED_DEMO,
+            is_synthetic=True,
+            created_at=now - timedelta(hours=1),
+            updated_at=now,
+        ),
+    ]
+
+
 def seed_demonstration_data(
     container: RepositoryContainer | None = None,
     force_reset: bool = True,
@@ -542,5 +596,9 @@ def seed_demonstration_data(
     for demand in get_demo_demands():
         if force_reset or not target_container.demands.get(demand.id):
             target_container.demands.create(demand)
+
+    for deliv in get_demo_deliveries():
+        if force_reset or not target_container.deliveries.get(deliv.id):
+            target_container.deliveries.create(deliv)
 
     return target_container

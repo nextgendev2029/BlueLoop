@@ -546,3 +546,36 @@ def test_20_supplier_can_discover_open_demands_but_not_closed_demands():
     res_closed = client.get("/api/v1/demands/DEM-CLOSED-TEST")
     assert res_closed.status_code == 403
     assert "open buyer demand" in res_closed.json()["message"].lower()
+
+
+def test_23_stateless_multi_container_token_resilience():
+    """
+    Simulates AWS Lambda multi-container environment:
+    Token issued in Container 1 must authenticate successfully in Container 2
+    even when Container 2 has no record of the session in its local sessions table.
+    """
+    from app.repositories.memory import get_repository_container
+    from starlette.testclient import TestClient
+    from app.main import app
+
+    container = get_repository_container()
+    client = TestClient(app)
+
+    # 1. Login and get signed token
+    login_res = client.post(
+        "/api/v1/auth/login",
+        json={"email": "buyer@blueloop.io", "password": "Password123!"},
+    )
+    assert login_res.status_code == 200
+    token = login_res.json()["token"]
+
+    # 2. Simulate new container: clear sessions repository completely
+    if hasattr(container, "sessions") and container.sessions:
+        container.sessions.clear()
+
+    # 3. New container receives request with token: must succeed via signed token verification
+    fresh_client = TestClient(app)
+    me_res = fresh_client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert me_res.status_code == 200
+    assert me_res.json()["email"] == "buyer@blueloop.io"
+    assert me_res.json()["role"] == "buyer"

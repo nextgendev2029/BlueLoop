@@ -40,7 +40,7 @@ export const AllocationComparisonTable: React.FC = () => {
           <div className="flex items-center gap-2">
             <GitMerge className="h-4 w-4 text-[#174D3A]" />
             <h3 className="text-base font-semibold text-[#202A24]">
-              Candidate Allocation Ledger & Cost Matrix
+              Bilateral Supply Allocation Engine
             </h3>
             {latestRun ? (
               <StatusBadge
@@ -49,11 +49,11 @@ export const AllocationComparisonTable: React.FC = () => {
                 size="xs"
               />
             ) : (
-              <StatusBadge status="DEMO" label="Connecting Solver..." size="xs" />
+              <StatusBadge status="DEMO" label="Optimizing Supply..." size="xs" />
             )}
           </div>
           <p className="text-xs text-[#69736B] mt-0.5">
-            Deterministic constrained optimization results matching effluent supplies to commercial intake demand.
+            Constrained bilateral optimization results matching certified effluent supplies to commercial intake demand.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -162,7 +162,7 @@ export const AllocationComparisonTable: React.FC = () => {
             <strong className="text-[#174D3A] font-mono">{latestRun.totals.total_allocated_volume_kl.toLocaleString()} kL</strong>{' '}
             ({latestRun.totals.overall_fulfillment_rate.toFixed(1)}% Demand Fulfillment Rate).
           </span>
-          <span className="font-mono text-[#8C978F]">Deterministic greedy prioritization</span>
+          <span className="font-mono text-[#8C978F]">Constraint-optimized prioritization</span>
         </div>
       )}
     </div>

@@ -14,7 +14,7 @@ export const WaterFlowDiagram: React.FC = () => {
             <StatusBadge status="CONFIRMED" label="Transfer Workflow" size="xs" />
           </div>
           <h3 className="text-base font-semibold text-[#202A24] mt-0.5">
-            Deterministic Effluent-to-Intake Transfer Sequence
+            Industrial Water Reuse Transfer Sequence
           </h3>
         </div>
         <div className="text-xs text-[#69736B] hidden sm:block font-mono">
@@ -84,7 +84,7 @@ export const WaterFlowDiagram: React.FC = () => {
         <div className="rounded-md border-2 border-[#168779] bg-[#EBF5F3]/50 p-4 flex flex-col justify-between relative shadow-subtle">
           <div className="absolute -top-2.5 right-3">
             <span className="bg-[#168779] text-white text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded shadow-xs">
-              Deterministic Gate
+              Specification Gate
             </span>
           </div>
           <div>

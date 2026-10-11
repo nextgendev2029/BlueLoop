@@ -38,7 +38,7 @@ export const DeterministicGatekeeperCard: React.FC = () => {
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-[#174D3A]" />
             <h3 className="text-base font-semibold text-[#202A24]">
-              Deterministic Quality Gatekeeper Inspector
+              Water Quality Specification Gate
             </h3>
             {evaluation?.is_eligible ? (
               <StatusBadge status="SCREENING_PASS" label="Screening Verdict: Eligible" size="xs" />
@@ -172,7 +172,7 @@ export const DeterministicGatekeeperCard: React.FC = () => {
         <div className="mt-4 rounded-md border border-[#D9E8DF] bg-[#EDF6F1]/50 p-4 text-xs space-y-2">
           <div className="flex items-center gap-2 font-semibold text-[#10392B]">
             <ShieldCheck className="h-4 w-4 text-[#168779]" />
-            <span>Deterministic Quality Engine Decision Trace</span>
+            <span>Water Quality Specification Decision Trace</span>
           </div>
           <p className="text-[11px] text-[#174D3A] leading-relaxed">
             {evaluation?.decision_summary || 'Evaluation summary ready.'}

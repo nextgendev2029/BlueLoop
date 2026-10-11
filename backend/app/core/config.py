@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     session_cookie_name: str = "blueloop_session"
     session_cookie_secure: bool = False
     session_cookie_samesite: str = "lax"
+    secret_key: str = "blueloop-production-signing-secret-key-salt-2026"
 
     @field_validator("sqlite_db_path", mode="after")
     @classmethod

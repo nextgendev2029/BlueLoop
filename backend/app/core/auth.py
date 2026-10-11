@@ -10,7 +10,9 @@ from typing import Callable, Dict, List, Optional
 from fastapi import Depends, HTTPException, Request, Response, status
 
 from app.core.config import settings
-from app.models.entities import User
+from app.core.security import verify_access_token
+from app.models.entities import Organisation, User
+from app.models.enums import OrgType, VerificationStatus
 from app.repositories.memory import get_repository_container
 
 logger = logging.getLogger("blueloop.core.auth")
@@ -74,6 +76,8 @@ def extract_session_token(request: Request) -> Optional[str]:
 async def get_current_user(request: Request) -> User:
     """
     FastAPI dependency validating the session token and returning the active User.
+    Supports stateless HMAC-SHA256 tokens for distributed multi-container Lambda resilience,
+    with fallback to opaque SQLite session records for backwards compatibility.
     Raises 401 Unauthorized if missing, expired, revoked, or disabled.
     """
     token = extract_session_token(request)
@@ -85,54 +89,109 @@ async def get_current_user(request: Request) -> User:
         )
 
     container = get_repository_container()
-    if not hasattr(container, "sessions") or not container.sessions:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Session management is unavailable.",
-        )
 
-    session = container.sessions.get_session(token)
-    if not session:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired session. Please sign in again.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    # 1. Stateless HMAC-SHA256 token verification (multi-container serverless safe)
+    claims = verify_access_token(token)
+    if claims:
+        # Check revocation in local session store if recorded
+        if hasattr(container, "sessions") and container.sessions:
+            session_row = container.sessions.get_session(token)
+            if session_row and session_row.get("is_revoked"):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Session has been invalidated. Please sign in again.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
 
-    if session["is_revoked"]:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Session has been invalidated. Please sign in again.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        user_id = claims.get("sub")
+        user = container.users.get(user_id)
+        if not user and claims.get("email"):
+            # Ensure organization exists in local container
+            org_id = claims.get("org_id", "ORG-DEFAULT")
+            if not container.organisations.get(org_id):
+                container.organisations.create(
+                    Organisation(
+                        id=org_id,
+                        name=claims.get("name") or "Organization",
+                        org_type=OrgType.BUYER if claims.get("role") == "buyer" else OrgType.SUPPLIER,
+                        verification_status=VerificationStatus.VERIFIED_DEMO,
+                        contact_email=claims.get("email"),
+                        is_synthetic=True,
+                        created_at=datetime.now(timezone.utc),
+                    )
+                )
+            # Reconstruct user from verified signed claims in this container
+            user = User(
+                id=user_id,
+                org_id=org_id,
+                name=claims.get("name") or "User",
+                email=claims.get("email"),
+                role=claims.get("role"),
+                is_active=True,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            )
+            container.users.create(user)
 
-    now = datetime.now(timezone.utc)
-    expires_at = session["expires_at"]
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account no longer exists.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
-    if expires_at < now:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Session has expired. Please sign in again.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account has been disabled. Contact an administrator for assistance.",
+            )
 
-    user = container.users.get(session["user_id"])
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User account no longer exists.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return user
 
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account has been disabled. Contact an administrator for assistance.",
-        )
+    # 2. Fallback to opaque token in session repository (for legacy tokens / test fixtures)
+    if hasattr(container, "sessions") and container.sessions:
+        session = container.sessions.get_session(token)
+        if session:
+            if session["is_revoked"]:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Session has been invalidated. Please sign in again.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
 
-    return user
+            now = datetime.now(timezone.utc)
+            expires_at = session["expires_at"]
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+            if expires_at < now:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Session has expired. Please sign in again.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            user = container.users.get(session["user_id"])
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="User account no longer exists.",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            if not user.is_active:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Account has been disabled. Contact an administrator for assistance.",
+                )
+
+            return user
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or expired session. Please sign in again.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 
 async def get_optional_current_user(request: Request) -> Optional[User]:

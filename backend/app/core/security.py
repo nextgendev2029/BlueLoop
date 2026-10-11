@@ -4,11 +4,17 @@ Implements robust password hashing using PBKDF2-HMAC-SHA256 (OWASP compliant),
 constant-time digest verification, strength validation, and secure session tokens.
 """
 
+import base64
+from datetime import timedelta
 import hashlib
 import hmac
+import json
 import re
 import secrets
-from typing import Tuple
+import time
+from typing import Any, Dict, Optional, Tuple
+
+from app.core.config import settings
 
 PBKDF2_ALGORITHM = "sha256"
 PBKDF2_ITERATIONS = 600000  # OWASP 2023 recommended iterations for PBKDF2-HMAC-SHA256
@@ -105,3 +111,83 @@ def validate_password_strength(password: str) -> Tuple[bool, str]:
 def generate_session_token() -> str:
     """Generate a high-entropy URL-safe session token (256 bits)."""
     return secrets.token_urlsafe(32)
+
+
+def _b64url_encode(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).decode("utf-8").rstrip("=")
+
+
+def _b64url_decode(data: str) -> bytes:
+    padding = "=" * (4 - (len(data) % 4)) if len(data) % 4 != 0 else ""
+    return base64.urlsafe_b64decode((data + padding).encode("utf-8"))
+
+
+def create_access_token(
+    user_id: str,
+    email: str,
+    role: str,
+    org_id: str,
+    name: Optional[str] = None,
+    expires_delta: Optional[timedelta] = None,
+    secret_key: Optional[str] = None,
+) -> str:
+    """
+    Generate a cryptographically signed HMAC-SHA256 stateless session token (JWT).
+    Allows instantaneous, multi-container validation across distributed serverless Lambda instances.
+    """
+    key = secret_key or settings.secret_key
+    now = int(time.time())
+    if expires_delta:
+        exp = now + int(expires_delta.total_seconds())
+    else:
+        exp = now + (settings.session_expiry_hours * 3600)
+
+    header = {"alg": "HS256", "typ": "JWT"}
+    payload: Dict[str, Any] = {
+        "sub": user_id,
+        "email": email,
+        "role": role,
+        "org_id": org_id,
+        "name": name or "",
+        "iat": now,
+        "exp": exp,
+    }
+
+    header_b64 = _b64url_encode(json.dumps(header, separators=(",", ":")).encode("utf-8"))
+    payload_b64 = _b64url_encode(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
+    sig = hmac.new(key.encode("utf-8"), signing_input, hashlib.sha256).digest()
+    sig_b64 = _b64url_encode(sig)
+
+    return f"{header_b64}.{payload_b64}.{sig_b64}"
+
+
+def verify_access_token(token: str, secret_key: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """
+    Verify HMAC-SHA256 signature and expiration of a stateless session token.
+    Returns decoded claims dict if valid and unexpired; None otherwise.
+    """
+    if not token or not isinstance(token, str):
+        return None
+    parts = token.strip().split(".")
+    if len(parts) != 3:
+        return None
+    header_b64, payload_b64, sig_b64 = parts
+    key = secret_key or settings.secret_key
+    signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
+    expected_sig = hmac.new(key.encode("utf-8"), signing_input, hashlib.sha256).digest()
+    try:
+        actual_sig = _b64url_decode(sig_b64)
+    except Exception:
+        return None
+    if not hmac.compare_digest(expected_sig, actual_sig):
+        return None
+    try:
+        payload_bytes = _b64url_decode(payload_b64)
+        payload = json.loads(payload_bytes.decode("utf-8"))
+    except Exception:
+        return None
+    exp = payload.get("exp")
+    if exp is not None and time.time() > exp:
+        return None
+    return payload

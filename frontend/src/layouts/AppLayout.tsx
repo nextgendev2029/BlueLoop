@@ -46,7 +46,7 @@ const navigationItems: (NavItem & { roles?: Array<'buyer' | 'supplier' | 'admin'
     title: 'Allocations',
     path: '/app/allocations',
     icon: GitMerge,
-    description: 'Deterministic supply-demand matching console',
+    description: 'Bilateral supply-demand matching console',
     roles: ['buyer', 'supplier', 'admin'],
   },
   {

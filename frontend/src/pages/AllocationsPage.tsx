@@ -176,7 +176,7 @@ export const AllocationsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold tracking-tight text-[#202A24]">
-              Deterministic Allocation Engine & Optimization Console
+              Bilateral Supply Allocation Engine & Console
             </h2>
             <StatusBadge status="CONFIRMED" label="Optimization Active" size="xs" />
           </div>
@@ -523,7 +523,7 @@ export const AllocationsPage: React.FC = () => {
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="bg-white p-3 rounded border border-[#E0E5DF] space-y-1">
                                       <span className="font-semibold text-[#202A24] block">
-                                        Deterministic Reason Trail:
+                                        Specification Decision Trail:
                                       </span>
                                       <ul className="list-disc list-inside space-y-1 text-[11px] text-[#69736B]">
                                         {alloc.decision_reasons.map((r, i) => (
@@ -702,7 +702,7 @@ export const AllocationsPage: React.FC = () => {
         <Modal
           isOpen={showConfigModal}
           onClose={() => setShowConfigModal(false)}
-          title="Configure Deterministic Allocation Solver Run"
+          title="Configure Bilateral Supply Allocation Run"
           subtitle="Set linear parameters and optional entity filter subsets"
           maxWidth="xl"
         >

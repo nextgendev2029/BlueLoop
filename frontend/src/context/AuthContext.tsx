@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { AuthUser, LoginPayload, SignupPayload } from '../types/auth';
 import { getMe, login as apiLogin, logout as apiLogout, signup as apiSignup } from '../services/auth';
-import { clearStoredAuthToken } from '../lib/api';
+import { BlueLoopApiError, clearStoredAuthToken, getStoredAuthToken } from '../lib/api';
 
 export interface AuthContextType {
   user: AuthUser | null;
@@ -20,6 +20,34 @@ export interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const USER_STORAGE_KEY = 'blueloop_auth_user';
+
+function getStoredUser(): AuthUser | null {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const raw = window.localStorage.getItem(USER_STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    }
+  } catch {
+    // Ignore storage or parse errors
+  }
+  return null;
+}
+
+function setStoredUser(user: AuthUser | null): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      if (user) {
+        window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      } else {
+        window.localStorage.removeItem(USER_STORAGE_KEY);
+      }
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
 
 export const DEMO_CREDENTIALS = {
   buyer: {
@@ -43,16 +71,39 @@ export const DEMO_CREDENTIALS = {
 } as const;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    const token = getStoredAuthToken();
+    if (!token) return null;
+    return getStoredUser();
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    const token = getStoredAuthToken();
+    return !!token;
+  });
 
   const refreshUser = useCallback(async () => {
+    const token = getStoredAuthToken();
+    if (!token) {
+      setUser(null);
+      setStoredUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const me = await getMe();
       setUser(me);
-    } catch {
-      setUser(null);
-      clearStoredAuthToken();
+      setStoredUser(me);
+    } catch (err: any) {
+      // Only true 401 or 403 HTTP errors invalidate the session
+      if (err instanceof BlueLoopApiError && (err.status === 401 || err.status === 403)) {
+        setUser(null);
+        setStoredUser(null);
+        clearStoredAuthToken();
+      } else {
+        // Transient network failure or Lambda warm-up: do not purge session
+        console.warn('Session check encountered transient error, preserving cached credentials:', err?.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -67,6 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const session = await apiLogin(payload);
       setUser(session.user);
+      setStoredUser(session.user);
     } finally {
       setIsLoading(false);
     }
@@ -77,6 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const session = await apiSignup(payload);
       setUser(session.user);
+      setStoredUser(session.user);
     } finally {
       setIsLoading(false);
     }
@@ -90,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Ignore network errors on logout
     } finally {
       setUser(null);
+      setStoredUser(null);
       clearStoredAuthToken();
       setIsLoading(false);
     }

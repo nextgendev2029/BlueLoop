@@ -250,10 +250,10 @@ export const DashboardPage: React.FC = () => {
       {/* 4. Closed-Loop Water Transfer Sequence */}
       <WaterFlowDiagram />
 
-      {/* 5. Deterministic Quality Gatekeeper Inspector */}
+      {/* 5. Water Quality Specification Gate */}
       <DeterministicGatekeeperCard />
 
-      {/* 6. Candidate Allocation & Cost Comparison Table */}
+      {/* 6. Bilateral Supply Allocation & Cost Comparison Engine */}
       <AllocationComparisonTable />
 
       {/* 7. Procurement Action Hub */}
