@@ -15,7 +15,7 @@ export const ProductPreviewSection: React.FC = () => {
   );
 
   return (
-    <section id="product-preview" className="py-24 bg-white border-y border-[#DCE7EB]">
+    <section id="product-preview" className="py-24 bg-white border-y border-[#DCE7EB] overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>

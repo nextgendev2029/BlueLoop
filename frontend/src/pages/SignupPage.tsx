@@ -73,7 +73,7 @@ export const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col lg:flex-row antialiased">
+    <div className="min-h-screen bg-canvas flex flex-col lg:flex-row antialiased w-full max-w-full overflow-x-hidden">
       {/* Left Brand Panel */}
       <div className="lg:w-1/2 bg-ocean-950 text-white p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-ocean-800">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-water-600/20 rounded-full blur-3xl pointer-events-none" />
