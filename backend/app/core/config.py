@@ -1,3 +1,4 @@
+import os
 from typing import List, Union
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -44,11 +45,22 @@ class Settings(BaseSettings):
     demo_mode: bool = True
 
     # Database & Authentication Persistence
+    # NOTE: On AWS Lambda, /tmp/blueloop.db is used via SQLITE_DB_PATH.
+    # Note that /tmp is ephemeral across Lambda container instances, serving as an
+    # isolated demonstration workaround rather than persistent distributed storage.
     sqlite_db_path: str = "backend/data/blueloop.db"
     session_expiry_hours: int = 24
     session_cookie_name: str = "blueloop_session"
     session_cookie_secure: bool = False
     session_cookie_samesite: str = "lax"
+
+    @field_validator("sqlite_db_path", mode="after")
+    @classmethod
+    def resolve_sqlite_path(cls, v: str) -> str:
+        # Automatic fallback for AWS Lambda execution environments if SQLITE_DB_PATH is default
+        if os.environ.get("AWS_LAMBDA_FUNCTION_NAME") and v == "backend/data/blueloop.db":
+            return "/tmp/blueloop.db"
+        return v
 
     @field_validator("cors_origins", mode="before")
     @classmethod

@@ -93,17 +93,23 @@ export async function apiClient<T>(
     ? { Authorization: `Bearer ${storedToken}` }
     : {};
 
+  // When calling a deployed API (cross-origin API Gateway URL), default credentials to 'same-origin'
+  // to avoid browser CORS wildcard (*) rejections, transmitting session tokens via Authorization: Bearer.
+  // Preserves any explicitly passed options.credentials.
+  const defaultCredentials: RequestCredentials = apiBaseUrl ? 'same-origin' : 'include';
+  const credentialsMode: RequestCredentials = options?.credentials ?? defaultCredentials;
+
   let response: Response;
   try {
     response = await fetch(url, {
-      credentials: options?.credentials ?? 'include',
+      ...options,
+      credentials: credentialsMode,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         ...authHeaders,
         ...options?.headers,
       },
-      ...options,
     });
   } catch (err: any) {
     throw new BlueLoopApiError(0, err.message || 'Network connection failed. Backend service may be offline.', {

@@ -54,6 +54,7 @@ Resources:
           CORS_ORIGINS: '*'
           USE_SYNTHETIC_DATA: 'true'
           DEMO_MODE: 'true'
+          SQLITE_DB_PATH: '/tmp/blueloop.db'
       Events:
         ProxyPath:
           Type: HttpApi

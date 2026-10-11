@@ -2,6 +2,12 @@
 BlueLoop SQLite Persistence Layer
 Provides persistent, ACID-compliant storage for users, organisations,
 sessions, and audit logs that survives application restarts.
+
+NOTE (AWS Lambda Ephemeral Storage):
+When executed in AWS Lambda, SQLite resides in /tmp/blueloop.db.
+Storage in /tmp is ephemeral across Lambda container lifecycles. It serves
+as an isolated demonstration workaround for hackathon evaluation and
+is not a replacement for persistent distributed databases (e.g. Amazon DynamoDB or RDS).
 """
 
 from datetime import datetime, timezone, timedelta
@@ -79,7 +85,8 @@ def get_db_path(custom_path: Optional[str] = None) -> str:
     path = custom_path or settings.sqlite_db_path
     if path != ":memory:":
         parent = os.path.dirname(os.path.abspath(path))
-        os.makedirs(parent, exist_ok=True)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
     return path
 
 

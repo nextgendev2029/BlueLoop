@@ -217,5 +217,27 @@ describe('BlueLoop apiClient', () => {
       await apiClient('/api/v1/health');
       expect(requestedUrl).toBe('/api/v1/health');
     });
+
+    it('defaults credentials to same-origin when calling an external or configured base URL and preserves bearer token', async () => {
+      let capturedOptions: RequestInit | undefined;
+      globalThis.fetch = vi.fn().mockImplementation(async (_url: string, options?: RequestInit) => {
+        capturedOptions = options;
+        return new Response(JSON.stringify({ ok: true }), { status: 200 });
+      });
+
+      const originalEnv = import.meta.env.VITE_API_BASE_URL;
+      try {
+        // Simulate deployed API Gateway endpoint
+        (import.meta.env as any).VITE_API_BASE_URL = 'https://blueloop-api.execute-api.ap-south-1.amazonaws.com';
+        await apiClient('/api/v1/health');
+        expect(capturedOptions?.credentials).toBe('same-origin');
+
+        // Caller can explicitly override credentials if needed
+        await apiClient('/api/v1/health', { credentials: 'include' });
+        expect(capturedOptions?.credentials).toBe('include');
+      } finally {
+        (import.meta.env as any).VITE_API_BASE_URL = originalEnv;
+      }
+    });
   });
 });

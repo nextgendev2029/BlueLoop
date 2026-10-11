@@ -52,6 +52,7 @@ echo "--> [3/4] Validating and Building Frontend React SPA..."
 cd "$REPO_ROOT/frontend"
 npm run typecheck
 npm test
+rm -rf dist
 npm run build
 echo "✓ Frontend built successfully into frontend/dist/."
 
@@ -116,9 +117,26 @@ echo "Discovered CloudFront:  $CLOUDFRONT_URL"
 
 # Re-build frontend with deployed API endpoint
 echo ""
-echo "Rebuilding frontend configured with deployed API URL..."
+if [ -z "$API_ENDPOINT" ] || [ "$API_ENDPOINT" == "None" ]; then
+  echo "ERROR: Failed to retrieve API Gateway Endpoint from stack outputs. Aborting."
+  exit 1
+fi
+if [ -z "$FRONTEND_BUCKET" ] || [ "$FRONTEND_BUCKET" == "None" ]; then
+  echo "ERROR: Failed to retrieve Frontend S3 Bucket from stack outputs. Aborting."
+  exit 1
+fi
+
+echo "Cleaning stale build artifacts and rebuilding frontend configured with deployed API URL..."
 cd "$REPO_ROOT/frontend"
+rm -rf dist
 VITE_API_BASE_URL="$API_ENDPOINT" npm run build
+
+# Verify build output exists before attempting S3 sync
+if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
+  echo "ERROR: Frontend build output missing dist/index.html. Aborting S3 upload."
+  exit 1
+fi
+echo "✓ Verified production frontend build in dist/."
 
 # Sync assets to S3
 echo "Syncing frontend dist/ to S3 bucket $FRONTEND_BUCKET..."
