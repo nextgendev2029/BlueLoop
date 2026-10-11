@@ -36,230 +36,192 @@ export const WaterFlowScene: React.FC<WaterFlowSceneProps> = ({ className = '' }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0); // 100% transparent canvas
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.0;
     container.appendChild(renderer.domElement);
 
-    // 2. Scene and Camera positioned for full-background composition
+    // 2. Scene and Camera positioned to overlay the cinematic water landscape
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0.6, 4.4, 11.2);
-    camera.lookAt(0.6, 0, 0);
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 1.8, 10.5);
+    camera.lookAt(0.4, 0, 0);
 
-    // 3. Marine and Water Lighting (Restrained Cyan, Deep Ocean, and Ledger Aqua)
-    const ambientLight = new THREE.AmbientLight(0x0d283c, 1.4);
+    // 3. Subtle Lighting matching daylight and water caustics
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
-    const cyanLight = new THREE.DirectionalLight(0x16b8d4, 2.2);
-    cyanLight.position.set(5, 9, 7);
-    scene.add(cyanLight);
+    const sunLight = new THREE.DirectionalLight(0xfff7ed, 1.4);
+    sunLight.position.set(6, 8, 5);
+    scene.add(sunLight);
 
-    const deepBlueLight = new THREE.DirectionalLight(0x1677b8, 1.6);
-    deepBlueLight.position.set(-6, 6, -4);
-    scene.add(deepBlueLight);
+    const waterGlintLight = new THREE.DirectionalLight(0x38bdf8, 1.1);
+    waterGlintLight.position.set(-5, 4, 3);
+    scene.add(waterGlintLight);
 
-    // 4. Subtle Undulating Liquid Water Surface Plane (Subtle Depth)
-    const gridX = 64;
-    const gridY = 48;
-    const planeGeo = new THREE.PlaneGeometry(28, 15, gridX, gridY);
-    planeGeo.rotateX(-Math.PI / 2.35);
-
-    const posAttr = planeGeo.attributes.position;
-    const initialPositions = posAttr.array.slice() as Float32Array;
-
-    const waterMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x1677b8,
-      emissive: 0x07283c,
-      emissiveIntensity: 0.18,
-      roughness: 0.22,
-      metalness: 0.1,
-      transmission: 0.8,
-      transparent: true,
-      opacity: 0.22,
-      wireframe: false,
-      flatShading: false,
-    });
-
-    const waterMesh = new THREE.Mesh(planeGeo, waterMaterial);
-    waterMesh.position.set(1.5, -1.3, -1.0);
-    scene.add(waterMesh);
-
-    // Secondary ethereal wave ribbon for depth
-    const ribbonGeo = new THREE.PlaneGeometry(22, 5, 48, 16);
-    ribbonGeo.rotateX(-Math.PI / 2.25);
-    const ribbonMaterial = new THREE.MeshStandardMaterial({
-      color: 0x16b8d4,
-      roughness: 0.25,
-      metalness: 0.2,
-      transparent: true,
-      opacity: 0.12,
-      wireframe: false,
-    });
-    const ribbonMesh = new THREE.Mesh(ribbonGeo, ribbonMaterial);
-    ribbonMesh.position.set(2.0, -0.9, -2.0);
-    scene.add(ribbonMesh);
-
-    // 5. Open Industrial Water-Reuse Trajectory (Sequence: Source -> Screening -> Transport -> Intake -> Ledger)
-    // Clear directional narrative: NOT a circular donut pipe!
-    const streamPoints = [
-      new THREE.Vector3(-6.2, 1.8, -3.2), // 1. Tertiary Treatment Plant Outflow
-      new THREE.Vector3(-2.6, 1.3, -1.4), // 2. Chemical Quality Screening Checkpoint
-      new THREE.Vector3(0.8, 0.6, 0.2),   // 3. Logistics Transport Conveyance
-      new THREE.Vector3(4.2, -0.2, 1.2),  // 4. Industrial Cooling Intake
-      new THREE.Vector3(7.0, -1.0, 2.2),  // 5. Custody Ledger & Impact Record
+    // 4. Natural Meandering River Curve (Following the actual waterway: Treatment weir -> Central Quality Island -> Cooling Intake)
+    // No straight pipe or thick tube!
+    const riverPoints = [
+      new THREE.Vector3(-6.5, 0.4, -2.5),  // Treatment plant cascade outflow
+      new THREE.Vector3(-4.5, -0.2, -1.8), // Weir drop into river basin
+      new THREE.Vector3(-2.2, -0.6, -0.8), // River bend before monitoring island
+      new THREE.Vector3(-0.4, -0.7, 0.2),  // Waterway passing telemetry station
+      new THREE.Vector3(1.6, -0.8, 0.8),   // Downstream curve
+      new THREE.Vector3(3.8, -0.9, 1.2),   // Approach to industrial cooling intake
+      new THREE.Vector3(6.2, -0.8, 0.5),   // Cooling intake manifold & reuse suction
     ];
 
-    // Open curve (false = directional flow from source to destination)
-    const streamCurve = new THREE.CatmullRomCurve3(streamPoints, false);
+    const riverCurve = new THREE.CatmullRomCurve3(riverPoints, false, 'catmullrom', 0.5);
 
-    // Fluid conduit ribbon
-    const tubeGeo = new THREE.TubeGeometry(streamCurve, 96, 0.14, 16, false);
-    const tubeMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x1677b8,
-      emissive: 0x09344d,
-      emissiveIntensity: 0.22,
-      roughness: 0.18,
-      metalness: 0.12,
-      transmission: 0.72,
-      transparent: true,
-      opacity: 0.34,
-      wireframe: false,
-    });
-    const tubeMesh = new THREE.Mesh(tubeGeo, tubeMaterial);
-    scene.add(tubeMesh);
-
-    // Outer luminous halo
-    const outerTubeGeo = new THREE.TubeGeometry(streamCurve, 72, 0.24, 12, false);
-    const outerMaterial = new THREE.MeshStandardMaterial({
-      color: 0x16b8d4,
-      roughness: 0.25,
-      metalness: 0.2,
-      transparent: true,
-      opacity: 0.1,
-      wireframe: false,
-    });
-    const outerMesh = new THREE.Mesh(outerTubeGeo, outerMaterial);
-    scene.add(outerMesh);
-
-    // 6. Directional Flow Particles (Moving sequentially from Source to Destination)
-    const particleCount = 180;
+    // 5. Water Flow Current Particles (Natural glints and eddies flowing smoothly along the river)
+    const particleCount = 220;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
     const particleProgress = new Float32Array(particleCount);
-    const particleSpeed = new Float32Array(particleCount);
+    const particleSpeeds = new Float32Array(particleCount);
+    const particleOffsets = new Float32Array(particleCount * 3);
 
-    const colorSource = new THREE.Color(0x1677b8);
-    const colorScreening = new THREE.Color(0x16b8d4);
-    const colorIntake = new THREE.Color(0x24b8c7);
-    const colorLedger = new THREE.Color(0x168779);
+    const colEffluent = new THREE.Color(0x38bdf8); // Light cyan at outflow
+    const colFiltered = new THREE.Color(0x22d3ee); // Pure cyan at screening
+    const colIntake = new THREE.Color(0x0284c7);   // Rich azure at intake
 
     for (let i = 0; i < particleCount; i++) {
       particleProgress[i] = Math.random();
-      particleSpeed[i] = 0.0016 + Math.random() * 0.0022;
+      particleSpeeds[i] = (0.0008 + Math.random() * 0.0014) * (prefersReducedMotion ? 0.3 : 1.0);
 
-      const pt = streamCurve.getPoint(particleProgress[i]);
-      const scatter = 0.14;
-      particlePositions[i * 3] = pt.x + (Math.random() - 0.5) * scatter;
-      particlePositions[i * 3 + 1] = pt.y + (Math.random() - 0.5) * scatter;
-      particlePositions[i * 3 + 2] = pt.z + (Math.random() - 0.5) * scatter;
+      // Lateral and vertical variance to simulate width of river
+      particleOffsets[i * 3] = (Math.random() - 0.5) * 0.75;
+      particleOffsets[i * 3 + 1] = (Math.random() - 0.5) * 0.18;
+      particleOffsets[i * 3 + 2] = (Math.random() - 0.5) * 0.65;
 
-      // Color transition reflecting the industrial transformation along the stream
+      const pt = riverCurve.getPoint(particleProgress[i]);
+      particlePositions[i * 3] = pt.x + particleOffsets[i * 3];
+      particlePositions[i * 3 + 1] = pt.y + particleOffsets[i * 3 + 1];
+      particlePositions[i * 3 + 2] = pt.z + particleOffsets[i * 3 + 2];
+
+      // Subtle natural glint color interpolation
       const p = particleProgress[i];
-      let col = colorSource.clone();
-      if (p < 0.3) {
-        col = colorSource.clone().lerp(colorScreening, p / 0.3);
-      } else if (p < 0.7) {
-        col = colorScreening.clone().lerp(colorIntake, (p - 0.3) / 0.4);
-      } else {
-        col = colorIntake.clone().lerp(colorLedger, (p - 0.7) / 0.3);
-      }
-
-      particleColors[i * 3] = col.r;
-      particleColors[i * 3 + 1] = col.g;
-      particleColors[i * 3 + 2] = col.b;
+      const c = p < 0.5 ? colEffluent.clone().lerp(colFiltered, p * 2) : colFiltered.clone().lerp(colIntake, (p - 0.5) * 2);
+      particleColors[i * 3] = c.r;
+      particleColors[i * 3 + 1] = c.g;
+      particleColors[i * 3 + 2] = c.b;
     }
 
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
 
     const particleMaterial = new THREE.PointsMaterial({
-      size: 0.13,
+      size: 0.1,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.75,
       blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
 
-    const particleSystem = new THREE.Points(particleGeo, particleMaterial);
-    scene.add(particleSystem);
+    const riverParticles = new THREE.Points(particleGeo, particleMaterial);
+    scene.add(riverParticles);
 
-    // 7. Industrial Water Sequence Markers (5 Nodes: Treatment, Screening, Transport, Intake, Ledger)
-    const markersGroup = new THREE.Group();
+    // 6. Central Quality Monitoring Station Beacons (Matching the green and blue lights in the reference image)
+    const telemetryGroup = new THREE.Group();
+    telemetryGroup.position.set(-0.35, -0.15, 0.2);
 
-    const createSequenceNode = (
-      position: THREE.Vector3,
-      colorHex: number,
-      haloRadius: number = 0.28
-    ) => {
-      const g = new THREE.Group();
-      g.position.copy(position);
+    // Green Sensor Beacon (Inline sensor online)
+    const greenBeaconGeo = new THREE.SphereGeometry(0.08, 16, 16);
+    const greenBeaconMat = new THREE.MeshBasicMaterial({
+      color: 0x10b981,
+      transparent: true,
+      opacity: 0.95,
+    });
+    const greenBeacon = new THREE.Mesh(greenBeaconGeo, greenBeaconMat);
+    greenBeacon.position.set(-0.2, 0.45, 0);
+    telemetryGroup.add(greenBeacon);
 
-      const core = new THREE.Mesh(
-        new THREE.SphereGeometry(0.14, 16, 16),
-        new THREE.MeshBasicMaterial({ color: colorHex })
-      );
-      g.add(core);
+    // Blue Sensor Beacon (Telemetry link active)
+    const blueBeaconGeo = new THREE.SphereGeometry(0.08, 16, 16);
+    const blueBeaconMat = new THREE.MeshBasicMaterial({
+      color: 0x0ea5e9,
+      transparent: true,
+      opacity: 0.95,
+    });
+    const blueBeacon = new THREE.Mesh(blueBeaconGeo, blueBeaconMat);
+    blueBeacon.position.set(0.2, 0.45, 0);
+    telemetryGroup.add(blueBeacon);
 
-      const halo = new THREE.Mesh(
-        new THREE.RingGeometry(haloRadius * 0.7, haloRadius, 32),
-        new THREE.MeshBasicMaterial({
-          color: colorHex,
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.4,
-        })
-      );
-      halo.rotateX(-Math.PI / 2);
-      g.add(halo);
+    // Soft Sensor Halo Ring on the Water Surface (Representing real-time acoustic/optical water testing)
+    const ringGeo = new THREE.RingGeometry(0.18, 0.24, 32);
+    ringGeo.rotateX(-Math.PI / 2);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const rippleRing1 = new THREE.Mesh(ringGeo, ringMat);
+    rippleRing1.position.set(0, -0.4, 0);
+    telemetryGroup.add(rippleRing1);
 
-      return g;
-    };
+    const rippleRing2 = rippleRing1.clone();
+    (rippleRing2.material as THREE.Material) = ringMat.clone();
+    rippleRing2.scale.set(1.6, 1.6, 1.6);
+    telemetryGroup.add(rippleRing2);
 
-    // 1. Treatment Source Node (Marine Blue)
-    const treatmentNode = createSequenceNode(streamPoints[0], 0x1677b8, 0.32);
-    // 2. Chemical Screening Gatekeeper Node (Cyan)
-    const screeningNode = createSequenceNode(streamPoints[1], 0x16b8d4, 0.30);
-    // 3. Logistics Transport Junction (Aqua)
-    const transportNode = createSequenceNode(streamPoints[2], 0x24b8c7, 0.28);
-    // 4. Industrial Cooling Intake Node (Navy/Teal)
-    const intakeNode = createSequenceNode(streamPoints[3], 0x123b56, 0.30);
-    // 5. Audit Provenance Ledger Node (Emerald Teal)
-    const ledgerNode = createSequenceNode(streamPoints[4], 0x168779, 0.34);
+    scene.add(telemetryGroup);
 
-    markersGroup.add(treatmentNode);
-    markersGroup.add(screeningNode);
-    markersGroup.add(transportNode);
-    markersGroup.add(intakeNode);
-    markersGroup.add(ledgerNode);
-    scene.add(markersGroup);
+    // 7. Subtle Cooling Tower Plume Particles (Right side: soft condensation drifting upwards)
+    const plumeCount = 45;
+    const plumeGeo = new THREE.BufferGeometry();
+    const plumePositions = new Float32Array(plumeCount * 3);
+    const plumeAlphas = new Float32Array(plumeCount);
+    const plumeYBase = 2.4;
 
-    // 8. Subtle Parallax Response
+    for (let i = 0; i < plumeCount; i++) {
+      plumePositions[i * 3] = 4.8 + (Math.random() - 0.5) * 0.8;     // Cooling tower top X
+      plumePositions[i * 3 + 1] = plumeYBase + Math.random() * 1.6;  // Rise height Y
+      plumePositions[i * 3 + 2] = -2.2 + (Math.random() - 0.5) * 0.5; // Z depth
+      plumeAlphas[i] = Math.random();
+    }
+
+    plumeGeo.setAttribute('position', new THREE.BufferAttribute(plumePositions, 3));
+
+    const plumeMat = new THREE.PointsMaterial({
+      color: 0xf8fafc,
+      size: 0.28,
+      transparent: true,
+      opacity: 0.18,
+      depthWrite: false,
+    });
+
+    const plumeParticles = new THREE.Points(plumeGeo, plumeMat);
+    scene.add(plumeParticles);
+
+    // 8. Gentle Shimmer Wave Plane (Soft sunlight glint over the lower river water area)
+    const waveGeo = new THREE.PlaneGeometry(16, 6, 24, 12);
+    waveGeo.rotateX(-Math.PI / 2.3);
+    const waveMat = new THREE.MeshStandardMaterial({
+      color: 0x0284c7,
+      roughness: 0.4,
+      metalness: 0.15,
+      transparent: true,
+      opacity: 0.08,
+      wireframe: false,
+    });
+    const waveMesh = new THREE.Mesh(waveGeo, waveMat);
+    waveMesh.position.set(0.5, -1.0, 0);
+    scene.add(waveMesh);
+
+    // 9. Mouse Parallax & Resize Handling
     let mouseX = 0;
     let mouseY = 0;
     let targetX = 0;
     let targetY = 0;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      targetX = x * 0.22;
-      targetY = y * 0.14;
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
 
-    // 9. Responsive Resize Handling
     const handleResize = () => {
       if (!container) return;
       const w = container.clientWidth || window.innerWidth || 1200;
@@ -271,91 +233,96 @@ export const WaterFlowScene: React.FC<WaterFlowSceneProps> = ({ className = '' }
 
     window.addEventListener('resize', handleResize);
 
-    // 10. Animation Render Loop (Continuous Directional Industrial Water Story)
-    let animationFrameId: number;
-    const clock = new THREE.Clock();
+    // 10. Animation Loop
+    let animationId: number;
+    let clock = new THREE.Clock();
 
     const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
 
-      const elapsed = clock.getElapsedTime();
-      const speedFactor = prefersReducedMotion ? 0.2 : 1.0;
-      const t = elapsed * speedFactor;
+      const elapsedTime = clock.getElapsedTime();
 
-      // Animate water surface wave ripples
-      const currentPos = posAttr.array as Float32Array;
-      for (let i = 0; i < currentPos.length; i += 3) {
-        const ox = initialPositions[i];
-        const oy = initialPositions[i + 1];
-        const wave1 = Math.sin(ox * 0.38 + t * 1.1) * 0.18;
-        const wave2 = Math.cos(oy * 0.46 + t * 0.85) * 0.15;
-        const ripple = Math.sin((ox + oy) * 0.22 + t * 1.4) * 0.06;
-        currentPos[i + 2] = initialPositions[i + 2] + wave1 + wave2 + ripple;
+      // Smooth mouse parallax easing
+      if (!prefersReducedMotion) {
+        targetX += (mouseX * 0.35 - targetX) * 0.04;
+        targetY += (mouseY * 0.2 - targetY) * 0.04;
+        camera.position.x = targetX;
+        camera.position.y = 1.8 + targetY;
+        camera.lookAt(0.4 + targetX * 0.5, targetY * 0.3, 0);
       }
-      posAttr.needsUpdate = true;
-      planeGeo.computeVertexNormals();
 
-      // Ribbon undulating motion
-      ribbonMesh.position.y = -0.9 + Math.sin(t * 1.0) * 0.05;
-
-      // Animate flowing fluid particles strictly in sequence: Source -> Screening -> Transport -> Intake -> Ledger
-      const positions = particleGeo.attributes.position.array as Float32Array;
+      // Animate river current particles along the curve
+      const posArray = particleGeo.attributes.position.array as Float32Array;
       for (let i = 0; i < particleCount; i++) {
-        particleProgress[i] = (particleProgress[i] + particleSpeed[i] * speedFactor) % 1.0;
-        const pt = streamCurve.getPoint(particleProgress[i]);
-        const pulse = Math.sin(t * 1.6 + particleProgress[i] * Math.PI * 4) * 0.025;
-        positions[i * 3] = pt.x * (1 + pulse);
-        positions[i * 3 + 1] = pt.y * (1 + pulse);
-        positions[i * 3 + 2] = pt.z * (1 + pulse);
+        particleProgress[i] = (particleProgress[i] + particleSpeeds[i]) % 1.0;
+        const pt = riverCurve.getPoint(particleProgress[i]);
+
+        // Lateral meander sine wave
+        const meanderSin = Math.sin(elapsedTime * 1.5 + particleProgress[i] * 8.0) * 0.08;
+
+        posArray[i * 3] = pt.x + particleOffsets[i * 3] + meanderSin;
+        posArray[i * 3 + 1] = pt.y + particleOffsets[i * 3 + 1];
+        posArray[i * 3 + 2] = pt.z + particleOffsets[i * 3 + 2];
       }
       particleGeo.attributes.position.needsUpdate = true;
 
-      // Node halo breathing animations
-      treatmentNode.children[1].scale.setScalar(1 + Math.sin(t * 2.0) * 0.12);
-      screeningNode.children[1].scale.setScalar(1 + Math.cos(t * 2.2) * 0.14);
-      transportNode.children[1].scale.setScalar(1 + Math.sin(t * 2.4) * 0.10);
-      intakeNode.children[1].scale.setScalar(1 + Math.cos(t * 2.0) * 0.12);
-      ledgerNode.children[1].scale.setScalar(1 + Math.sin(t * 2.6) * 0.16);
+      // Animate Telemetry Beacons (Subtle breathing pulse)
+      const pulse = Math.sin(elapsedTime * 2.8) * 0.15 + 0.85;
+      greenBeaconMat.opacity = pulse;
+      blueBeaconMat.opacity = Math.cos(elapsedTime * 2.8) * 0.15 + 0.85;
 
-      // Camera parallax
-      mouseX += (targetX - mouseX) * 0.04;
-      mouseY += (targetY - mouseY) * 0.04;
-      camera.position.x = 0.6 + mouseX * 1.4;
-      camera.position.y = 4.4 + mouseY * 0.7;
-      camera.lookAt(0.6, 0, 0);
+      // Expanding sensor ripple rings
+      const ringScale1 = (1.0 + (elapsedTime * 0.4) % 1.0) * 1.4;
+      rippleRing1.scale.set(ringScale1, ringScale1, ringScale1);
+      (rippleRing1.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 0.35 * (1.0 - (ringScale1 - 1.4) / 1.4));
+
+      // Animate cooling tower condensation rising
+      const plumePos = plumeGeo.attributes.position.array as Float32Array;
+      for (let i = 0; i < plumeCount; i++) {
+        plumePos[i * 3 + 1] += (0.003 + Math.random() * 0.002) * (prefersReducedMotion ? 0.3 : 1.0);
+        if (plumePos[i * 3 + 1] > plumeYBase + 2.0) {
+          plumePos[i * 3 + 1] = plumeYBase;
+          plumePos[i * 3] = 4.8 + (Math.random() - 0.5) * 0.8;
+        }
+      }
+      plumeGeo.attributes.position.needsUpdate = true;
+
+      // Subtle wave surface undulation
+      if (!prefersReducedMotion) {
+        waveMesh.position.y = -1.0 + Math.sin(elapsedTime * 0.8) * 0.03;
+      }
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // 11. Complete GPU Resource Disposal on Unmount
+    // 11. Complete GPU and Event Cleanup
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('resize', handleResize);
 
-      planeGeo.dispose();
-      waterMaterial.dispose();
-      ribbonGeo.dispose();
-      ribbonMaterial.dispose();
-      tubeGeo.dispose();
-      tubeMaterial.dispose();
-      outerTubeGeo.dispose();
-      outerMaterial.dispose();
+      // Dispose geometries
       particleGeo.dispose();
-      particleMaterial.dispose();
+      greenBeaconGeo.dispose();
+      blueBeaconGeo.dispose();
+      ringGeo.dispose();
+      plumeGeo.dispose();
+      waveGeo.dispose();
 
-      markersGroup.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.geometry.dispose();
-          if (Array.isArray(child.material)) {
-            child.material.forEach((m) => m.dispose());
-          } else {
-            child.material.dispose();
-          }
-        }
-      });
+      // Dispose materials
+      particleMaterial.dispose();
+      greenBeaconMat.dispose();
+      blueBeaconMat.dispose();
+      ringMat.dispose();
+      plumeMat.dispose();
+      waveMat.dispose();
+
+      // Clear scene and renderer
+      while (scene.children.length > 0) {
+        scene.remove(scene.children[0]);
+      }
 
       renderer.dispose();
       if (renderer.domElement && container.contains(renderer.domElement)) {
@@ -365,17 +332,13 @@ export const WaterFlowScene: React.FC<WaterFlowSceneProps> = ({ className = '' }
   }, []);
 
   if (!webGLSupported) {
-    return (
-      <div className={`relative overflow-hidden flex items-center justify-center ${className}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-water-100/40 via-aqua-50/20 to-transparent" />
-      </div>
-    );
+    return null;
   }
 
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden pointer-events-none select-none ${className}`}
+      className={`relative w-full h-full pointer-events-none ${className}`}
       aria-hidden="true"
     />
   );

@@ -15,20 +15,25 @@ export const LandingPage: React.FC = () => {
   const demoEntryDestination = isAuthenticated ? '/app/dashboard' : '/login?demo=true';
 
   return (
-    <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900 overflow-x-hidden">
+    <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900">
       {/* Navigation */}
       <LandingNavbar />
 
       {/* Hero Section: Full-Background Interactive Water Scene with High Contrast Editorial Foreground */}
-      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#EDF6FA] via-[#FAFBF9] to-canvas border-b border-slate-200/60">
-        {/* Full-Background Three.js Animated Water Flow Scene */}
+      <section className="relative min-h-[88vh] lg:min-h-[92vh] flex items-center pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-[#FAFBF9] border-b border-slate-200/60">
+        {/* Full-Background Photographic & Three.js Animated Water Scene */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
-          <WaterFlowScene className="w-full h-full" />
+          <img
+            src="/images/hero-water-treatment.jpg"
+            alt="Industrial Water Treatment and Reuse Landscape"
+            className="w-full h-full object-cover object-right md:object-center opacity-75"
+          />
+          {/* Subtle gradient scrim ensuring editorial headline readability on the left */}
+          <div className="absolute inset-0 bg-gradient-to-r from-canvas via-canvas/85 md:via-canvas/60 to-canvas/15" />
+          <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-canvas to-transparent" />
+          {/* Animated Three.js Water Current, Sensors & Condensation Overlay */}
+          <WaterFlowScene className="absolute inset-0 w-full h-full" />
         </div>
-
-        {/* Soft radial and linear gradient scrims to ensure high text contrast while letting the water flow shine through */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-canvas/95 via-canvas/75 to-transparent lg:w-7/12 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-canvas to-transparent pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-2xl space-y-6">

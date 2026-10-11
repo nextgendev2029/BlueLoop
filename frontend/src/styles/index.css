@@ -17,7 +17,6 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
     letter-spacing: -0.011em;
-    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
