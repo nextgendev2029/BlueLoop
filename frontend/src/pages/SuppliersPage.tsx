@@ -546,7 +546,7 @@ export const SuppliersPage: React.FC = () => {
             </div>
 
             <p className="text-[#69736B] leading-relaxed">
-              This treatment facility publishes real-time discharge capacity through BlueLoop.
+              This treatment facility publishes periodic discharge capacity listings through BlueLoop.
               Effluent batches produced at this facility are screened against buyer tolerance boundaries
               before physical dispatch.
             </p>

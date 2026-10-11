@@ -47,7 +47,7 @@ export const SettingsPage: React.FC = () => {
             <StatusBadge status="DEMO" label="System Telemetry" size="xs" />
           </div>
           <p className="text-xs text-[#69736B] mt-1">
-            Real-time backend runtime telemetry, persistence mode limits, and target AWS serverless infrastructure blueprint.
+            Live backend runtime health, persistence mode limits, and target AWS serverless infrastructure blueprint.
           </p>
         </div>
         <div>

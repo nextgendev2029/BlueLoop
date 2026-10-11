@@ -88,7 +88,7 @@ export const DeterministicGatekeeperCard: React.FC = () => {
             SYNTH-LIST-01 — CETP Maraimalai Stream 01-A (Tertiary Polished)
           </span>
           <span className="text-[11px] text-[#69736B] block mt-0.5">
-            Lab Certificate: <span className="font-mono text-[#174D3A]">SYNTH-CERT-01 (NABL Standard)</span>
+            Lab Certificate: <span className="font-mono text-[#174D3A]">SYNTH-CERT-01 (Synthetic Demonstration Record)</span>
           </span>
         </div>
         <div>
