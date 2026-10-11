@@ -24,7 +24,7 @@ export const LandingFooter: React.FC = () => {
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs font-mono text-slate-400">
               <span className="inline-block h-2 w-2 rounded-full bg-forest-400 animate-pulse" />
-              <span>Deterministic Engine v0.1 • Hackathon Edition</span>
+              <span>Enterprise Platform v0.1 • Open Demonstration Access</span>
             </div>
           </div>
 

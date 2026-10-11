@@ -105,7 +105,7 @@ export const SignupPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 text-xs text-slate-400">
-          <span>Synthetic Demonstration Edition • Open access granted</span>
+          <span>Industrial Water Reuse Platform • Open Sandbox Access</span>
         </div>
       </div>
 
@@ -115,15 +115,15 @@ export const SignupPage: React.FC = () => {
           {/* Quick Demo Access Callout */}
           <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-water-50 to-aqua-50 border border-water-200/80 shadow-xs flex items-center justify-between">
             <div>
-              <span className="text-xs font-bold text-water-900 block">Demonstration Sandbox</span>
-              <span className="text-[11px] text-slate-600 block">No signup necessary to test.</span>
+              <span className="text-xs font-bold text-water-900 block">Open Demonstration Sandbox</span>
+              <span className="text-[11px] text-slate-600 block">Preloaded facilities ready for review.</span>
             </div>
             <button
               type="button"
               onClick={() => navigate('/app/dashboard')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-water-600 hover:bg-water-700 text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
             >
-              <span>Explore Demo</span>
+              <span>Explore Live Demo</span>
               <ArrowRight className="h-3 w-3" />
             </button>
           </div>

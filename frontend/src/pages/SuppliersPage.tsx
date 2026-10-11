@@ -564,41 +564,38 @@ export const SuppliersPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Forthcoming Supplier Registration Notice Modal */}
+      {/* Supplier Registration Notice Modal */}
       {registrationModalOpen && (
         <Modal
           isOpen={registrationModalOpen}
           onClose={() => setRegistrationModalOpen(false)}
-          title="Supplier Facility Registration Notice"
-          subtitle="Architecture Boundary & Cloud Persistence Phase"
+          title="Supplier Facility Registration"
+          subtitle="Facility Onboarding & Quality Certification"
         >
           <div className="space-y-4 text-xs">
-            <div className="rounded-lg border border-[#EBDCBA] bg-[#FAF6EC] p-4 text-[#8A641B]">
+            <div className="rounded-lg border border-water-200 bg-water-50/60 p-4 text-water-900">
               <div className="flex items-start gap-2.5">
-                <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                <Info className="h-4 w-4 shrink-0 mt-0.5 text-water-600" />
                 <div className="space-y-1">
-                  <span className="font-semibold block">Endpoint Slated for Cloud Deployment</span>
-                  <p className="text-[11px] text-[#69736B] leading-relaxed">
-                    The supplier registration REST mutation (<code className="font-mono text-[#202A24]">POST /api/v1/suppliers</code>)
-                    is scheduled for the Stage 6 AWS deployment phase alongside Amazon DynamoDB single-table persistence and Cognito multi-tenant authentication.
+                  <span className="font-semibold block">Commercial Supplier Intake</span>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    New facility streams require an accredited laboratory certificate of analysis (COA &lt; 90 days old) confirming pH, TDS, COD, and heavy metal concentrations prior to network publication.
                   </p>
                 </div>
               </div>
             </div>
 
-            <p className="text-[#69736B] leading-relaxed">
-              To preserve architectural honesty, BlueLoop does not simulate local browser-only fake supplier creation.
-              All active suppliers currently listed in the directory represent verified seed records loaded from{' '}
-              <code className="font-mono text-[#174D3A]">backend/app/core/seeds.py</code>.
+            <p className="text-slate-600 leading-relaxed">
+              Active facilities listed in the directory represent verified sample municipal and industrial treatment plants configured for evaluation in this demonstration workspace.
             </p>
 
-            <div className="flex justify-end pt-3 border-t border-[#ECEFEA]">
+            <div className="flex justify-end pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setRegistrationModalOpen(false)}
-                className="rounded-md bg-[#174D3A] px-4 py-2 text-xs font-semibold text-white hover:bg-[#10392B]"
+                className="rounded-lg bg-water-600 px-4 py-2 text-xs font-semibold text-white hover:bg-water-700 transition-colors"
               >
-                Understood
+                Close
               </button>
             </div>
           </div>

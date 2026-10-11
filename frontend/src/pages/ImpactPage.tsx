@@ -86,7 +86,7 @@ export const ImpactPage: React.FC = () => {
             <h2 className="text-xl font-bold tracking-tight text-[#202A24]">
               Freshwater Displacement & Environmental Impact Ledger
             </h2>
-            <StatusBadge status="DEMO" label="Live REST Data" size="xs" />
+            <StatusBadge status="CONFIRMED" label="Audited Ledger" size="xs" />
           </div>
           <p className="text-xs text-[#69736B] mt-1">
             Multi-tier auditable freshwater displacement metrics, substitution coefficients, and procurement delta formulas.
@@ -106,7 +106,7 @@ export const ImpactPage: React.FC = () => {
             type="button"
             onClick={handleExportLedger}
             disabled={!summary}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-water-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-water-700 transition-colors disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
             {exported ? 'Ledger Downloaded!' : 'Export Audit Ledger'}

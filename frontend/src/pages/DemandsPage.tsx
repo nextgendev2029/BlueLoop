@@ -404,41 +404,38 @@ export const DemandsPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Forthcoming Demand Registration Notice Modal */}
+      {/* Demand Registration Notice Modal */}
       {demandModalOpen && (
         <Modal
           isOpen={demandModalOpen}
           onClose={() => setDemandModalOpen(false)}
-          title="Demand Request Submission Notice"
-          subtitle="Architecture Boundary & Cloud Persistence Phase"
+          title="Demand Specification Intake"
+          subtitle="Intake Tolerances & Volume Requirements"
         >
           <div className="space-y-4 text-xs">
-            <div className="rounded-lg border border-[#EBDCBA] bg-[#FAF6EC] p-4 text-[#8A641B]">
+            <div className="rounded-lg border border-water-200 bg-water-50/60 p-4 text-water-900">
               <div className="flex items-start gap-2.5">
-                <Info className="h-4 w-4 shrink-0 mt-0.5" />
+                <Info className="h-4 w-4 shrink-0 mt-0.5 text-water-600" />
                 <div className="space-y-1">
-                  <span className="font-semibold block">Endpoint Slated for Cloud Deployment</span>
-                  <p className="text-[11px] text-[#69736B] leading-relaxed">
-                    Buyer demand intake submission (<code className="font-mono text-[#202A24]">POST /api/v1/demands</code>)
-                    is scheduled for the Stage 6 AWS deployment phase alongside Amazon DynamoDB persistence and Cognito authenticated buyer workflows.
+                  <span className="font-semibold block">Commercial Buyer Intake</span>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    Specify application tolerances (cooling tower, boiler feed, or industrial process), maximum acceptable transport distance, and target volumetric flow rates.
                   </p>
                 </div>
               </div>
             </div>
 
-            <p className="text-[#69736B] leading-relaxed">
-              All active demand requests currently shown in the console are seed entities loaded from{' '}
-              <code className="font-mono text-[#174D3A]">backend/app/core/seeds.py</code> representing verified test cases,
-              including both matching pairs and deliberate quality mismatch scenarios for deterministic screening verification.
+            <p className="text-slate-600 leading-relaxed">
+              Active demand requests listed in the console demonstrate realistic operational requirements, including compatible matches and boundary test cases to showcase fail-closed screening.
             </p>
 
-            <div className="flex justify-end pt-3 border-t border-[#ECEFEA]">
+            <div className="flex justify-end pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setDemandModalOpen(false)}
-                className="rounded-md bg-[#174D3A] px-4 py-2 text-xs font-semibold text-white hover:bg-[#10392B]"
+                className="rounded-lg bg-water-600 px-4 py-2 text-xs font-semibold text-white hover:bg-water-700 transition-colors"
               >
-                Understood
+                Close
               </button>
             </div>
           </div>

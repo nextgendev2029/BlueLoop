@@ -11,7 +11,7 @@ export const WaterFlowDiagram: React.FC = () => {
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#397FA3]">
               Circularity Pipeline
             </span>
-            <StatusBadge status="DEMO" label="Architecture Blueprint" size="xs" />
+            <StatusBadge status="CONFIRMED" label="Transfer Workflow" size="xs" />
           </div>
           <h3 className="text-base font-semibold text-[#202A24] mt-0.5">
             Deterministic Effluent-to-Intake Transfer Sequence
@@ -24,7 +24,7 @@ export const WaterFlowDiagram: React.FC = () => {
 
       {/* Visual Flow Architecture */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 relative">
-        {/* Stage 1: Supplier Origin */}
+        {/* Step 1: Supplier Origin */}
         <div className="rounded-md border border-[#E0E5DF] bg-[#F7F7F2] p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -32,7 +32,7 @@ export const WaterFlowDiagram: React.FC = () => {
                 <Factory className="h-4 w-4" />
               </span>
               <span className="text-[10px] font-mono font-medium text-[#69736B] px-1.5 py-0.5 rounded bg-white border border-[#E0E5DF]">
-                STAGE 01
+                STEP 01
               </span>
             </div>
             <h4 className="text-xs font-bold text-[#202A24]">Effluent Origin</h4>
@@ -52,7 +52,7 @@ export const WaterFlowDiagram: React.FC = () => {
           </div>
         </div>
 
-        {/* Stage 2: Quality Laboratory Certification */}
+        {/* Step 2: Quality Laboratory Certification */}
         <div className="rounded-md border border-[#E0E5DF] bg-[#F7F7F2] p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -60,7 +60,7 @@ export const WaterFlowDiagram: React.FC = () => {
                 <Filter className="h-4 w-4 text-[#397FA3]" />
               </span>
               <span className="text-[10px] font-mono font-medium text-[#69736B] px-1.5 py-0.5 rounded bg-white border border-[#E0E5DF]">
-                STAGE 02
+                STEP 02
               </span>
             </div>
             <h4 className="text-xs font-bold text-[#202A24]">Laboratory Evidence</h4>
@@ -80,7 +80,7 @@ export const WaterFlowDiagram: React.FC = () => {
           </div>
         </div>
 
-        {/* Stage 3: BlueLoop Deterministic Gatekeeper */}
+        {/* Step 3: BlueLoop Deterministic Gatekeeper */}
         <div className="rounded-md border-2 border-[#168779] bg-[#EBF5F3]/50 p-4 flex flex-col justify-between relative shadow-subtle">
           <div className="absolute -top-2.5 right-3">
             <span className="bg-[#168779] text-white text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded shadow-xs">
@@ -113,7 +113,7 @@ export const WaterFlowDiagram: React.FC = () => {
           </div>
         </div>
 
-        {/* Stage 4: Consumer Intake & Displacement */}
+        {/* Step 4: Consumer Intake & Displacement */}
         <div className="rounded-md border border-[#E0E5DF] bg-[#F7F7F2] p-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -121,7 +121,7 @@ export const WaterFlowDiagram: React.FC = () => {
                 <Building2 className="h-4 w-4" />
               </span>
               <span className="text-[10px] font-mono font-medium text-[#69736B] px-1.5 py-0.5 rounded bg-white border border-[#E0E5DF]">
-                STAGE 04
+                STEP 04
               </span>
             </div>
             <h4 className="text-xs font-bold text-[#202A24]">Commercial Intake</h4>
@@ -144,9 +144,9 @@ export const WaterFlowDiagram: React.FC = () => {
 
       <div className="mt-4 pt-3 border-t border-[#ECEFEA] flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#69736B]">
         <span>
-          <strong className="text-[#202A24]">Engineering Integrity Standard:</strong> Missing required lab parameters evaluate as UNKNOWN; candidate matches violating ANY threshold are automatically excluded.
+          <strong className="text-[#202A24]">Fail-Closed Safety Standard:</strong> Missing required lab parameters evaluate as UNKNOWN; candidate matches violating ANY threshold are automatically excluded.
         </span>
-        <span className="font-mono text-[#8C978F]">Deterministic Gatekeeper v1.0</span>
+        <span className="font-mono text-[#8C978F]">Automated Compatibility Check</span>
       </div>
     </div>
   );

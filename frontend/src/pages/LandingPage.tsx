@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
 import { LandingNavbar } from '../components/landing/LandingNavbar';
 import { WaterFlowScene } from '../components/landing/WaterFlowScene';
@@ -18,96 +17,79 @@ export const LandingPage: React.FC = () => {
 
       {/* Hero Section */}
       <section className="relative min-h-[92vh] flex items-center pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#EDF6FA] via-[#FAFBF9] to-canvas">
-        {/* Interactive Three.js Background Canvas */}
-        <div className="absolute inset-0 z-0 opacity-70 pointer-events-auto">
+        {/* Interactive Fluid Three.js Canvas: positioned on right/center with zero click interception */}
+        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-3/5 z-0 opacity-85 pointer-events-none overflow-hidden">
           <WaterFlowScene className="w-full h-full" />
         </div>
 
-        {/* Subtle radial mask overlay to guarantee text legibility */}
-        <div className="absolute inset-0 z-0 bg-radial-gradient pointer-events-none opacity-60" />
+        {/* Subtle radial mask overlay to guarantee text legibility on left */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-canvas via-canvas/90 to-transparent lg:w-3/5 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-3xl">
+          <div className="max-w-2xl">
             {/* Tagline Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-xs mb-6 text-xs text-slate-700"
-            >
-              <span className="flex h-2 w-2 rounded-full bg-forest-500 animate-pulse" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 shadow-xs mb-6 text-xs text-slate-700">
+              <span className="flex h-2 w-2 rounded-full bg-water-600 animate-pulse" />
               <span className="font-semibold text-ocean-900">BlueLoop Platform</span>
               <span className="text-slate-300">|</span>
-              <span className="text-slate-600 font-mono text-[11px]">Fail-Closed Water Intelligence</span>
-            </motion.div>
+              <span className="text-slate-600 font-medium text-[11px]">Industrial Water Reuse Intelligence</span>
+            </div>
 
             {/* Editorial Serif Hero Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-ink leading-[1.08]"
-            >
+            <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-medium tracking-tight text-ink leading-[1.08]">
               Water has <br />
               <span className="italic text-water-600 font-normal">another life.</span>
-            </motion.h1>
+            </h1>
 
             {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-6 text-base sm:text-xl text-slate-600 leading-relaxed font-sans max-w-2xl"
-            >
-              Industrial water reuse and procurement optimization. We connect certified treated-effluent
-              producers with commercial buyers through deterministic quality compatibility,
-              least-cost logistics allocation, and auditable custody tracking.
-            </motion.p>
+            <p className="mt-6 text-base sm:text-lg text-slate-600 leading-relaxed font-sans max-w-xl">
+              Connect certified treated-effluent suppliers with commercial consumers. Optimize supply
+              allocation with deterministic water-quality screening, transport economics, and
+              audit-ready custody tracking.
+            </p>
 
             {/* Primary Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-8 flex flex-wrap items-center gap-4"
-            >
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
                 to="/app/dashboard"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-water-600 hover:bg-water-700 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
               >
-                <span>Launch Live Demo</span>
+                <span>Explore Live Demo</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
 
               <a
                 href="#preview"
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white/95 hover:bg-white text-slate-700 font-semibold text-sm border border-slate-200/90 shadow-xs hover:border-slate-300 transition-all backdrop-blur-sm"
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm border border-slate-300 shadow-xs hover:border-slate-400 transition-all"
               >
-                <span>Inspect Matching Engine</span>
+                <span>Inspect Matching Console</span>
                 <ExternalLink className="h-4 w-4 text-slate-400" />
               </a>
 
               <Link
                 to="/login"
-                className="inline-flex items-center px-4 py-3.5 text-xs font-semibold text-slate-600 hover:text-ink transition-colors underline-offset-4 hover:underline"
+                className="inline-flex items-center px-4 py-3.5 text-xs font-semibold text-slate-700 hover:text-ink transition-colors underline-offset-4 hover:underline"
               >
                 Sign In
               </Link>
-            </motion.div>
+            </div>
 
-            {/* Proof Pill Strip */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.45 }}
-              className="mt-12 pt-8 border-t border-slate-200/70 grid grid-cols-2 sm:grid-cols-4 gap-4"
-            >
+            {/* Proof Metric Strip */}
+            <div className="mt-12 pt-8 border-t border-slate-200/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
                 <span className="block text-2xl font-editorial font-bold text-ocean-900">
-                  100%
+                  3 Streams
                 </span>
                 <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                  Deterministic Math
+                  Secondary & Tertiary STP
+                </span>
+              </div>
+              <div>
+                <span className="block text-2xl font-editorial font-bold text-ocean-900">
+                  100% Match
+                </span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
+                  Fail-Closed Chemical Gate
                 </span>
               </div>
               <div>
@@ -120,21 +102,13 @@ export const LandingPage: React.FC = () => {
               </div>
               <div>
                 <span className="block text-2xl font-editorial font-bold text-ocean-900">
-                  0 PPM
+                  Haversine
                 </span>
                 <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                  Silent Failure Risk
+                  Logistics & Tariff Model
                 </span>
               </div>
-              <div>
-                <span className="block text-2xl font-editorial font-bold text-ocean-900">
-                  0 FABRICATED
-                </span>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
-                  Carbon Multipliers
-                </span>
-              </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -160,7 +134,7 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-aqua-300 text-xs font-mono mb-4">
             <Sparkles className="h-3.5 w-3.5" />
-            Live Demonstration Ready
+            Operational Water Procurement Workspace
           </div>
           <h2 className="font-editorial text-3xl sm:text-5xl font-medium tracking-tight text-white leading-tight">
             Explore certified water allocation in action.

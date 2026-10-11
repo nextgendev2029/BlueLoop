@@ -244,7 +244,7 @@ export const DeliveriesPage: React.FC = () => {
                   : 'bg-[#F7F7F2] border-[#E0E5DF] text-[#202A24]'
               }`}
             >
-              <span className="font-mono text-[10px] text-[#69736B] block">STAGE 0{idx + 1}</span>
+              <span className="font-mono text-[10px] text-slate-500 block">STEP 0{idx + 1}</span>
               <span className="font-semibold text-xs block mt-1">{st.label}</span>
               <span className="text-[10px] text-[#69736B] block mt-0.5">{st.desc}</span>
             </div>

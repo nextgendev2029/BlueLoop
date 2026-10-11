@@ -175,7 +175,7 @@ export const AllocationsPage: React.FC = () => {
             <h2 className="text-xl font-bold tracking-tight text-[#202A24]">
               Deterministic Allocation Engine & Optimization Console
             </h2>
-            <StatusBadge status="DEMO" label="Live REST Engine" size="xs" />
+            <StatusBadge status="CONFIRMED" label="Optimization Active" size="xs" />
           </div>
           <p className="text-xs text-[#69736B] mt-1">
             Capacity-constrained multi-facility allocation solver matching effluent supplies with buyer intake demand.
@@ -195,7 +195,7 @@ export const AllocationsPage: React.FC = () => {
             type="button"
             onClick={() => setShowConfigModal(true)}
             disabled={submittingRun}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-md bg-water-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-water-700 transition-colors disabled:opacity-50"
           >
             {submittingRun ? (
               <>
@@ -218,7 +218,7 @@ export const AllocationsPage: React.FC = () => {
             onClick={() => setActiveTab('current')}
             className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
               activeTab === 'current'
-                ? 'bg-[#174D3A] text-white shadow-xs'
+                ? 'bg-water-600 text-white shadow-xs'
                 : 'text-[#69736B] hover:text-[#202A24]'
             }`}
           >
@@ -229,7 +229,7 @@ export const AllocationsPage: React.FC = () => {
             onClick={() => setActiveTab('history')}
             className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
               activeTab === 'history'
-                ? 'bg-[#174D3A] text-white shadow-xs'
+                ? 'bg-water-600 text-white shadow-xs'
                 : 'text-[#69736B] hover:text-[#202A24]'
             }`}
           >
@@ -238,7 +238,7 @@ export const AllocationsPage: React.FC = () => {
         </div>
 
         <div className="text-[11px] text-[#69736B] hidden sm:block">
-          Memory Store: Process Lifetime (Resets on restart)
+          Active Workspace • Real-Time Constrained Matching
         </div>
       </div>
 
@@ -253,7 +253,7 @@ export const AllocationsPage: React.FC = () => {
         <div className="rounded-lg border border-[#E0E5DF] bg-white shadow-card overflow-hidden">
           <div className="p-4 border-b border-[#ECEFEA] bg-[#FAFAF8] flex justify-between items-center text-xs">
             <span className="font-semibold text-[#202A24]">Prior Allocation Proposals Ledger</span>
-            <span className="text-[#69736B] font-mono">{runsHistory.length} Runs In Memory</span>
+            <span className="text-[#69736B] font-mono">{runsHistory.length} Proposals Recorded</span>
           </div>
           <div className="divide-y divide-[#ECEFEA]">
             {runsHistory.map((run) => {

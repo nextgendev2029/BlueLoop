@@ -93,7 +93,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Bottom Disclaimer */}
         <div className="relative z-10 text-xs text-slate-400">
-          <span>Hackathon Demonstration Edition • No live production credentials required</span>
+          <span>Industrial Water Reuse Platform • Open Sandbox Access</span>
         </div>
       </div>
 
@@ -108,19 +108,18 @@ export const LoginPage: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-water-900">
-                  Instant Hackathon Review
+                  Open Demonstration Workspace
                 </h3>
                 <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                  BlueLoop runs in self-contained demonstration mode. You can explore all
-                  facilities, matching proposals, and reports immediately without entering
-                  credentials.
+                  BlueLoop operates with sample industrial facilities and water streams. You can explore
+                  matching proposals, quality verification, and custody logs without credentials.
                 </p>
                 <button
                   type="button"
                   onClick={() => navigate('/app/dashboard')}
                   className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-water-600 hover:bg-water-700 text-white text-xs font-semibold shadow-xs transition-colors"
                 >
-                  <span>Continue to Demo Mode</span>
+                  <span>Explore Live Demo</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>

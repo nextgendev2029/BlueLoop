@@ -208,8 +208,8 @@ export const AppLayout: React.FC = () => {
               </p>
             </div>
             <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
-              <span>v0.1 (Stage 4)</span>
-              <span>FastAPI + In-Memory</span>
+              <span>System Active</span>
+              <span>Sample Sandbox</span>
             </div>
           </div>
         </aside>
