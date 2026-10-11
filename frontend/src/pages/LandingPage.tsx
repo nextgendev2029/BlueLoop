@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LandingNavbar } from '../components/landing/LandingNavbar';
@@ -12,7 +12,19 @@ import { LandingFooter } from '../components/landing/LandingFooter';
 
 export const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const demoEntryDestination = isAuthenticated ? '/app/dashboard' : '/login?demo=true';
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/app/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (isAuthenticated) {
+    return null;
+  }
+
+  const demoEntryDestination = '/login?demo=true';
 
   return (
     <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900">

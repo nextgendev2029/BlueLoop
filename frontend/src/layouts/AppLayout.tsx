@@ -14,7 +14,6 @@ import {
   AlertCircle,
   RefreshCw,
   Info,
-  ExternalLink,
   LogOut,
   User as UserIcon,
 } from 'lucide-react';
@@ -146,7 +145,7 @@ export const AppLayout: React.FC = () => {
         >
           {/* Brand Header */}
           <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
-            <Link to="/" className="flex items-center group">
+            <Link to="/app/dashboard" className="flex items-center group">
               <BlueLoopLogo size="md" variant="brand" showWordmark showSubtitle />
             </Link>
             <button
@@ -157,19 +156,6 @@ export const AppLayout: React.FC = () => {
             >
               <X className="h-5 w-5" />
             </button>
-          </div>
-
-          {/* Quick Landing Page Shortcut */}
-          <div className="border-b border-slate-100 bg-slate-50/80 px-4 py-2">
-            <Link
-              to="/"
-              className="flex items-center justify-between text-[11px] text-slate-500 hover:text-water-700 transition-colors"
-            >
-              <span className="font-medium">Public Overview</span>
-              <span className="inline-flex items-center gap-0.5 text-[10px] font-mono text-slate-400">
-                View Site <ExternalLink className="h-3 w-3" />
-              </span>
-            </Link>
           </div>
 
           {/* Navigation Items */}

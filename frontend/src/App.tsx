@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { PublicRoute } from './components/PublicRoute';
 import { AppLayout } from './layouts/AppLayout';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -20,12 +21,12 @@ export const App: React.FC = () => {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Public Landing & Marketing */}
-          <Route path="/" element={<LandingPage />} />
-
-          {/* Authentication Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          {/* Public-Only Routes with Authenticated-User Redirect */}
+          <Route element={<PublicRoute />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
 
           {/* Protected Internal Application Workspace under /app */}
           <Route element={<ProtectedRoute />}>
