@@ -78,8 +78,8 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* 1. Operational Overview Banner */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs relative overflow-hidden">
+      {/* 1. Operational Overview Command Banner */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs relative overflow-hidden">
         <div
           className="absolute -right-24 -top-24 w-96 h-96 rounded-full pointer-events-none opacity-20 bg-gradient-to-br from-water-400 to-aqua-400 blur-3xl"
           aria-hidden="true"
@@ -90,11 +90,11 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-water-800 bg-water-50 px-2.5 py-1 rounded-md border border-water-200/80">
               Operational Workspace
             </span>
-            <StatusBadge status="DEMO" label="Sample Regional Network" size="xs" />
+            <StatusBadge status="DEMO" label="Demonstration Network" size="xs" />
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink leading-tight">
-            Regional Water Balance & Allocation Console
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink leading-tight font-editorial">
+            Regional Water Balance & Allocation Command
           </h1>
 
           <p className="text-sm text-slate-600 leading-relaxed max-w-3xl">
@@ -156,19 +156,20 @@ export const DashboardPage: React.FC = () => {
           <div className="pt-4 flex flex-wrap items-center gap-3">
             <Link
               to="/app/allocations"
-              className="inline-flex items-center gap-2 rounded-lg bg-water-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-water-700 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-ocean-950 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-ocean-900 transition-colors"
             >
-              Run Allocation Solver <ArrowRight className="h-3.5 w-3.5" />
+              <span>Run Allocation Solver</span>
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
             <Link
               to="/app/suppliers"
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-ink hover:bg-slate-100 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold text-ink hover:bg-slate-100 transition-colors"
             >
               Browse Treated Streams
             </Link>
             <Link
               to="/app/impact"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-water-700 hover:text-water-900 ml-2"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-water-700 hover:text-water-900 ml-2"
             >
               <Leaf className="h-3.5 w-3.5" /> View Impact Ledger
             </Link>
@@ -176,11 +177,11 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Multi-Tier Impact Breakdown Cards */}
+      {/* 2. Multi-Tier Impact Provenance Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">
               Tier 1: Potential
             </span>
             <StatusBadge status="ESTIMATED" label="Proposed" size="xs" />
@@ -190,13 +191,13 @@ export const DashboardPage: React.FC = () => {
             <span className="text-xs font-normal text-slate-500">kL</span>
           </div>
           <p className="mt-1 text-[11px] text-slate-500 leading-snug">
-            Freshwater volume in active unconfirmed allocation proposals.
+            Freshwater volume in active uncommitted allocation proposals.
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">
               Tier 2: Accepted
             </span>
             <StatusBadge status="CONFIRMED" label="Agreed" size="xs" />
@@ -206,13 +207,13 @@ export const DashboardPage: React.FC = () => {
             <span className="text-xs font-normal text-slate-500">kL</span>
           </div>
           <p className="mt-1 text-[11px] text-slate-500 leading-snug">
-            Bilateral agreements accepted by counterparty; pending dispatch.
+            Bilateral agreements accepted by counterparty; scheduled for dispatch.
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">
               Tier 3: Confirmed
             </span>
             <StatusBadge status="CONFIRMED" label="Delivered" size="xs" />
@@ -226,9 +227,9 @@ export const DashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">
               Tier 4: Certified
             </span>
             <StatusBadge status="PENDING" label="Audited" size="xs" />
@@ -249,14 +250,14 @@ export const DashboardPage: React.FC = () => {
       {/* 4. Closed-Loop Water Transfer Sequence */}
       <WaterFlowDiagram />
 
-      {/* 5. Deterministic Quality Gatekeeper Inspector (Live API Integrated) */}
+      {/* 5. Deterministic Quality Gatekeeper Inspector */}
       <DeterministicGatekeeperCard />
 
-      {/* 6. Candidate Allocation & Cost Comparison Table (Live API Integrated) */}
+      {/* 6. Candidate Allocation & Cost Comparison Table */}
       <AllocationComparisonTable />
 
-      {/* 7. Procurement Action Hub (Replaces Engineering Frameworks Matrix) */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs">
+      {/* 7. Procurement Action Hub */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <div className="flex items-center gap-2">
             <Layers className="h-4 w-4 text-ocean-900" />
@@ -265,7 +266,7 @@ export const DashboardPage: React.FC = () => {
             </h3>
           </div>
           <span className="text-[11px] font-mono text-water-700 font-medium">
-            Active Procurement Workspace
+            Active Procurement Console
           </span>
         </div>
 

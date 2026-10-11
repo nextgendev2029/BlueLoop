@@ -16,9 +16,11 @@ import { EmptyState } from '../components/common/EmptyState';
 import { ErrorBanner } from '../components/common/ErrorBanner';
 import { Modal } from '../components/common/Modal';
 import { fetchDemands } from '../services/demands';
+import { useAuth } from '../context/AuthContext';
 import { DemandRequest, DemandStatus } from '../types/api';
 
 export const DemandsPage: React.FC = () => {
+  const { user } = useAuth();
   const [demands, setDemands] = useState<DemandRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,13 +104,17 @@ export const DemandsPage: React.FC = () => {
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-[#168779]' : 'text-[#69736B]'}`} />
             Refresh
           </button>
-          <button
-            type="button"
-            onClick={() => setDemandModalOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
-          >
-            <Plus className="h-3.5 w-3.5" /> Submit Demand Request
-          </button>
+          {user?.role === 'buyer' || user?.role === 'admin' ? (
+            <button
+              type="button"
+              onClick={() => setDemandModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" /> Submit Demand Request
+            </button>
+          ) : (
+            <span className="text-xs text-[#69736B] italic">Demands submitted by verified commercial buyers</span>
+          )}
         </div>
       </div>
 

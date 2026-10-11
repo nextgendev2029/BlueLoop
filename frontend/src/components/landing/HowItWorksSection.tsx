@@ -9,7 +9,7 @@ export const HowItWorksSection: React.FC = () => {
       description:
         'Treatment facilities publish periodic batch listings with accredited laboratory test profiles-pH, TDS, TSS, COD, BOD, and heavy metals.',
       icon: Search,
-      highlight: 'Explicit water grades (A–D)',
+      highlight: 'Explicit water grades (A-D)',
     },
     {
       step: '02',

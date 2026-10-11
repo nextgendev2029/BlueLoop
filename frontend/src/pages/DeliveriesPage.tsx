@@ -17,6 +17,7 @@ import {
   createDelivery,
   updateDeliveryStatus,
 } from '../services/deliveries';
+import { useAuth } from '../context/AuthContext';
 import { fetchSupplies } from '../services/suppliers';
 import { fetchDemands } from '../services/demands';
 import {
@@ -36,6 +37,7 @@ const LIFECYCLE_STAGES: { key: DeliveryLifecycleStatus; label: string; desc: str
 ];
 
 export const DeliveriesPage: React.FC = () => {
+  const { user } = useAuth();
   const [deliveries, setDeliveries] = useState<DeliveryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -213,13 +215,17 @@ export const DeliveriesPage: React.FC = () => {
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-[#168779]' : 'text-[#69736B]'}`} />
             Refresh
           </button>
-          <button
-            type="button"
-            onClick={() => setScheduleModalOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
-          >
-            <Plus className="h-3.5 w-3.5" /> Schedule Delivery
-          </button>
+          {user?.role === 'supplier' || user?.role === 'admin' ? (
+            <button
+              type="button"
+              onClick={() => setScheduleModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" /> Schedule Delivery
+            </button>
+          ) : (
+            <span className="text-xs text-[#69736B] italic">Dispatches managed by verified suppliers</span>
+          )}
         </div>
       </div>
 

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Droplet,
   Eye,
   EyeOff,
   ArrowRight,
@@ -11,6 +10,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { BlueLoopLogo } from '../components/common/BlueLoopLogo';
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -80,13 +80,8 @@ export const SignupPage: React.FC = () => {
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-aqua-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          <Link to="/" className="inline-flex items-center gap-2.5 group">
-            <div className="h-9 w-9 rounded-lg bg-water-600 flex items-center justify-center text-white shadow-sm group-hover:bg-water-500 transition-colors">
-              <Droplet className="h-5 w-5" />
-            </div>
-            <span className="font-editorial text-2xl font-medium tracking-tight text-white">
-              BlueLoop
-            </span>
+          <Link to="/" className="inline-flex items-center group">
+            <BlueLoopLogo size="lg" variant="light" showWordmark showSubtitle />
           </Link>
         </div>
 
@@ -98,7 +93,7 @@ export const SignupPage: React.FC = () => {
           <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-medium text-white leading-tight">
             Close the loop on industrial water consumption.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p className="mt-4 text-sm sm:text-base text-slate-300 leading-relaxed font-sans">
             Whether you operate an STP looking to monetize tertiary effluent, or an industrial
             facility seeking resilient, lower-cost process water, BlueLoop guarantees deterministic
             quality compliance.
@@ -106,20 +101,20 @@ export const SignupPage: React.FC = () => {
 
           <div className="mt-8 space-y-4 pt-6 border-t border-ocean-800/80">
             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="text-xs font-semibold text-aqua-300 uppercase tracking-wider mb-1">
+              <div className="text-xs font-semibold text-aqua-300 uppercase tracking-wider mb-1 font-mono">
                 For Effluent Producers
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 Register discharge streams with lab assays, set ex-works pricing, and eliminate surface
                 discharge penalties.
               </p>
             </div>
 
             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="text-xs font-semibold text-water-300 uppercase tracking-wider mb-1">
+              <div className="text-xs font-semibold text-water-300 uppercase tracking-wider mb-1 font-mono">
                 For Commercial Buyers
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 Specify tolerance bands, discover nearby streams, and reduce municipal water
                 procurement costs by up to 40%.
               </p>
@@ -211,6 +206,7 @@ export const SignupPage: React.FC = () => {
                 <input
                   id="fullName"
                   type="text"
+                  autoComplete="name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Dr. Sarah Chen"
@@ -225,6 +221,7 @@ export const SignupPage: React.FC = () => {
                 <input
                   id="company"
                   type="text"
+                  autoComplete="organization"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Solventex Pharma Ltd"
@@ -240,6 +237,7 @@ export const SignupPage: React.FC = () => {
               <input
                 id="signupEmail"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="s.chen@solventex.com"
@@ -255,6 +253,7 @@ export const SignupPage: React.FC = () => {
                 <input
                   id="signupPassword"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 8 characters, 1 uppercase, 1 number"
@@ -263,7 +262,7 @@ export const SignupPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -277,7 +276,7 @@ export const SignupPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-2 py-2.5 px-4 rounded-lg bg-ocean-900 hover:bg-ocean-800 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2 shadow-xs disabled:opacity-60"
+              className="w-full mt-2 py-2.5 px-4 rounded-lg bg-ocean-950 hover:bg-ocean-900 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2 shadow-xs disabled:opacity-60"
             >
               <span>{isSubmitting ? 'Registering...' : 'Register Profile & Continue'}</span>
               <ArrowRight className="h-4 w-4" />

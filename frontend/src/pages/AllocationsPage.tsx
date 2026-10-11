@@ -10,7 +10,9 @@ import {
   ChevronUp,
   Check,
   X,
+  Info,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { StatusBadge, StatusType } from '../components/common/StatusBadge';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { ErrorBanner } from '../components/common/ErrorBanner';
@@ -31,6 +33,7 @@ import {
 } from '../types/api';
 
 export const AllocationsPage: React.FC = () => {
+  const { user } = useAuth();
   const [currentRun, setCurrentRun] = useState<AllocationRunResponse | null>(null);
   const [runsHistory, setRunsHistory] = useState<AllocationRunResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -334,24 +337,31 @@ export const AllocationsPage: React.FC = () => {
               {/* Review Proposal Actions */}
               <div className="flex items-center gap-2">
                 {currentRun.status === 'PROPOSED' ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setReviewModal('accept')}
-                      disabled={actionInProgress}
-                      className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors disabled:opacity-50"
-                    >
-                      <Check className="h-3.5 w-3.5" /> Accept Proposal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setReviewModal('reject')}
-                      disabled={actionInProgress}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-[#F4D1CE] bg-[#FDF3F2] px-3 py-1.5 text-xs font-semibold text-[#972B28] hover:bg-[#FCE8E6] transition-colors disabled:opacity-50"
-                    >
-                      <X className="h-3.5 w-3.5" /> Reject Proposal
-                    </button>
-                  </>
+                  user?.role === 'supplier' ? (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+                      <Info className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                      <span>Commercial Buyer approval required</span>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setReviewModal('accept')}
+                        disabled={actionInProgress}
+                        className="inline-flex items-center gap-1.5 rounded-md bg-[#174D3A] px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#10392B] transition-colors disabled:opacity-50"
+                      >
+                        <Check className="h-3.5 w-3.5" /> Accept Proposal
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReviewModal('reject')}
+                        disabled={actionInProgress}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-[#F4D1CE] bg-[#FDF3F2] px-3 py-1.5 text-xs font-semibold text-[#972B28] hover:bg-[#FCE8E6] transition-colors disabled:opacity-50"
+                      >
+                        <X className="h-3.5 w-3.5" /> Reject Proposal
+                      </button>
+                    </>
+                  )
                 ) : (
                   <span className="text-xs text-[#69736B] italic font-mono">
                     Decision Committed ({currentRun.status})

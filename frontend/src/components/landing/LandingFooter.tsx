@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Droplet, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { BlueLoopLogo } from '../common/BlueLoopLogo';
 
 export const LandingFooter: React.FC = () => {
   return (
@@ -9,13 +10,8 @@ export const LandingFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-ocean-800/60">
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="h-9 w-9 rounded-lg bg-water-600 flex items-center justify-center text-white shadow-sm group-hover:bg-water-500 transition-colors">
-                <Droplet className="h-5 w-5" />
-              </div>
-              <span className="font-editorial text-2xl font-medium tracking-tight text-white">
-                BlueLoop
-              </span>
+            <Link to="/" className="flex items-center group">
+              <BlueLoopLogo size="lg" variant="light" showWordmark showSubtitle />
             </Link>
             <p className="text-sm text-slate-300 max-w-sm leading-relaxed">
               Industrial water reuse intelligence and procurement optimization. Connecting treated
@@ -24,14 +20,14 @@ export const LandingFooter: React.FC = () => {
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs font-mono text-slate-400">
               <span className="inline-block h-2 w-2 rounded-full bg-forest-400 animate-pulse" />
-              <span>Enterprise Platform v0.1 • Open Demonstration Access</span>
+              <span>Enterprise Platform - Demonstration Sandbox Active</span>
             </div>
           </div>
 
-          {/* Solutions Column */}
+          {/* Platform Workspaces */}
           <div>
             <h4 className="text-xs font-mono uppercase tracking-wider text-aqua-400 mb-4 font-semibold">
-              Platform
+              Workspaces
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-300">
               <li>
@@ -41,31 +37,31 @@ export const LandingFooter: React.FC = () => {
               </li>
               <li>
                 <Link to="/app/demands" className="hover:text-white transition-colors">
-                  Demand Specifications
+                  Demand Requests
                 </Link>
               </li>
               <li>
                 <Link to="/app/allocations" className="hover:text-white transition-colors">
-                  Allocation Engine
+                  Allocation Console
                 </Link>
               </li>
               <li>
                 <Link to="/app/deliveries" className="hover:text-white transition-colors">
-                  Custody Transfer Logs
+                  Custody & Logistics
                 </Link>
               </li>
               <li>
                 <Link to="/app/impact" className="hover:text-white transition-colors">
-                  Impact Ledger
+                  Impact Reports
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Architecture Column */}
+          {/* Capabilities */}
           <div>
             <h4 className="text-xs font-mono uppercase tracking-wider text-aqua-400 mb-4 font-semibold">
-              Architecture
+              Capabilities
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-300">
               <li>
@@ -78,65 +74,77 @@ export const LandingFooter: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="#preview"
+                  href="#the-problem"
                   className="hover:text-white transition-colors inline-flex items-center gap-1"
                 >
-                  Constrained Matching
+                  Transport Economics
                 </a>
               </li>
               <li>
                 <a
-                  href="#provenance"
+                  href="#impact"
                   className="hover:text-white transition-colors inline-flex items-center gap-1"
                 >
-                  4-Tier Provenance
+                  4-Stage Provenance
                 </a>
               </li>
               <li>
-                <Link to="/app/settings" className="hover:text-white transition-colors">
-                  Cloud Infrastructure
+                <Link
+                  to="/app/settings"
+                  className="hover:text-white transition-colors inline-flex items-center gap-1"
+                >
+                  Compliance Alerts
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Access / Get Started */}
+          {/* Access & Organization */}
           <div>
             <h4 className="text-xs font-mono uppercase tracking-wider text-aqua-400 mb-4 font-semibold">
               Access
             </h4>
-            <div className="space-y-3">
-              <Link
-                to="/app/dashboard"
-                className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-water-600 hover:bg-water-500 text-white font-medium text-xs shadow-xs transition-colors"
-              >
-                Launch Live Demo
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex w-full items-center justify-center px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-medium text-xs transition-colors border border-white/10"
-              >
-                Sign In to Account
-              </Link>
-              <div className="pt-2 text-[11px] text-slate-400 leading-normal flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-forest-400 shrink-0" />
-                <span>Zero login credentials required for demonstration review.</span>
-              </div>
-            </div>
+            <ul className="space-y-2.5 text-sm text-slate-300">
+              <li>
+                <Link to="/login" className="hover:text-white transition-colors">
+                  Sign In
+                </Link>
+              </li>
+              <li>
+                <Link to="/signup" className="hover:text-white transition-colors">
+                  Register Organization
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/app/dashboard"
+                  className="hover:text-white transition-colors inline-flex items-center gap-1 text-aqua-300 font-medium"
+                >
+                  Live Demo Sandbox <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </li>
+              <li>
+                <Link to="/app/settings" className="hover:text-white transition-colors">
+                  System Preferences
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom Integrity Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <p>© {new Date().getFullYear()} BlueLoop Intelligence. All synthetic datasets clearly demarcated.</p>
-          <div className="flex items-center gap-6">
-            <span className="inline-flex items-center gap-1 text-slate-400">
-              Built with precision for sustainable industry
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-forest-400 shrink-0" />
+            <span>
+              BlueLoop Water Intelligence. Built for verifiable circular water procurement.
             </span>
-            <Link to="/app/settings" className="hover:text-white transition-colors">
-              System Health
-            </Link>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <span>Synthetic Demonstration Data</span>
+            <span>Deterministic Math</span>
+            <span>Audited ESG Accounting</span>
           </div>
         </div>
       </div>

@@ -10,11 +10,9 @@ import {
   Settings,
   Menu,
   X,
-  ShieldCheck,
   CheckCircle2,
   AlertCircle,
   RefreshCw,
-  Droplet,
   Info,
   ExternalLink,
   LogOut,
@@ -23,6 +21,7 @@ import {
 import { NavItem } from '../types/navigation';
 import { fetchHealth, HealthStatus } from '../services/health';
 import { useAuth } from '../context/AuthContext';
+import { BlueLoopLogo } from '../components/common/BlueLoopLogo';
 
 const navigationItems: (NavItem & { roles?: Array<'buyer' | 'supplier' | 'admin'> })[] = [
   {
@@ -67,7 +66,7 @@ const navigationItems: (NavItem & { roles?: Array<'buyer' | 'supplier' | 'admin'
     title: 'Settings',
     path: '/app/settings',
     icon: Settings,
-    description: 'Cloud environment & system configuration',
+    description: 'Platform preferences & user management',
   },
 ];
 
@@ -146,25 +145,15 @@ export const AppLayout: React.FC = () => {
           }`}
         >
           {/* Brand Header */}
-          <div className="flex h-16 items-center justify-between border-b border-slate-200 px-6">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-water-600 text-white shadow-xs group-hover:bg-water-700 transition-colors">
-                <Droplet className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-editorial text-lg font-bold tracking-tight text-ocean-950">
-                  BlueLoop
-                </span>
-                <span className="text-[10px] uppercase font-mono tracking-wider text-water-700 -mt-1 font-semibold">
-                  Water Intelligence
-                </span>
-              </div>
+          <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+            <Link to="/" className="flex items-center group">
+              <BlueLoopLogo size="md" variant="brand" showWordmark showSubtitle />
             </Link>
             <button
               type="button"
               className="text-slate-400 hover:text-slate-600 md:hidden p-1 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
-              aria-label="Close sidebar"
+              aria-label="Close navigation sidebar"
             >
               <X className="h-5 w-5" />
             </button>
@@ -195,7 +184,7 @@ export const AppLayout: React.FC = () => {
                   className={({ isActive }) =>
                     `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-medium transition-all ${
                       isActive
-                        ? 'bg-water-50 text-water-900 font-semibold shadow-xs border-l-2 border-water-600'
+                        ? 'bg-water-50 text-water-900 font-semibold shadow-2xs border-l-2 border-water-600'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-ink'
                     }`
                   }
@@ -259,7 +248,7 @@ export const AppLayout: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-water-600 hover:bg-water-700 text-white text-xs font-semibold shadow-2xs transition-colors"
+                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-ocean-900 hover:bg-ocean-800 text-white text-xs font-semibold shadow-2xs transition-colors"
               >
                 <UserIcon className="h-3.5 w-3.5" />
                 <span>Sign In</span>
@@ -282,7 +271,7 @@ export const AppLayout: React.FC = () => {
                 type="button"
                 className="text-slate-500 hover:text-ink md:hidden p-1 rounded-md"
                 onClick={() => setMobileMenuOpen(true)}
-                aria-label="Open sidebar"
+                aria-label="Open sidebar menu"
               >
                 <Menu className="h-5 w-5" />
               </button>
@@ -332,7 +321,7 @@ export const AppLayout: React.FC = () => {
               {user && (
                 <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs">
                   <span className="text-slate-500 text-[11px]">Org:</span>
-                  <span className="font-semibold text-ocean-950 text-[11px] max-w-[120px] truncate">
+                  <span className="font-semibold text-ocean-950 text-[11px] max-w-[140px] truncate">
                     {user.organisation?.name || user.email}
                   </span>
                   <span
@@ -349,7 +338,7 @@ export const AppLayout: React.FC = () => {
                 </div>
               )}
 
-              {/* Compact Mode Badge with Popover */}
+              {/* Mode Badge with Popover */}
               <div className="relative group">
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-ice-500/20 border border-ice-500/40 text-ocean-900 text-[11px] font-mono font-medium cursor-help hover:bg-ice-500/30 transition-colors">
                   <span className="h-1.5 w-1.5 rounded-full bg-water-500 animate-pulse" />
@@ -360,7 +349,7 @@ export const AppLayout: React.FC = () => {
                 {/* Hover Popover */}
                 <div className="absolute right-0 top-full mt-2 w-72 p-3.5 bg-white border border-slate-200 shadow-xl rounded-xl text-xs hidden group-hover:block z-50">
                   <div className="font-semibold text-ink mb-1 flex items-center gap-1.5">
-                    <ShieldCheck className="h-3.5 w-3.5 text-forest-600" />
+                    <CheckCircle2 className="h-3.5 w-3.5 text-forest-600" />
                     <span>Durable Multi-Tenant Workspace</span>
                   </div>
                   <p className="text-[11px] leading-relaxed text-slate-500">
