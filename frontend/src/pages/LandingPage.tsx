@@ -27,7 +27,7 @@ export const LandingPage: React.FC = () => {
   const demoEntryDestination = '/login?demo=true';
 
   return (
-    <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900 w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-canvas text-ink antialiased flex flex-col selection:bg-water-100 selection:text-water-900">
       {/* Navigation */}
       <LandingNavbar />
 
