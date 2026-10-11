@@ -33,7 +33,9 @@ export async function apiClient<T>(
   endpoint: string,
   options?: RequestInit & { params?: Record<string, string | number | boolean | undefined | null> }
 ): Promise<T> {
-  let url = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const apiBaseUrl = (import.meta.env?.VITE_API_BASE_URL || '').replace(/\/$/, '');
+  const normalizedPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  let url = apiBaseUrl ? `${apiBaseUrl}${normalizedPath}` : normalizedPath;
 
   // Append query parameters if provided
   if (options?.params) {

@@ -1,0 +1,194 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  BlueLoop - Water Reuse Intelligence and Procurement Optimisation Platform
+  AWS Serverless Ship-It Hackathon Infrastructure:
+  FastAPI Lambda Backend + API Gateway HTTP API + CloudFront CDN + S3 SPA
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [prod, staging, dev]
+    Description: Deployment environment tier
+
+Resources:
+  # ----------------------------------------------------------------------------
+  # 1. API Gateway HTTP API (Low latency, automatic CORS, cost-optimized)
+  # ----------------------------------------------------------------------------
+  BlueLoopHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub 'blueloop-api-${Environment}'
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowMethods:
+          - GET
+          - POST
+          - PATCH
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - '*'
+        MaxAge: 600
+
+  # ----------------------------------------------------------------------------
+  # 2. FastAPI Backend on AWS Lambda (Mangum ASGI adapter, Python 3.11, Graviton2)
+  # ----------------------------------------------------------------------------
+  BlueLoopFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'blueloop-backend-${Environment}'
+      CodeUri: ../backend
+      Handler: app.main.handler
+      Runtime: python3.11
+      Architectures:
+        - arm64
+      MemorySize: 512
+      Timeout: 29
+      Environment:
+        Variables:
+          APP_ENV: !Ref Environment
+          DEBUG: 'false'
+          CORS_ORIGINS: '*'
+          USE_SYNTHETIC_DATA: 'true'
+          DEMO_MODE: 'true'
+      Events:
+        ProxyPath:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BlueLoopHttpApi
+            Path: /{proxy+}
+            Method: ANY
+        RootPath:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BlueLoopHttpApi
+            Path: /
+            Method: ANY
+
+  # ----------------------------------------------------------------------------
+  # 3. Amazon CloudWatch Log Group (Retain logs for 7 days to eliminate costs)
+  # ----------------------------------------------------------------------------
+  BlueLoopLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${BlueLoopFunction}'
+      RetentionInDays: 7
+
+  # ----------------------------------------------------------------------------
+  # 4. Amazon S3 Bucket for React SPA Assets (Private bucket with OAC access)
+  # ----------------------------------------------------------------------------
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'blueloop-app-${AWS::AccountId}-${AWS::Region}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # ----------------------------------------------------------------------------
+  # 5. CloudFront Origin Access Control (OAC) for secure private S3 delivery
+  # ----------------------------------------------------------------------------
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub 'blueloop-oac-${Environment}-${AWS::Region}'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # ----------------------------------------------------------------------------
+  # 6. Amazon CloudFront CDN Distribution (SPA route fallback for React Router)
+  # ----------------------------------------------------------------------------
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: BlueLoop React Production Distribution
+        Enabled: true
+        DefaultRootObject: index.html
+        HttpVersion: http2and3
+        PriceClass: PriceClass_All
+        Origins:
+          - Id: S3FrontendOrigin
+            DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt CloudFrontOAC.Id
+            S3OriginConfig: {}
+        DefaultCacheBehavior:
+          TargetOriginId: S3FrontendOrigin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+
+  # ----------------------------------------------------------------------------
+  # 7. S3 Bucket Policy granting CloudFront Distribution read-only access
+  # ----------------------------------------------------------------------------
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontServicePrincipalReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${FrontendBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+Outputs:
+  ApiGatewayEndpoint:
+    Description: Deployed FastAPI API Gateway HTTPS Endpoint
+    Value: !Sub 'https://${BlueLoopHttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiEndpoint'
+
+  CloudFrontUrl:
+    Description: Public HTTPS URL for BlueLoop Web Application
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendUrl'
+
+  CloudFrontDistributionId:
+    Description: CloudFront Distribution ID for cache invalidations
+    Value: !Ref CloudFrontDistribution
+
+  FrontendBucketName:
+    Description: S3 Bucket hosting React SPA production build
+    Value: !Ref FrontendBucket
+
+  LambdaFunctionName:
+    Description: Lambda Function Name executing FastAPI backend
+    Value: !Ref BlueLoopFunction

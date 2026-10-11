@@ -198,12 +198,24 @@ source .venv/bin/activate
 pytest
 ```
 
-### Frontend Typechecking & Production Build
+### Frontend Automated Test Suite, Typecheck & Production Build
 From the `frontend/` directory:
 ```bash
 cd frontend
 npm run typecheck
+npm test
 npm run build
+```
+
+### Unified Verification Script
+Run the comprehensive multi-layer verification suite:
+```bash
+./scripts/verify.sh
+```
+
+### AWS Deployment Packaging & Dry-Run
+```bash
+./scripts/deploy.sh --dry-run
 ```
 
 ---
@@ -225,9 +237,10 @@ npm run build
 | **Allocation REST Endpoints** | **Implemented** | POST /allocations/run, GET /allocations/{id}, accept/reject proposals |
 | **Delivery & Custody Tracking** | **Implemented** | GET/POST /deliveries, PATCH /deliveries/{id}/status with strict lifecycle validation |
 | **Impact Analytics API** | **Implemented** | Multi-tier displacement reporting (potential, accepted, confirmed, verified) |
-| **Automated Testing Suite** | **Implemented** | 65 automated unit & integration tests passing with 100% success rate |
-| **DynamoDB Persistence** | *Planned (Stage 6)* | Transition in-memory store to DynamoDB single-table persistence |
-| **AWS Cloud Deployment** | *Planned (Stage 6)* | API Gateway, Lambda, DynamoDB, S3, CloudFront provisioning |
+| **Complete Product Integration** | **Implemented** | Unified API client, reactive health indicator, modal flows, 102 automated tests |
+| **AWS Serverless Packaging & IaC** | **Packaged & Verified** | SAM template (`infra/template.yaml`), deploy script (`scripts/deploy.sh`), dry-run verified (**Status: NOT DEPLOYED per resource safety protocol**) |
+| **DynamoDB Persistence** | *Planned (Post-Hackathon)* | Transition in-memory store to DynamoDB single-table persistence |
+| **Amazon Cognito Auth** | *Planned (Post-Hackathon)* | Multi-tenant RBAC with authenticated buyer/supplier portals |
 
 ---
 

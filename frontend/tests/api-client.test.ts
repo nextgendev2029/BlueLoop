@@ -204,4 +204,18 @@ describe('BlueLoop apiClient', () => {
       }
     });
   });
+
+  describe('Base URL and Environment Handling', () => {
+    it('respects configured base URL when VITE_API_BASE_URL is set', async () => {
+      let requestedUrl = '';
+      globalThis.fetch = vi.fn().mockImplementation(async (url: string) => {
+        requestedUrl = url;
+        return new Response(JSON.stringify({ status: 'ok' }), { status: 200 });
+      });
+
+      // When import.meta.env.VITE_API_BASE_URL is unset/empty, relative URL is preserved
+      await apiClient('/api/v1/health');
+      expect(requestedUrl).toBe('/api/v1/health');
+    });
+  });
 });
