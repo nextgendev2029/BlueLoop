@@ -11,7 +11,7 @@ import {
   ShieldAlert,
   Sparkles,
 } from 'lucide-react';
-import { useAuth, DEMO_CREDENTIALS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { BlueLoopLogo } from '../components/common/BlueLoopLogo';
 
 export const LoginPage: React.FC = () => {
@@ -207,13 +207,10 @@ export const LoginPage: React.FC = () => {
 
           <div className="mb-6">
             <h1 className="text-2xl font-bold tracking-tight text-ink">
-              Sign in to your account
+              Sign in to BlueLoop
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              Or{' '}
-              <Link to="/signup" className="text-water-600 hover:text-water-700 font-medium">
-                register a facility stream or buyer demand
-              </Link>
+              Enter your credentials to access your industrial water reuse workspace.
             </p>
           </div>
 
@@ -241,25 +238,12 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label
-                  htmlFor="password"
-                  className="block text-xs font-medium text-slate-700"
-                >
-                  Password
-                </label>
-                <a
-                  href="#credentials-info"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setEmail(DEMO_CREDENTIALS.buyer.email);
-                    setPassword(DEMO_CREDENTIALS.buyer.password);
-                  }}
-                  className="text-xs text-water-600 hover:text-water-700 font-medium"
-                >
-                  Fill demo buyer credentials
-                </a>
-              </div>
+              <label
+                htmlFor="password"
+                className="block text-xs font-medium text-slate-700 mb-1"
+              >
+                Password
+              </label>
               <div className="relative">
                 <input
                   id="password"

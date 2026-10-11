@@ -49,8 +49,9 @@ async def list_demands(
         # Tenant Isolation: Buyers only see their own demands
         if current_user.role == "buyer" and d.org_id != current_user.org_id:
             return False
-        # Suppliers cannot view unrelated buyer demand requests
-        if current_user.role == "supplier":
+        # Suppliers can discover open buyer demand requests to identify matching opportunities,
+        # but cannot view non-open (e.g. DRAFT, FULFILLED, CANCELLED) demands
+        if current_user.role == "supplier" and d.status != DemandStatus.OPEN:
             return False
         if intended_use and d.intended_use != intended_use:
             return False
@@ -102,10 +103,10 @@ async def get_demand_request(
             detail="Access forbidden to demand requests of other organisations.",
         )
 
-    if current_user.role == "supplier":
+    if current_user.role == "supplier" and d.status != DemandStatus.OPEN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Suppliers are not permitted to inspect private buyer demand records.",
+            detail="Suppliers may only inspect open buyer demand opportunities.",
         )
 
     return DemandRequestResponse.model_validate(d)

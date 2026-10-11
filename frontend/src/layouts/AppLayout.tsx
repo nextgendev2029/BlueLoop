@@ -41,14 +41,14 @@ const navigationItems: (NavItem & { roles?: Array<'buyer' | 'supplier' | 'admin'
     path: '/app/demands',
     icon: FileSpreadsheet,
     description: 'Intake volumes & parameter tolerances',
-    roles: ['buyer', 'admin'],
+    roles: ['buyer', 'supplier', 'admin'],
   },
   {
     title: 'Allocations',
     path: '/app/allocations',
     icon: GitMerge,
     description: 'Deterministic supply-demand matching console',
-    roles: ['buyer', 'admin'],
+    roles: ['buyer', 'supplier', 'admin'],
   },
   {
     title: 'Deliveries',

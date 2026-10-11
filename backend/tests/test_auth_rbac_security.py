@@ -501,3 +501,48 @@ def test_19_authentication_state_survives_persistence():
     me_res = new_client.get("/api/v1/auth/me")
     assert me_res.status_code == 200
     assert me_res.json()["email"] == "buyer@blueloop.io"
+
+
+# -----------------------------------------------------------------------------
+# Case 20: Supplier Can Discover Open Demands But Not Closed/Cancelled Demands
+# -----------------------------------------------------------------------------
+
+def test_20_supplier_can_discover_open_demands_but_not_closed_demands():
+    client = get_client()
+    client.post("/api/v1/auth/login", json={"email": "supplier@blueloop.io", "password": "Password123!"})
+
+    # Supplier listing demands should return open opportunities
+    res = client.get("/api/v1/demands")
+    assert res.status_code == 200
+    items = res.json()["items"]
+    assert len(items) > 0
+    # Every item returned to supplier must have OPEN status
+    for item in items:
+        assert item["status"] == "OPEN"
+
+    # Supplier can fetch open demand detail
+    open_demand_id = items[0]["id"]
+    res_detail = client.get(f"/api/v1/demands/{open_demand_id}")
+    assert res_detail.status_code == 200
+    assert res_detail.json()["id"] == open_demand_id
+
+    # Create a non-open demand in repository to test guard
+    from app.repositories.memory import get_repository_container
+    from app.models.entities import DemandRequest, QualityLimits
+    from app.models.enums import DemandStatus, IntendedUse
+    container = get_repository_container()
+    closed_demand = DemandRequest(
+        id="DEM-CLOSED-TEST",
+        org_id="SYNTH-ORG-04",
+        facility_name="Private Draft Facility",
+        intended_use=IntendedUse.COOLING_TOWER,
+        required_volume_kl=100.0,
+        quality_limits=QualityLimits(min_ph=6.5, max_ph=8.5),
+        status=DemandStatus.CANCELLED,
+    )
+    container.demands.create(closed_demand)
+
+    # Supplier attempting to fetch non-open demand should receive 403 Forbidden
+    res_closed = client.get("/api/v1/demands/DEM-CLOSED-TEST")
+    assert res_closed.status_code == 403
+    assert "open buyer demand" in res_closed.json()["message"].lower()
