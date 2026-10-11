@@ -181,8 +181,9 @@ async def accept_allocation_proposal(
     # Tenant Ownership Verification: Buyers can only accept proposals involving their own demands
     if current_user.role == "buyer":
         user_demand_ids = {d.id for d in container.demands.list(lambda d: d.org_id == current_user.org_id)}
-        has_matching_demand = any(item.demand_id in user_demand_ids for item in proposal.allocations)
-        if not has_matching_demand and proposal.allocations:
+        alloc_items = getattr(proposal, "proposed_allocations", getattr(proposal, "allocations", []))
+        has_matching_demand = any(item.demand_id in user_demand_ids for item in alloc_items)
+        if not has_matching_demand and alloc_items:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Cannot accept allocation proposals for other buyer organisations.",
@@ -244,8 +245,9 @@ async def reject_allocation_proposal(
     # Tenant Ownership Verification: Buyers can only reject proposals involving their own demands
     if current_user.role == "buyer":
         user_demand_ids = {d.id for d in container.demands.list(lambda d: d.org_id == current_user.org_id)}
-        has_matching_demand = any(item.demand_id in user_demand_ids for item in proposal.allocations)
-        if not has_matching_demand and proposal.allocations:
+        alloc_items = getattr(proposal, "proposed_allocations", getattr(proposal, "allocations", []))
+        has_matching_demand = any(item.demand_id in user_demand_ids for item in alloc_items)
+        if not has_matching_demand and alloc_items:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Cannot reject allocation proposals for other buyer organisations.",

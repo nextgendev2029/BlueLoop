@@ -359,3 +359,88 @@ def test_impact_summary_analytics():
     # Without third-party certified testing, independently verified stays 0.0
     assert data3["independently_verified_displacement_kl"] == 0.0
     assert data3["is_independently_verified"] is False
+
+
+def test_end_to_end_demo_workflow():
+    """
+    Validates complete bilateral workflow across roles:
+    1. Buyer creates water demand
+    2. Quality compatibility evaluated
+    3. Allocation run executes
+    4. Buyer accepts allocation proposal
+    5. Supplier schedules delivery
+    6. Delivery moves through custody chain to confirmed
+    7. Impact ledger credits confirmed freshwater displacement
+    """
+    from starlette.testclient import TestClient
+    from app.main import app
+
+    buyer_client = TestClient(app)
+    supplier_client = TestClient(app)
+
+    # 1. Logins
+    login_b = buyer_client.post("/api/v1/auth/login", json={"email": "buyer@blueloop.io", "password": "Password123!"})
+    assert login_b.status_code == 200
+    b_hdr = {"Authorization": f"Bearer {login_b.json()['token']}"}
+
+    login_s = supplier_client.post("/api/v1/auth/login", json={"email": "supplier@blueloop.io", "password": "Password123!"})
+    assert login_s.status_code == 200
+    s_hdr = {"Authorization": f"Bearer {login_s.json()['token']}"}
+
+    # 2. Create Demand (Buyer)
+    demand_payload = {
+        "facility_name": "Apex Clean Server Hall B",
+        "intended_use": "COOLING_TOWER",
+        "required_volume_kl": 500.0,
+        "quality_limits": {
+            "min_ph": 6.5,
+            "max_ph": 8.5,
+            "max_tds_mg_l": 1000.0,
+            "required_parameters": ["ph", "tds_mg_l"],
+        },
+    }
+    d_res = buyer_client.post("/api/v1/demands", json=demand_payload, headers=b_hdr)
+    assert d_res.status_code == 201
+    demand_id = d_res.json()["id"]
+
+    # 3. Quality Compatibility Evaluation
+    comp_res = buyer_client.post("/api/v1/compatibility/evaluate", json={"listing_id": "SYNTH-LIST-01", "demand_id": demand_id}, headers=b_hdr)
+    assert comp_res.status_code == 200
+
+    # 4. Run Allocation (Buyer)
+    run_res = buyer_client.post("/api/v1/allocations/run", json={"demand_ids": [demand_id]}, headers=b_hdr)
+    assert run_res.status_code == 200
+    run_id = run_res.json()["run_id"]
+
+    # 5. Accept Allocation (Buyer)
+    acc_res = buyer_client.post(f"/api/v1/allocations/{run_id}/accept", headers=b_hdr)
+    assert acc_res.status_code == 200
+    assert acc_res.json()["status"] == "ACCEPTED"
+
+    # 6. Create Delivery (Supplier)
+    deliv_payload = {
+        "listing_id": "SYNTH-LIST-01",
+        "demand_id": demand_id,
+        "dispatched_volume_kl": 350.0,
+        "scheduled_date": "2026-03-10T10:00:00Z",
+        "delivery_mode": "DEDICATED_TANKER",
+    }
+    del_res = supplier_client.post("/api/v1/deliveries", json=deliv_payload, headers=s_hdr)
+    assert del_res.status_code == 201
+    deliv_id = del_res.json()["id"]
+
+    # 7. Custody Lifecycle Progression
+    supplier_client.patch(f"/api/v1/deliveries/{deliv_id}/status", json={"lifecycle_status": "DISPATCHED"}, headers=s_hdr)
+    supplier_client.patch(f"/api/v1/deliveries/{deliv_id}/status", json={"lifecycle_status": "IN_TRANSIT"}, headers=s_hdr)
+    buyer_client.patch(f"/api/v1/deliveries/{deliv_id}/status", json={"lifecycle_status": "DELIVERED_SAMPLE_PENDING"}, headers=b_hdr)
+    p_acc = buyer_client.patch(
+        f"/api/v1/deliveries/{deliv_id}/status",
+        json={"lifecycle_status": "ACCEPTED_CONFIRMED", "delivered_volume_kl": 350.0},
+        headers=b_hdr,
+    )
+    assert p_acc.status_code == 200
+
+    # 8. Impact Summary Verification
+    imp_res = buyer_client.get("/api/v1/impact/summary", headers=b_hdr)
+    assert imp_res.status_code == 200
+    assert imp_res.json()["delivery_confirmed_displacement_kl"] >= 350.0
