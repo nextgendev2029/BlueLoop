@@ -10,9 +10,11 @@ import {
   Factory,
   Building2,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const SignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const { signup, isAuthenticated } = useAuth();
   const [fullName, setFullName] = useState('');
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
@@ -22,7 +24,14 @@ export const SignupPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // If already authenticated, redirect to workspace
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/app/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -41,12 +50,26 @@ export const SignupPage: React.FC = () => {
       return;
     }
 
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password)) {
+      setError('Password must contain at least one uppercase letter, one lowercase letter, and one number.');
+      return;
+    }
+
     setIsSubmitting(true);
-    // Honest: navigate to app workspace
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await signup({
+        name: fullName.trim(),
+        company_name: company.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+        role,
+      });
       navigate('/app/dashboard');
-    }, 400);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. An account with this email may already exist.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -105,29 +128,13 @@ export const SignupPage: React.FC = () => {
         </div>
 
         <div className="relative z-10 text-xs text-slate-400">
-          <span>Industrial Water Reuse Platform • Open Sandbox Access</span>
+          <span>Industrial Water Reuse Platform - Multi-Tenant Account Registration</span>
         </div>
       </div>
 
       {/* Right Form Card */}
       <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-16">
         <div className="w-full max-w-md">
-          {/* Quick Demo Access Callout */}
-          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-water-50 to-aqua-50 border border-water-200/80 shadow-xs flex items-center justify-between">
-            <div>
-              <span className="text-xs font-bold text-water-900 block">Open Demonstration Sandbox</span>
-              <span className="text-[11px] text-slate-600 block">Preloaded facilities ready for review.</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate('/app/dashboard')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-water-600 hover:bg-water-700 text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
-            >
-              <span>Explore Live Demo</span>
-              <ArrowRight className="h-3 w-3" />
-            </button>
-          </div>
-
           <div className="mb-6">
             <h1 className="text-2xl font-bold tracking-tight text-ink">
               Create your organization profile
@@ -242,7 +249,7 @@ export const SignupPage: React.FC = () => {
 
             <div>
               <label htmlFor="signupPassword" className="block text-xs font-medium text-slate-700 mb-1">
-                Password (min 8 characters)
+                Password
               </label>
               <div className="relative">
                 <input
@@ -250,17 +257,21 @@ export const SignupPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+                  placeholder="Min 8 characters, 1 uppercase, 1 number"
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-water-500 focus:ring-1 focus:ring-water-500 text-sm outline-none pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Must contain at least 8 characters, an uppercase letter, a lowercase letter, and a number.
+              </p>
             </div>
 
             <button
@@ -274,13 +285,12 @@ export const SignupPage: React.FC = () => {
           </form>
 
           <div className="mt-6 pt-4 border-t border-slate-200 text-center">
-            <button
-              type="button"
-              onClick={() => navigate('/app/dashboard')}
+            <Link
+              to="/login"
               className="text-xs text-water-600 hover:text-water-700 font-semibold underline underline-offset-2"
             >
-              Skip registration and browse sandbox workspace
-            </button>
+              Sign in with an existing account
+            </Link>
           </div>
         </div>
       </div>

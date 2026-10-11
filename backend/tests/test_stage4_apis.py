@@ -20,10 +20,12 @@ from app.models.enums import (
     ListingStatus,
     VerificationStatus,
 )
+from app.core.config import settings
 from app.core.seeds import seed_demonstration_data
 from app.repositories.memory import get_repository_container
 
 client = TestClient(app)
+client.cookies.set(settings.session_cookie_name, "blueloop-test-admin-token")
 
 
 # =============================================================================

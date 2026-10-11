@@ -1,8 +1,8 @@
-# BlueLoop — Hackathon Submission Checklist
+# BlueLoop - Hackathon Submission Checklist
 
 **Hackathon Event**: Environmental Hacks / AWS Bharat Builds Tour  
 **Track**: Heat and Water  
-**Project**: BlueLoop — Water Reuse Intelligence & Procurement Optimisation Platform  
+**Project**: BlueLoop - Water Reuse Intelligence & Procurement Optimisation Platform  
 
 This checklist must be reviewed before submitting the hackathon form or publishing repository links.
 
@@ -30,7 +30,7 @@ This checklist must be reviewed before submitting the hackathon form or publishi
 
 ## 3. Data Integrity & Environmental Policy
 - [x] **Synthetic Data Labels**: All demonstration suppliers, chemical tests, and demand listings visibly tagged `[DEMO / SYNTHETIC]`
-- [x] **Quality Gatekeeper Honesty**: Quality screening accurately framed as *advisory screening*—does not guarantee legal or potable safety
+- [x] **Quality Gatekeeper Honesty**: Quality screening accurately framed as *advisory screening*-does not guarantee legal or potable safety
 - [x] **Fail-Closed Logic Verified**: Missing chemical measurements evaluate to `UNKNOWN` and fail screening
 - [x] **Multi-Tier Impact Provenance**: Clear separation between *Potential*, *Accepted*, *Confirmed Delivered*, and *Independently Verified* displacement
 - [x] **Volumetric Baseline Disclosed**: 1:1 volumetric displacement against potable municipal baseline explicitly documented

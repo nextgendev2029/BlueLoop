@@ -8,18 +8,31 @@ import {
   CheckCircle2,
   Sparkles,
   AlertCircle,
+  Building2,
+  Factory,
+  ShieldAlert,
 } from 'lucide-react';
+import { useAuth, DEMO_CREDENTIALS } from '../context/AuthContext';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login, quickLogin, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [demoRoleLoading, setDemoRoleLoading] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // If already authenticated, redirect to workspace
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/app/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -34,11 +47,27 @@ export const LoginPage: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    // Honest message: Inform the user that this environment operates in open demo mode
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await login({ email: email.trim(), password });
       navigate('/app/dashboard');
-    }, 400);
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed. Please verify your credentials.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleQuickDemo = async (role: 'buyer' | 'supplier' | 'admin') => {
+    setError(null);
+    setDemoRoleLoading(role);
+    try {
+      await quickLogin(role);
+      navigate('/app/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Demo authentication failed. Backend may be offline.');
+    } finally {
+      setDemoRoleLoading(null);
+    }
   };
 
   return (
@@ -86,14 +115,14 @@ export const LoginPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2.5 text-xs text-slate-300">
               <CheckCircle2 className="h-4 w-4 text-forest-400 shrink-0" />
-              <span>4-tier audited custody and impact tracking</span>
+              <span>Multi-tenant organization data isolation & RBAC</span>
             </div>
           </div>
         </div>
 
         {/* Bottom Disclaimer */}
         <div className="relative z-10 text-xs text-slate-400">
-          <span>Industrial Water Reuse Platform • Open Sandbox Access</span>
+          <span>Industrial Water Reuse Platform - Production & Demo Authentication</span>
         </div>
       </div>
 
@@ -101,27 +130,65 @@ export const LoginPage: React.FC = () => {
       <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-16">
         <div className="w-full max-w-md">
           {/* Quick Demo Access Callout Banner */}
-          <div className="mb-8 p-5 rounded-2xl bg-gradient-to-r from-water-50 to-aqua-50 border border-water-200/80 shadow-xs">
+          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-water-50 to-aqua-50 border border-water-200/80 shadow-xs">
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 rounded-lg bg-water-600 text-white flex items-center justify-center shrink-0">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-water-900">
-                  Open Demonstration Workspace
+                  Quick Demo Access
                 </h3>
                 <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                  BlueLoop operates with sample industrial facilities and water streams. You can explore
-                  matching proposals, quality verification, and custody logs without credentials.
+                  Authenticate instantly using seeded test profiles with verified permissions:
                 </p>
-                <button
-                  type="button"
-                  onClick={() => navigate('/app/dashboard')}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-water-600 hover:bg-water-700 text-white text-xs font-semibold shadow-xs transition-colors"
-                >
-                  <span>Explore Live Demo</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    disabled={demoRoleLoading !== null || isSubmitting}
+                    onClick={() => handleQuickDemo('buyer')}
+                    className="p-2.5 rounded-lg bg-white border border-water-300 hover:border-water-500 hover:bg-water-50/50 text-left transition-colors shadow-2xs disabled:opacity-50"
+                  >
+                    <div className="flex items-center gap-1.5 text-ink font-semibold text-[11px]">
+                      <Building2 className="h-3.5 w-3.5 text-water-600" />
+                      <span>Buyer</span>
+                    </div>
+                    <span className="block text-[10px] text-slate-500 mt-0.5 truncate">
+                      Apex Centers
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={demoRoleLoading !== null || isSubmitting}
+                    onClick={() => handleQuickDemo('supplier')}
+                    className="p-2.5 rounded-lg bg-white border border-water-300 hover:border-water-500 hover:bg-water-50/50 text-left transition-colors shadow-2xs disabled:opacity-50"
+                  >
+                    <div className="flex items-center gap-1.5 text-ink font-semibold text-[11px]">
+                      <Factory className="h-3.5 w-3.5 text-water-600" />
+                      <span>Supplier</span>
+                    </div>
+                    <span className="block text-[10px] text-slate-500 mt-0.5 truncate">
+                      Maraimalai Tech
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={demoRoleLoading !== null || isSubmitting}
+                    onClick={() => handleQuickDemo('admin')}
+                    className="p-2.5 rounded-lg bg-white border border-water-300 hover:border-water-500 hover:bg-water-50/50 text-left transition-colors shadow-2xs disabled:opacity-50"
+                  >
+                    <div className="flex items-center gap-1.5 text-ink font-semibold text-[11px]">
+                      <ShieldAlert className="h-3.5 w-3.5 text-water-600" />
+                      <span>Admin</span>
+                    </div>
+                    <span className="block text-[10px] text-slate-500 mt-0.5 truncate">
+                      Platform Ops
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -169,14 +236,15 @@ export const LoginPage: React.FC = () => {
                   Password
                 </label>
                 <a
-                  href="#forgot"
+                  href="#credentials-info"
                   onClick={(e) => {
                     e.preventDefault();
-                    setError('Demo Mode: Use "Continue to Demo Mode" above.');
+                    setEmail(DEMO_CREDENTIALS.buyer.email);
+                    setPassword(DEMO_CREDENTIALS.buyer.password);
                   }}
                   className="text-xs text-water-600 hover:text-water-700"
                 >
-                  Forgot password?
+                  Fill demo buyer credentials
                 </a>
               </div>
               <div className="relative">
@@ -213,7 +281,7 @@ export const LoginPage: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || demoRoleLoading !== null}
               className="w-full mt-2 py-2.5 px-4 rounded-lg bg-ocean-900 hover:bg-ocean-800 text-white font-medium text-sm transition-colors flex items-center justify-center gap-2 shadow-xs disabled:opacity-60"
             >
               <span>{isSubmitting ? 'Authenticating...' : 'Sign In'}</span>
@@ -221,17 +289,16 @@ export const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Honest Demo Mode Banner */}
+          {/* Registration link */}
           <div className="mt-8 pt-6 border-t border-slate-200 text-center">
             <p className="text-xs text-slate-500">
-              Looking for quick evaluation?{' '}
-              <button
-                type="button"
-                onClick={() => navigate('/app/dashboard')}
+              Need an enterprise organization account?{' '}
+              <Link
+                to="/signup"
                 className="text-water-600 hover:text-water-700 font-semibold underline underline-offset-2"
               >
-                Skip authentication and enter Demo Mode
-              </button>
+                Register an organization
+              </Link>
             </p>
           </div>
         </div>

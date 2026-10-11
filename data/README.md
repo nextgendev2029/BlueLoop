@@ -21,9 +21,9 @@ This directory documents the synthetic demonstration fixtures established for Bl
 6. `SYNTH-ORG-06`: **Metro Rail Precast Infrastructure Yard** (Buyer)
 
 ### B. Treatment Facilities (`SYNTH-FAC-*`)
-1. `SYNTH-FAC-01`: **Maraimalai CETP Sector A** — Maraimalai Nagar, Tamil Nadu (CETP)
-2. `SYNTH-FAC-02`: **Guindy Tertiary STP** — Chennai, Tamil Nadu (Municipal Tertiary)
-3. `SYNTH-FAC-03`: **Ambattur Effluent Polishing Facility** — Ambattur, Tamil Nadu (Industrial STP)
+1. `SYNTH-FAC-01`: **Maraimalai CETP Sector A** - Maraimalai Nagar, Tamil Nadu (CETP)
+2. `SYNTH-FAC-02`: **Guindy Tertiary STP** - Chennai, Tamil Nadu (Municipal Tertiary)
+3. `SYNTH-FAC-03`: **Ambattur Effluent Polishing Facility** - Ambattur, Tamil Nadu (Industrial STP)
 
 ### C. Supply Listings (`SYNTH-LIST-*`)
 1. `SYNTH-LIST-01`: **Tertiary Polished Stream 01** (3,500 kL/day, $0.78/kL, pH 7.35, TDS 980 mg/L, COD 38 mg/L, BOD 8.5 mg/L, Turbidity 1.4 NTU). Eligible for cooling towers.

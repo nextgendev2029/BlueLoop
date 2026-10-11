@@ -5,6 +5,7 @@ Explicitly tagged as synthetic data; fictional facility and organisation names.
 """
 
 from datetime import datetime, timezone, timedelta
+from app.core.security import hash_password
 from app.models.entities import (
     DemandRequest,
     Organisation,
@@ -12,6 +13,7 @@ from app.models.entities import (
     QualityLimits,
     SupplierFacility,
     SupplyListing,
+    User,
     WaterQualityMeasurements,
 )
 from app.models.enums import (
@@ -30,6 +32,15 @@ from app.repositories.memory import RepositoryContainer, get_repository_containe
 def get_demo_organisations() -> list[Organisation]:
     now = datetime(2026, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
     return [
+        Organisation(
+            id="SYNTH-ORG-00",
+            name="BlueLoop Platform Operations",
+            org_type=OrgType.PLATFORM_OPERATOR,
+            verification_status=VerificationStatus.CERTIFIED,
+            contact_email="admin@blueloop.io",
+            is_synthetic=True,
+            created_at=now,
+        ),
         Organisation(
             id="SYNTH-ORG-01",
             name="Maraimalai Clean Tech Industrial Park",
@@ -326,7 +337,7 @@ def get_demo_demands() -> list[DemandRequest]:
         DemandRequest(
             id="SYNTH-DEM-01",
             org_id="SYNTH-ORG-04",
-            facility_name="Apex Hyperscale Data Center — Evaporative Cooling Loops",
+            facility_name="Apex Hyperscale Data Center - Evaporative Cooling Loops",
             intended_use=IntendedUse.COOLING_TOWER,
             required_volume_kl=3000.0,
             max_price_per_kl=1.25,
@@ -354,7 +365,7 @@ def get_demo_demands() -> list[DemandRequest]:
         DemandRequest(
             id="SYNTH-DEM-02",
             org_id="SYNTH-ORG-06",
-            facility_name="Metro Rail Precast Yard — Concrete Curing & Batching",
+            facility_name="Metro Rail Precast Yard - Concrete Curing & Batching",
             intended_use=IntendedUse.CONSTRUCTION_BATCHING,
             required_volume_kl=1500.0,
             max_price_per_kl=0.80,
@@ -381,7 +392,7 @@ def get_demo_demands() -> list[DemandRequest]:
         DemandRequest(
             id="SYNTH-DEM-03",
             org_id="SYNTH-ORG-05",
-            facility_name="Precision Automotive Engine Plant — High-Pressure Boiler Feed",
+            facility_name="Precision Automotive Engine Plant - High-Pressure Boiler Feed",
             intended_use=IntendedUse.BOILER_FEED,
             required_volume_kl=2000.0,
             max_price_per_kl=1.50,
@@ -409,28 +420,127 @@ def get_demo_demands() -> list[DemandRequest]:
     ]
 
 
+# Pre-computed OWASP PBKDF2 hashes for instant seed execution without CPU overhead
+DEMO_PASSWORD_HASH = "pbkdf2_sha256$600000$be92e0cc1929677b583008e83b3e91b5$f274c87e67612c2c04af5365964ad6803f519fef58b57471a10278002fdc9082"
+ADMIN_PASSWORD_HASH = "pbkdf2_sha256$600000$7c2de5f6173d2d36abe79d71080a9b64$b992e7a80ad34d12c8eec98d61c29361a0246d664feeedd9f86459b53c3ebf13"
+
+
+def get_demo_users() -> list[User]:
+    now = datetime(2026, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+    return [
+        User(
+            id="USR-ADMIN-01",
+            org_id="SYNTH-ORG-00",
+            name="System Administrator",
+            email="admin@blueloop.io",
+            role="admin",
+            password_hash=ADMIN_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+        User(
+            id="USR-SUP-01",
+            org_id="SYNTH-ORG-01",
+            name="Maraimalai Plant Director",
+            email="supplier@blueloop.io",
+            role="supplier",
+            password_hash=DEMO_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+        User(
+            id="USR-SUP-02",
+            org_id="SYNTH-ORG-02",
+            name="Guindy Operations Lead",
+            email="guindy.supplier@blueloop.io",
+            role="supplier",
+            password_hash=DEMO_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+        User(
+            id="USR-SUP-03",
+            org_id="SYNTH-ORG-03",
+            name="Ambattur Reclamation Supervisor",
+            email="ambattur.supplier@blueloop.io",
+            role="supplier",
+            password_hash=DEMO_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+        User(
+            id="USR-BUY-01",
+            org_id="SYNTH-ORG-04",
+            name="Apex Data Center Facilities Lead",
+            email="buyer@blueloop.io",
+            role="buyer",
+            password_hash=DEMO_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+        User(
+            id="USR-BUY-02",
+            org_id="SYNTH-ORG-05",
+            name="Precision Auto Sustainability Engineer",
+            email="precision.buyer@blueloop.io",
+            role="buyer",
+            password_hash=DEMO_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+        User(
+            id="USR-BUY-03",
+            org_id="SYNTH-ORG-06",
+            name="Metro Rail Batching Manager",
+            email="metrorail.buyer@blueloop.io",
+            role="buyer",
+            password_hash=DEMO_PASSWORD_HASH,
+            is_active=True,
+            created_at=now,
+        ),
+    ]
+
+
 def seed_demonstration_data(
     container: RepositoryContainer | None = None,
+    force_reset: bool = True,
 ) -> RepositoryContainer:
     """Populates repository container with the deterministic synthetic sample dataset."""
     target_container = container or get_repository_container()
 
-    # Clear previous seed records
-    target_container.reset_all()
+    if force_reset:
+        target_container.reset_all(clear_sessions=True)
 
     for org in get_demo_organisations():
-        target_container.organisations.create(org)
+        if force_reset or not target_container.organisations.get(org.id):
+            target_container.organisations.create(org)
+
+    for user in get_demo_users():
+        if force_reset or not target_container.users.get(user.id):
+            target_container.users.create(user)
+
+    if hasattr(target_container, "sessions") and target_container.sessions:
+        if force_reset or not target_container.sessions.get_session("blueloop-test-admin-token"):
+            target_container.sessions.create_session(
+                "blueloop-test-admin-token",
+                "USR-ADMIN-01",
+                datetime.now(timezone.utc) + timedelta(days=7),
+            )
 
     for fac in get_demo_facilities():
-        target_container.facilities.create(fac)
+        if force_reset or not target_container.facilities.get(fac.id):
+            target_container.facilities.create(fac)
 
     for evid in get_demo_quality_evidences():
-        target_container.evidences.create(evid)
+        if force_reset or not target_container.evidences.get(evid.id):
+            target_container.evidences.create(evid)
 
     for listing in get_demo_listings():
-        target_container.listings.create(listing)
+        if force_reset or not target_container.listings.get(listing.id):
+            target_container.listings.create(listing)
 
     for demand in get_demo_demands():
-        target_container.demands.create(demand)
+        if force_reset or not target_container.demands.get(demand.id):
+            target_container.demands.create(demand)
 
     return target_container

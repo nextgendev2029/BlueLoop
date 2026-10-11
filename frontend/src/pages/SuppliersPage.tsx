@@ -488,10 +488,10 @@ export const SuppliersPage: React.FC = () => {
                       CPCB Heavy Metal Trace Screening:
                     </span>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px] text-[#69736B]">
-                      <div>Cd: {selectedSupply.measurements.heavy_metals.cadmium_mg_l ?? '—'} mg/L</div>
-                      <div>Cr: {selectedSupply.measurements.heavy_metals.chromium_mg_l ?? '—'} mg/L</div>
-                      <div>Pb: {selectedSupply.measurements.heavy_metals.lead_mg_l ?? '—'} mg/L</div>
-                      <div>Ni: {selectedSupply.measurements.heavy_metals.nickel_mg_l ?? '—'} mg/L</div>
+                      <div>Cd: {selectedSupply.measurements.heavy_metals.cadmium_mg_l ?? '-'} mg/L</div>
+                      <div>Cr: {selectedSupply.measurements.heavy_metals.chromium_mg_l ?? '-'} mg/L</div>
+                      <div>Pb: {selectedSupply.measurements.heavy_metals.lead_mg_l ?? '-'} mg/L</div>
+                      <div>Ni: {selectedSupply.measurements.heavy_metals.nickel_mg_l ?? '-'} mg/L</div>
                     </div>
                   </div>
                 )}

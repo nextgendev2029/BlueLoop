@@ -4,7 +4,9 @@ BlueLoop Suppliers API Endpoints
 
 from typing import Optional
 import logging
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from app.core.auth import get_current_user
+from app.models.entities import User
 from app.models.enums import FacilityType, VerificationStatus
 from app.repositories.memory import get_repository_container
 from app.schemas.supplier import SupplierFacilityResponse, SupplierListResponse
@@ -31,6 +33,7 @@ async def list_suppliers(
     ),
     limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
     offset: int = Query(0, ge=0, description="Offset index for pagination"),
+    current_user: User = Depends(get_current_user),
 ) -> SupplierListResponse:
     container = get_repository_container()
 
@@ -88,7 +91,10 @@ async def list_suppliers(
     summary="Get Supplier Facility Detail",
     description="Returns detailed profile of a specific treatment facility.",
 )
-async def get_supplier_facility(facility_id: str) -> SupplierFacilityResponse:
+async def get_supplier_facility(
+    facility_id: str,
+    current_user: User = Depends(get_current_user),
+) -> SupplierFacilityResponse:
     container = get_repository_container()
     fac = container.facilities.get(facility_id)
     if not fac:

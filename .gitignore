@@ -82,3 +82,9 @@ tmp/
 temp/
 *.log
 .aws-sam/
+
+# Databases
+*.db
+*.db-journal
+*.db-wal
+backend/data/*.db

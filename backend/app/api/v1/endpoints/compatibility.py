@@ -2,7 +2,9 @@
 BlueLoop Water Quality Compatibility Screening API Endpoint
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from app.core.auth import get_current_user
+from app.models.entities import User
 from app.repositories.memory import get_repository_container
 from app.schemas.compatibility import (
     CompatibilityEvaluationRequest,
@@ -28,6 +30,7 @@ compatibility_service = QualityCompatibilityService()
 )
 async def evaluate_compatibility(
     payload: CompatibilityEvaluationRequest,
+    current_user: User = Depends(get_current_user),
 ) -> CompatibilityEvaluationResponse:
     container = get_repository_container()
 

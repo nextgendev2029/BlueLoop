@@ -427,7 +427,7 @@ export const DeliveriesPage: React.FC = () => {
               >
                 {suppliesList.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.id} — {s.name} ({s.available_volume_kl.toLocaleString()} kL available)
+                    {s.id} - {s.name} ({s.available_volume_kl.toLocaleString()} kL available)
                   </option>
                 ))}
               </select>
@@ -445,7 +445,7 @@ export const DeliveriesPage: React.FC = () => {
               >
                 {demandsList.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.id} — {d.facility_name} ({d.required_volume_kl.toLocaleString()} kL required)
+                    {d.id} - {d.facility_name} ({d.required_volume_kl.toLocaleString()} kL required)
                   </option>
                 ))}
               </select>

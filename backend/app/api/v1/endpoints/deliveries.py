@@ -7,9 +7,10 @@ from datetime import datetime, timezone
 import logging
 from typing import Optional
 import uuid
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from app.models.entities import AuditEvent, DeliveryRecord
+from app.core.auth import get_current_user, require_role
+from app.models.entities import AuditEvent, DeliveryRecord, User
 from app.models.enums import (
     ActorType,
     DeliveryLifecycleStatus,
@@ -54,7 +55,7 @@ VALID_TRANSITIONS = {
     response_model=DeliveryListResponse,
     status_code=status.HTTP_200_OK,
     summary="List Physical Delivery Records",
-    description="Returns tracked water batch dispatches and custody status.",
+    description="Returns tracked water batch dispatches and custody status scoped to organization.",
 )
 async def list_deliveries(
     lifecycle_status: Optional[DeliveryLifecycleStatus] = Query(
@@ -67,10 +68,24 @@ async def list_deliveries(
     demand_id: Optional[str] = Query(None, description="Filter by buyer demand ID"),
     limit: int = Query(50, ge=1, le=100, description="Maximum items to return"),
     offset: int = Query(0, ge=0, description="Offset index for pagination"),
+    current_user: User = Depends(get_current_user),
 ) -> DeliveryListResponse:
     container = get_repository_container()
 
     def filter_fn(deliv: DeliveryRecord):
+        # Tenant isolation
+        if current_user.role == "supplier":
+            listing = container.listings.get(deliv.listing_id)
+            if not listing:
+                return False
+            fac = container.facilities.get(listing.facility_id)
+            if not fac or fac.org_id != current_user.org_id:
+                return False
+        elif current_user.role == "buyer":
+            demand = container.demands.get(deliv.demand_id)
+            if not demand or demand.org_id != current_user.org_id:
+                return False
+
         if lifecycle_status and deliv.lifecycle_status != lifecycle_status:
             return False
         if delivery_mode and deliv.delivery_mode != delivery_mode:
@@ -88,7 +103,7 @@ async def list_deliveries(
     paginated = sorted_deliveries[offset : offset + limit]
 
     items = [DeliveryRecordResponse.model_validate(d) for d in paginated]
-    logger.debug("Listed %d deliveries (total: %d)", len(items), total_count)
+    logger.debug("Listed %d deliveries (total: %d) for user %s", len(items), total_count, current_user.email)
 
     return DeliveryListResponse(
         items=items,
@@ -106,7 +121,10 @@ async def list_deliveries(
     summary="Get Delivery Record Detail",
     description="Returns detailed telemetry and lifecycle state for a physical batch dispatch.",
 )
-async def get_delivery(delivery_id: str) -> DeliveryRecordResponse:
+async def get_delivery(
+    delivery_id: str,
+    current_user: User = Depends(get_current_user),
+) -> DeliveryRecordResponse:
     container = get_repository_container()
     deliv = container.deliveries.get(delivery_id)
     if not deliv:
@@ -114,6 +132,24 @@ async def get_delivery(delivery_id: str) -> DeliveryRecordResponse:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Delivery record with ID '{delivery_id}' not found.",
         )
+
+    # Tenant access check
+    if current_user.role == "supplier":
+        listing = container.listings.get(deliv.listing_id)
+        fac = container.facilities.get(listing.facility_id) if listing else None
+        if not fac or fac.org_id != current_user.org_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to delivery records of other suppliers.",
+            )
+    elif current_user.role == "buyer":
+        demand = container.demands.get(deliv.demand_id)
+        if not demand or demand.org_id != current_user.org_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to delivery records of other buyers.",
+            )
+
     return DeliveryRecordResponse.model_validate(deliv)
 
 
@@ -122,9 +158,12 @@ async def get_delivery(delivery_id: str) -> DeliveryRecordResponse:
     response_model=DeliveryRecordResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Schedule Water Delivery Dispatch",
-    description="Registers an actual physical delivery batch against valid supply and demand records.",
+    description="Registers an actual physical delivery batch against valid supply and demand records. Restricted to suppliers and administrators.",
 )
-async def create_delivery(payload: DeliveryCreateRequest) -> DeliveryRecordResponse:
+async def create_delivery(
+    payload: DeliveryCreateRequest,
+    current_user: User = Depends(require_role("supplier", "admin")),
+) -> DeliveryRecordResponse:
     container = get_repository_container()
 
     listing = container.listings.get(payload.listing_id)
@@ -133,6 +172,15 @@ async def create_delivery(payload: DeliveryCreateRequest) -> DeliveryRecordRespo
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Supply listing '{payload.listing_id}' not found.",
         )
+
+    # Supplier tenant ownership validation
+    if current_user.role == "supplier":
+        fac = container.facilities.get(listing.facility_id)
+        if not fac or fac.org_id != current_user.org_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot dispatch deliveries from another supplier's facility.",
+            )
 
     demand = container.demands.get(payload.demand_id)
     if not demand:
@@ -168,20 +216,21 @@ async def create_delivery(payload: DeliveryCreateRequest) -> DeliveryRecordRespo
             event_id=f"AUD-{uuid.uuid4().hex[:8].upper()}",
             entity_type="DeliveryRecord",
             entity_id=deliv_id,
-            actor_type=ActorType.USER_OPERATOR,
+            actor_type=ActorType.SUPPLIER if current_user.role == "supplier" else ActorType.USER_OPERATOR,
             action="SCHEDULE_DELIVERY",
             explanation=(
                 f"Physical water delivery {deliv_id} scheduled for {payload.dispatched_volume_kl:.1f} kL "
-                f"via {payload.delivery_mode} from {listing.id} to {demand.id}."
+                f"via {payload.delivery_mode} from {listing.id} to {demand.id} by {current_user.email}."
             ),
             metadata={
                 "dispatched_volume_kl": payload.dispatched_volume_kl,
                 "scheduled_date": payload.scheduled_date.isoformat(),
+                "user_id": current_user.id,
             },
         )
     )
 
-    logger.info("Created delivery %s: %.1f kL", deliv_id, payload.dispatched_volume_kl)
+    logger.info("Created delivery %s: %.1f kL by %s", deliv_id, payload.dispatched_volume_kl, current_user.email)
     return DeliveryRecordResponse.model_validate(created_record)
 
 
@@ -195,6 +244,7 @@ async def create_delivery(payload: DeliveryCreateRequest) -> DeliveryRecordRespo
 async def update_delivery_status(
     delivery_id: str,
     payload: DeliveryStatusUpdateRequest,
+    current_user: User = Depends(get_current_user),
 ) -> DeliveryRecordResponse:
     container = get_repository_container()
     record = container.deliveries.get(delivery_id)
@@ -203,6 +253,23 @@ async def update_delivery_status(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Delivery record with ID '{delivery_id}' not found.",
         )
+
+    # Check tenancy
+    if current_user.role == "supplier":
+        listing = container.listings.get(record.listing_id)
+        fac = container.facilities.get(listing.facility_id) if listing else None
+        if not fac or fac.org_id != current_user.org_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot transition status for another supplier's delivery batch.",
+            )
+    elif current_user.role == "buyer":
+        demand = container.demands.get(record.demand_id)
+        if not demand or demand.org_id != current_user.org_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot transition status for another buyer's delivery batch.",
+            )
 
     current_status = record.lifecycle_status
     target_status = payload.lifecycle_status
@@ -241,15 +308,16 @@ async def update_delivery_status(
             entity_id=delivery_id,
             actor_type=ActorType.USER_OPERATOR,
             action="UPDATE_DELIVERY_STATUS",
-            explanation=f"Delivery {delivery_id} transitioned from {current_status} to {target_status}.",
+            explanation=f"Delivery {delivery_id} transitioned from {current_status} to {target_status} by {current_user.email}.",
             metadata={
                 "previous_status": str(current_status),
                 "new_status": str(target_status),
                 "delivered_volume_kl": record.delivered_volume_kl,
                 "notes": payload.notes,
+                "user_id": current_user.id,
             },
         )
     )
 
-    logger.info("Delivery %s transitioned: %s -> %s", delivery_id, current_status, target_status)
+    logger.info("Delivery %s transitioned: %s -> %s by %s", delivery_id, current_status, target_status, current_user.email)
     return DeliveryRecordResponse.model_validate(updated_record)

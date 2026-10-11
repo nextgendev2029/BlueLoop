@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Factory,
@@ -17,11 +17,14 @@ import {
   Droplet,
   Info,
   ExternalLink,
+  LogOut,
+  User as UserIcon,
 } from 'lucide-react';
 import { NavItem } from '../types/navigation';
 import { fetchHealth, HealthStatus } from '../services/health';
+import { useAuth } from '../context/AuthContext';
 
-const navigationItems: NavItem[] = [
+const navigationItems: (NavItem & { roles?: Array<'buyer' | 'supplier' | 'admin'> })[] = [
   {
     title: 'Dashboard',
     path: '/app/dashboard',
@@ -39,12 +42,14 @@ const navigationItems: NavItem[] = [
     path: '/app/demands',
     icon: FileSpreadsheet,
     description: 'Intake volumes & parameter tolerances',
+    roles: ['buyer', 'admin'],
   },
   {
     title: 'Allocations',
     path: '/app/allocations',
     icon: GitMerge,
     description: 'Deterministic supply-demand matching console',
+    roles: ['buyer', 'admin'],
   },
   {
     title: 'Deliveries',
@@ -79,6 +84,8 @@ export const AppLayout: React.FC = () => {
     status: 'checking',
   });
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const checkBackendHealth = async () => {
     setBackendHealth((prev) => ({ ...prev, status: 'checking' }));
@@ -100,50 +107,64 @@ export const AppLayout: React.FC = () => {
 
   useEffect(() => {
     checkBackendHealth();
+    const interval = setInterval(checkBackendHealth, 30000);
+    return () => clearInterval(interval);
   }, []);
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  // Filter navigation items based on current user role
+  const visibleNavItems = navigationItems.filter((item) => {
+    if (!item.roles) return true;
+    if (!user) return true;
+    return item.roles.includes(user.role);
+  });
+
   const currentNav =
-    navigationItems.find((item) => location.pathname === item.path) ||
+    visibleNavItems.find((item) => location.pathname.startsWith(item.path)) ||
     navigationItems[0];
 
   return (
-    <div className="min-h-screen flex flex-col bg-canvas font-sans text-ink antialiased">
-      <div className="flex flex-1 overflow-hidden">
-        {/* Mobile Backdrop */}
-        {mobileMenuOpen && (
-          <div
-            className="fixed inset-0 z-40 bg-ocean-950/50 backdrop-blur-xs md:hidden"
-            onClick={() => setMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
-        )}
+    <div className="flex h-screen bg-canvas font-sans antialiased text-ink">
+      {/* Mobile Drawer Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-ocean-950/40 backdrop-blur-xs md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
 
-        {/* Art-Directed Clean Sidebar */}
+      {/* Main Structural Frame */}
+      <div className="flex h-full w-full overflow-hidden">
+        {/* Collapsible/Static Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
-            mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
+            mobileMenuOpen ? 'translate-x-0' : '-translate-x-0 md:translate-x-0 max-md:-translate-x-full'
           }`}
         >
           {/* Brand Header */}
-          <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+          <div className="flex h-16 items-center justify-between border-b border-slate-200 px-6">
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ocean-900 text-white shadow-xs group-hover:bg-water-600 transition-colors">
-                <Droplet className="h-4 w-4 text-aqua-300" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-water-600 text-white shadow-xs group-hover:bg-water-700 transition-colors">
+                <Droplet className="h-4 w-4" />
               </div>
-              <div>
-                <span className="text-base font-bold tracking-tight text-ink">
+              <div className="flex flex-col">
+                <span className="font-editorial text-lg font-bold tracking-tight text-ocean-950">
                   BlueLoop
                 </span>
-                <span className="block text-[10px] font-mono uppercase tracking-wider text-water-600">
-                  Reuse Intelligence
+                <span className="text-[10px] uppercase font-mono tracking-wider text-water-700 -mt-1 font-semibold">
+                  Water Intelligence
                 </span>
               </div>
             </Link>
             <button
               type="button"
-              className="text-slate-400 hover:text-slate-700 md:hidden p-1 rounded-md"
+              className="text-slate-400 hover:text-slate-600 md:hidden p-1 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
-              aria-label="Close menu"
+              aria-label="Close sidebar"
             >
               <X className="h-5 w-5" />
             </button>
@@ -164,7 +185,7 @@ export const AppLayout: React.FC = () => {
 
           {/* Navigation Items */}
           <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Main Navigation">
-            {navigationItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
@@ -196,20 +217,58 @@ export const AppLayout: React.FC = () => {
             })}
           </nav>
 
-          {/* Sidebar Footer Callout */}
-          <div className="border-t border-slate-200 bg-slate-50/50 p-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-3 text-xs shadow-xs">
-              <div className="flex items-center gap-1.5 font-semibold text-ocean-900">
-                <ShieldCheck className="h-4 w-4 text-forest-600 shrink-0" />
-                <span className="text-[11px]">Deterministic Logic</span>
+          {/* Sidebar Footer User Card & Sign Out */}
+          <div className="border-t border-slate-200 bg-slate-50/60 p-3.5 space-y-3">
+            {user ? (
+              <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-2xs">
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="h-7 w-7 rounded-lg bg-ocean-100 text-ocean-800 flex items-center justify-center font-bold text-xs shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-xs font-semibold text-ink truncate">
+                        {user.name}
+                      </span>
+                      <span className="block text-[10px] text-slate-500 truncate">
+                        {user.organisation?.name || user.email}
+                      </span>
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium uppercase shrink-0 ${
+                      user.role === 'admin'
+                        ? 'bg-purple-100 text-purple-700'
+                        : user.role === 'supplier'
+                        ? 'bg-water-100 text-water-700'
+                        : 'bg-emerald-100 text-emerald-700'
+                    }`}
+                  >
+                    {user.role}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full mt-2 inline-flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-200 text-slate-600 hover:text-red-700 hover:border-red-200 hover:bg-red-50 text-[11px] font-medium transition-colors"
+                >
+                  <LogOut className="h-3 w-3" />
+                  <span>Sign Out</span>
+                </button>
               </div>
-              <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                Algorithmic chemical compatibility & least-cost allocation. Zero speculative multipliers.
-              </p>
-            </div>
-            <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-slate-400">
-              <span>System Active</span>
-              <span>Sample Sandbox</span>
+            ) : (
+              <Link
+                to="/login"
+                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-water-600 hover:bg-water-700 text-white text-xs font-semibold shadow-2xs transition-colors"
+              >
+                <UserIcon className="h-3.5 w-3.5" />
+                <span>Sign In</span>
+              </Link>
+            )}
+
+            <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 px-1">
+              <span>RBAC & Tenancy Active</span>
+              <span>Isolated</span>
             </div>
           </div>
         </aside>
@@ -269,11 +328,32 @@ export const AppLayout: React.FC = () => {
                 </button>
               </div>
 
-              {/* Compact Demo Mode Badge with Popover (Replaces Intrusive Top Strip) */}
+              {/* Current Role Pill */}
+              {user && (
+                <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs">
+                  <span className="text-slate-500 text-[11px]">Org:</span>
+                  <span className="font-semibold text-ocean-950 text-[11px] max-w-[120px] truncate">
+                    {user.organisation?.name || user.email}
+                  </span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase font-semibold ${
+                      user.role === 'admin'
+                        ? 'bg-purple-100 text-purple-700'
+                        : user.role === 'supplier'
+                        ? 'bg-water-100 text-water-700'
+                        : 'bg-emerald-100 text-emerald-700'
+                    }`}
+                  >
+                    {user.role}
+                  </span>
+                </div>
+              )}
+
+              {/* Compact Mode Badge with Popover */}
               <div className="relative group">
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-ice-500/20 border border-ice-500/40 text-ocean-900 text-[11px] font-mono font-medium cursor-help hover:bg-ice-500/30 transition-colors">
                   <span className="h-1.5 w-1.5 rounded-full bg-water-500 animate-pulse" />
-                  <span>DEMO MODE</span>
+                  <span>AUTHENTICATED</span>
                   <Info className="h-3 w-3 text-ocean-600 ml-0.5" />
                 </div>
 
@@ -281,11 +361,11 @@ export const AppLayout: React.FC = () => {
                 <div className="absolute right-0 top-full mt-2 w-72 p-3.5 bg-white border border-slate-200 shadow-xl rounded-xl text-xs hidden group-hover:block z-50">
                   <div className="font-semibold text-ink mb-1 flex items-center gap-1.5">
                     <ShieldCheck className="h-3.5 w-3.5 text-forest-600" />
-                    <span>Synthetic Demonstration Sandbox</span>
+                    <span>Durable Multi-Tenant Workspace</span>
                   </div>
                   <p className="text-[11px] leading-relaxed text-slate-500">
-                    Showing synthetic industrial facilities, laboratory certificates, and allocations.
-                    No real customer data is accessed.
+                    Your session is protected with PBKDF2-HMAC-SHA256 authenticated sessions and
+                    strict organisation-level data isolation.
                   </p>
                 </div>
               </div>

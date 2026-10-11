@@ -1,4 +1,4 @@
-# BlueLoop — 3-Minute Hackathon Demo Script
+# BlueLoop - 3-Minute Hackathon Demo Script
 
 **Product**: BlueLoop (Water Reuse Intelligence & Procurement Optimisation Platform)  
 **Hackathon Track**: Heat and Water (AWS Bharat Builds Tour / Environmental Hacks)  
@@ -21,7 +21,7 @@
 ## Timed Narrative
 
 ### 0:00 – 0:25 (25s) | The Problem: The Industrial Water Paradox
-> *"Every day across industrial clusters, common effluent treatment plants and municipal facilities discharge thousands of kilolitres of high-grade treated water. Simultaneously, nearby industrial facilities—such as evaporative cooling towers, boiler houses, and construction batching plants—deplete scarce groundwater or municipal potable supplies.*  
+> *"Every day across industrial clusters, common effluent treatment plants and municipal facilities discharge thousands of kilolitres of high-grade treated water. Simultaneously, nearby industrial facilities-such as evaporative cooling towers, boiler houses, and construction batching plants-deplete scarce groundwater or municipal potable supplies.*  
 >  
 > *Why doesn't reuse happen automatically? Because industrial buyers cannot afford equipment corrosion, scaling, or regulatory liability. Sourcing treated water has historically relied on ad-hoc phone calls, unverified water tests, and non-transparent transport tariffs."*
 
@@ -38,11 +38,11 @@
 ### 0:45 – 1:20 (35s) | Supply Discovery & Deterministic Quality Screening
 > *(Click **Suppliers** in sidebar, show directory of facilities & listings, then click **Demands**)*  
 >  
-> *"Here in our Supplier and Demand directories, facilities register their available treated effluent batches alongside certified laboratory tests—pH, TDS, TSS, COD, BOD, and heavy metals.*  
+> *"Here in our Supplier and Demand directories, facilities register their available treated effluent batches alongside certified laboratory tests-pH, TDS, TSS, COD, BOD, and heavy metals.*  
 >  
 > *(Click on a demand card to open intake tolerance limits modal)*  
 >  
-> *Notice that buyers define strict tolerance boundaries for their specific application—here, an evaporative cooling tower requiring TDS below 1,000 mg/L and pH between 6.5 and 8.5.*  
+> *Notice that buyers define strict tolerance boundaries for their specific application-here, an evaporative cooling tower requiring TDS below 1,000 mg/L and pH between 6.5 and 8.5.*  
 >  
 > *(Show Deterministic Gatekeeper evaluation card on Dashboard or Compatibility Screener)*  
 >  
@@ -60,12 +60,12 @@
 > *...the deterministic Greedy Constrained Cost Minimizer calculates feasible matches.  
 > Look at the transparent mathematical output:  
 > 1. Proposed Volume: Exactly 400 kL allocated from Koyambedu Reclamation Plant to Apex Automobile Assembly.  
-> 2. Cost Transparency: We calculate the ex-works water price plus transport logistics using road distance formulas—₹39.54/kL delivered.  
+> 2. Cost Transparency: We calculate the ex-works water price plus transport logistics using road distance formulas-₹39.54/kL delivered.  
 > 3. Decision Explainability: For unallocated demands, we provide explicit reason codes: `Candidate excluded: TDS (1850 mg/L) exceeds buyer limit (1000 mg/L)`.  
 >  
 > *(Click **Accept Proposal**, show confirmation modal, and confirm)*  
 >  
-> *Proposals transition to ACCEPTED with server-side immutable audit events. Critically, accepting a proposal schedules logistics—it does not fabricate a physical delivery."*
+> *Proposals transition to ACCEPTED with server-side immutable audit events. Critically, accepting a proposal schedules logistics-it does not fabricate a physical delivery."*
 
 ---
 

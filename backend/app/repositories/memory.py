@@ -98,6 +98,13 @@ class UserRepository(InMemoryRepository[User]):
     def __init__(self):
         super().__init__(id_field_name="id", entity_name="User")
 
+    def get_by_email(self, email: str) -> Optional[User]:
+        with self._lock:
+            for u in self._store.values():
+                if u.email.strip().lower() == email.strip().lower():
+                    return u.model_copy(deep=True)
+            return None
+
 
 class SupplierFacilityRepository(InMemoryRepository[SupplierFacility]):
     def __init__(self):
@@ -144,9 +151,22 @@ class AuditEventRepository(InMemoryRepository[AuditEvent]):
 class RepositoryContainer:
     """Holds shared repository instances for local development & API services."""
 
-    def __init__(self):
-        self.organisations = OrganisationRepository()
-        self.users = UserRepository()
+    def __init__(self, use_sqlite: bool = True):
+        self.use_sqlite = use_sqlite
+        if use_sqlite:
+            from app.repositories.sqlite_auth import (
+                SQLiteOrganisationRepository,
+                SQLiteUserRepository,
+                SQLiteSessionRepository,
+            )
+            self.organisations = SQLiteOrganisationRepository()
+            self.users = SQLiteUserRepository()
+            self.sessions = SQLiteSessionRepository()
+        else:
+            self.organisations = OrganisationRepository()
+            self.users = UserRepository()
+            self.sessions = None
+
         self.facilities = SupplierFacilityRepository()
         self.listings = SupplyListingRepository()
         self.demands = DemandRequestRepository()
@@ -156,10 +176,12 @@ class RepositoryContainer:
         self.deliveries = DeliveryRepository()
         self.audit_events = AuditEventRepository()
 
-    def reset_all(self) -> None:
+    def reset_all(self, clear_sessions: bool = False) -> None:
         """Clear all repositories (useful for test isolation)."""
         self.organisations.clear()
         self.users.clear()
+        if clear_sessions and hasattr(self, "sessions") and self.sessions:
+            self.sessions.clear()
         self.facilities.clear()
         self.listings.clear()
         self.demands.clear()
@@ -174,9 +196,9 @@ class RepositoryContainer:
 _container: Optional[RepositoryContainer] = None
 
 
-def get_repository_container() -> RepositoryContainer:
+def get_repository_container(use_sqlite: bool = True) -> RepositoryContainer:
     """Singleton getter for local repository container."""
     global _container
     if _container is None:
-        _container = RepositoryContainer()
+        _container = RepositoryContainer(use_sqlite=use_sqlite)
     return _container

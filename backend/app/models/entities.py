@@ -68,10 +68,16 @@ class User(BaseDomainModel):
     org_id: str = Field(..., description="Organisation to which user belongs")
     name: str = Field(..., min_length=2, description="Display or real name")
     email: str = Field(..., description="User login email")
-    role: str = Field(default="OPERATOR", description="Access role identifier")
+    role: str = Field(default="buyer", description="Access role identifier (buyer, supplier, admin)")
+    is_active: bool = Field(default=True, description="Account active status")
+    password_hash: Optional[str] = Field(default=None, description="Hashed password (never exposed)")
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         description="UTC creation timestamp",
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        description="UTC update timestamp",
     )
 
 

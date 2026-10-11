@@ -76,13 +76,13 @@ Represents a physical treatment facility or industrial discharge source.
 > Missing chemical and physical measurements are strictly represented as `None` (`UNKNOWN`).
 > Missing values are **never treated as zero** and **never treated as passing results**.
 - **`WaterQualityMeasurements`**:
-  - `ph`: Optional[float] — Standard pH scale [0.0 – 14.0]
-  - `tds_mg_l`: Optional[float] — Total Dissolved Solids in **milligrams per litre (mg/L)**
-  - `cod_mg_l`: Optional[float] — Chemical Oxygen Demand in **mg/L**
-  - `bod_mg_l`: Optional[float] — Biochemical Oxygen Demand in **mg/L**
-  - `tss_mg_l`: Optional[float] — Total Suspended Solids in **mg/L**
-  - `turbidity_ntu`: Optional[float] — Nephelometric Turbidity Units (**NTU**)
-  - `heavy_metals_pass`: Optional[bool] — Binary toxicology certificate (pass/fail)
+  - `ph`: Optional[float] - Standard pH scale [0.0 – 14.0]
+  - `tds_mg_l`: Optional[float] - Total Dissolved Solids in **milligrams per litre (mg/L)**
+  - `cod_mg_l`: Optional[float] - Chemical Oxygen Demand in **mg/L**
+  - `bod_mg_l`: Optional[float] - Biochemical Oxygen Demand in **mg/L**
+  - `tss_mg_l`: Optional[float] - Total Suspended Solids in **mg/L**
+  - `turbidity_ntu`: Optional[float] - Nephelometric Turbidity Units (**NTU**)
+  - `heavy_metals_pass`: Optional[bool] - Binary toxicology certificate (pass/fail)
 - **`QualityEvidence`**:
   - `id`: str, `facility_id`: Optional[str], `listing_id`: Optional[str]
   - `measured_at`: UTC datetime
@@ -97,10 +97,10 @@ Represents an available volume of treated water.
 - `facility_id`: str
 - `name`: str
 - `water_grade`: `WaterGrade` (`RO_PERMEATE`, `TERTIARY_POLISHED`, `SECONDARY_CLARIFIED`, `INDUSTRIAL_RECYCLED`)
-- `available_volume_kl`: float — Available volume in **kilolitres (kL)**, strictly > 0
-- `price_per_kl`: float — Ex-works price per kilolitre, strictly &ge; 0
+- `available_volume_kl`: float - Available volume in **kilolitres (kL)**, strictly > 0
+- `price_per_kl`: float - Ex-works price per kilolitre, strictly &ge; 0
 - `available_from`: UTC datetime, `available_until`: Optional[UTC datetime]
-- `delivery_radius_km`: Optional[float] — Maximum logistics radius in **kilometres (km)**
+- `delivery_radius_km`: Optional[float] - Maximum logistics radius in **kilometres (km)**
 - `quality_evidence_status`: `VerificationStatus`
 - `quality_evidence_id`: Optional[str]
 - `measurements`: Optional[WaterQualityMeasurements]
@@ -117,13 +117,13 @@ Represents commercial intake specifications.
   - `max_tss_mg_l`: Optional[float] (mg/L)
   - `max_turbidity_ntu`: Optional[float] (NTU)
   - `require_heavy_metals_pass`: bool (default `True`)
-  - `required_parameters`: list[str] — Mandatory parameter names that cannot be missing
+  - `required_parameters`: list[str] - Mandatory parameter names that cannot be missing
 - **`DemandRequest`**:
   - `id`: str (e.g. `SYNTH-DEM-01`)
   - `org_id`: str
   - `facility_name`: str
   - `intended_use`: `IntendedUse` (`COOLING_TOWER`, `BOILER_FEED`, `INDUSTRIAL_PROCESS`, `CONSTRUCTION_BATCHING`, `LANDSCAPE_IRRIGATION`, `NON_POTABLE_FLUSHING`)
-  - `required_volume_kl`: float — Required intake volume in **kilolitres (kL)**, strictly > 0
+  - `required_volume_kl`: float - Required intake volume in **kilolitres (kL)**, strictly > 0
   - `max_price_per_kl`: Optional[float] (&ge; 0)
   - `total_budget`: Optional[float]
   - `max_distance_km`: Optional[float]

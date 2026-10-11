@@ -5,9 +5,10 @@ Deterministic multi-facility matching, feasibility screening, and constrained vo
 
 import uuid
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from app.models.entities import AllocationCandidate, AllocationRun, AuditEvent
+from app.core.auth import get_current_user, require_role
+from app.models.entities import AllocationCandidate, AllocationRun, AuditEvent, User
 from app.models.enums import ActorType, DemandStatus, EligibilityStatus, ListingStatus
 from app.repositories.memory import get_repository_container
 from app.schemas.allocation import (
@@ -33,6 +34,7 @@ allocation_engine = AllocationEngine()
 )
 async def run_allocation(
     payload: Optional[AllocationRunRequest] = None,
+    current_user: User = Depends(get_current_user),
 ) -> AllocationRunResponse:
     container = get_repository_container()
     req = payload or AllocationRunRequest()
@@ -121,7 +123,10 @@ async def run_allocation(
     summary="Get Allocation Run Proposal Detail",
     description="Returns the stored proposal, candidate feasibility traces, and accounting totals for a run.",
 )
-async def get_allocation_run(run_id: str) -> AllocationRunResponse:
+async def get_allocation_run(
+    run_id: str,
+    current_user: User = Depends(get_current_user),
+) -> AllocationRunResponse:
     container = get_repository_container()
     proposal = container.allocation_proposals.get(run_id)
     if not proposal:
@@ -142,6 +147,7 @@ async def get_allocation_run(run_id: str) -> AllocationRunResponse:
 async def list_allocation_runs(
     limit: int = Query(50, ge=1, le=100, description="Maximum number of items to return"),
     offset: int = Query(0, ge=0, description="Offset index for pagination"),
+    current_user: User = Depends(get_current_user),
 ) -> List[AllocationRunResponse]:
     container = get_repository_container()
     runs = container.allocation_proposals.list()
@@ -157,10 +163,13 @@ async def list_allocation_runs(
     summary="Accept Allocation Proposal",
     description=(
         "Transitions an allocation proposal from PROPOSED to ACCEPTED. "
-        "Does not fabricate physical delivery records. Prevents accepting already rejected runs."
+        "Strictly restricted to buyers and administrators. Prevents accepting already rejected runs."
     ),
 )
-async def accept_allocation_proposal(run_id: str) -> AllocationRunResponse:
+async def accept_allocation_proposal(
+    run_id: str,
+    current_user: User = Depends(require_role("buyer", "admin")),
+) -> AllocationRunResponse:
     container = get_repository_container()
     proposal = container.allocation_proposals.get(run_id)
     if not proposal:
@@ -168,6 +177,16 @@ async def accept_allocation_proposal(run_id: str) -> AllocationRunResponse:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Allocation run '{run_id}' not found.",
         )
+
+    # Tenant Ownership Verification: Buyers can only accept proposals involving their own demands
+    if current_user.role == "buyer":
+        user_demand_ids = {d.id for d in container.demands.list(lambda d: d.org_id == current_user.org_id)}
+        has_matching_demand = any(item.demand_id in user_demand_ids for item in proposal.allocations)
+        if not has_matching_demand and proposal.allocations:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot accept allocation proposals for other buyer organisations.",
+            )
 
     if proposal.status == "REJECTED":
         raise HTTPException(
@@ -190,10 +209,10 @@ async def accept_allocation_proposal(run_id: str) -> AllocationRunResponse:
                 event_id=f"AUD-{uuid.uuid4().hex[:8].upper()}",
                 entity_type="AllocationRun",
                 entity_id=run_id,
-                actor_type=ActorType.USER_OPERATOR,
+                actor_type=ActorType.BUYER if current_user.role == "buyer" else ActorType.USER_OPERATOR,
                 action="ACCEPT_PROPOSAL",
-                explanation=f"Allocation proposal '{run_id}' accepted by operator for subsequent delivery scheduling.",
-                metadata={"total_allocated_kl": proposal.totals.total_allocated_volume_kl},
+                explanation=f"Allocation proposal '{run_id}' accepted by {current_user.email}.",
+                metadata={"total_allocated_kl": proposal.totals.total_allocated_volume_kl, "user_id": current_user.id},
             )
         )
 
@@ -207,10 +226,13 @@ async def accept_allocation_proposal(run_id: str) -> AllocationRunResponse:
     summary="Reject Allocation Proposal",
     description=(
         "Transitions an allocation proposal from PROPOSED to REJECTED. "
-        "Prevents rejecting an already accepted allocation run."
+        "Strictly restricted to buyers and administrators. Prevents rejecting an already accepted allocation run."
     ),
 )
-async def reject_allocation_proposal(run_id: str) -> AllocationRunResponse:
+async def reject_allocation_proposal(
+    run_id: str,
+    current_user: User = Depends(require_role("buyer", "admin")),
+) -> AllocationRunResponse:
     container = get_repository_container()
     proposal = container.allocation_proposals.get(run_id)
     if not proposal:
@@ -218,6 +240,16 @@ async def reject_allocation_proposal(run_id: str) -> AllocationRunResponse:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Allocation run '{run_id}' not found.",
         )
+
+    # Tenant Ownership Verification: Buyers can only reject proposals involving their own demands
+    if current_user.role == "buyer":
+        user_demand_ids = {d.id for d in container.demands.list(lambda d: d.org_id == current_user.org_id)}
+        has_matching_demand = any(item.demand_id in user_demand_ids for item in proposal.allocations)
+        if not has_matching_demand and proposal.allocations:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot reject allocation proposals for other buyer organisations.",
+            )
 
     if proposal.status == "ACCEPTED":
         raise HTTPException(
@@ -240,10 +272,10 @@ async def reject_allocation_proposal(run_id: str) -> AllocationRunResponse:
                 event_id=f"AUD-{uuid.uuid4().hex[:8].upper()}",
                 entity_type="AllocationRun",
                 entity_id=run_id,
-                actor_type=ActorType.USER_OPERATOR,
+                actor_type=ActorType.BUYER if current_user.role == "buyer" else ActorType.USER_OPERATOR,
                 action="REJECT_PROPOSAL",
-                explanation=f"Allocation proposal '{run_id}' rejected by operator.",
-                metadata={"run_id": run_id},
+                explanation=f"Allocation proposal '{run_id}' rejected by {current_user.email}.",
+                metadata={"run_id": run_id, "user_id": current_user.id},
             )
         )
 

@@ -43,6 +43,13 @@ class Settings(BaseSettings):
     use_synthetic_data: bool = True
     demo_mode: bool = True
 
+    # Database & Authentication Persistence
+    sqlite_db_path: str = "backend/data/blueloop.db"
+    session_expiry_hours: int = 24
+    session_cookie_name: str = "blueloop_session"
+    session_cookie_secure: bool = False
+    session_cookie_samesite: str = "lax"
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:

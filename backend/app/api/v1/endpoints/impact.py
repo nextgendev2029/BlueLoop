@@ -5,8 +5,10 @@ Provides multi-stage freshwater displacement metrics separating proposals from v
 
 from datetime import datetime, timezone
 import logging
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
+from app.core.auth import get_current_user
+from app.models.entities import User
 from app.models.enums import DeliveryLifecycleStatus, VerificationStatus
 from app.repositories.memory import get_repository_container
 from app.schemas.impact import ImpactSummaryResponse
@@ -25,7 +27,9 @@ logger = logging.getLogger("blueloop.api.impact")
         "from active proposals, accepted allocations, metered physical deliveries, and certified savings."
     ),
 )
-async def get_impact_summary() -> ImpactSummaryResponse:
+async def get_impact_summary(
+    current_user: User = Depends(get_current_user),
+) -> ImpactSummaryResponse:
     container = get_repository_container()
     now = datetime.now(timezone.utc)
 

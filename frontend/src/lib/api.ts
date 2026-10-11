@@ -26,6 +26,43 @@ export class BlueLoopApiError extends Error {
   }
 }
 
+const TOKEN_STORAGE_KEY = 'blueloop_session_token';
+const inMemoryStorage: Record<string, string> = {};
+
+export function getStoredAuthToken(): string | null {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const val = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (val) return val;
+    }
+  } catch {
+    // Ignore storage access errors
+  }
+  return inMemoryStorage[TOKEN_STORAGE_KEY] || null;
+}
+
+export function setStoredAuthToken(token: string): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    }
+  } catch {
+    // Ignore storage errors in sandboxed environments
+  }
+  inMemoryStorage[TOKEN_STORAGE_KEY] = token;
+}
+
+export function clearStoredAuthToken(): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage errors
+  }
+  delete inMemoryStorage[TOKEN_STORAGE_KEY];
+}
+
 /**
  * Executes a typed request against the BlueLoop REST API.
  */
@@ -51,12 +88,19 @@ export async function apiClient<T>(
     }
   }
 
+  const storedToken = getStoredAuthToken();
+  const authHeaders: Record<string, string> = storedToken
+    ? { Authorization: `Bearer ${storedToken}` }
+    : {};
+
   let response: Response;
   try {
     response = await fetch(url, {
+      credentials: options?.credentials ?? 'include',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...authHeaders,
         ...options?.headers,
       },
       ...options,

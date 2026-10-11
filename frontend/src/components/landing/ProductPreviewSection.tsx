@@ -26,7 +26,7 @@ export const ProductPreviewSection: React.FC = () => {
               Engineered for Industrial Procurement Teams
             </h2>
             <p className="mt-2 text-sm text-[#637680] max-w-xl">
-              An operational workspace designed for transparent environmental infrastructure decisions—combining chemical rigor with logistics optimization.
+              An operational workspace designed for transparent environmental infrastructure decisions-combining chemical rigor with logistics optimization.
             </p>
           </div>
 

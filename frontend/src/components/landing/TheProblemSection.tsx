@@ -16,7 +16,7 @@ export const TheProblemSection: React.FC = () => {
           <p className="mt-3 text-base text-[#637680] leading-relaxed">
             Common Effluent Treatment Plants (CETPs) discharge high-grade treated effluent daily. 
             Simultaneously, manufacturing facilities draw potable municipal water for cooling towers.
-            The barrier is not supply availability—it is the absence of deterministic quality verification and transparent delivery logistics.
+            The barrier is not supply availability-it is the absence of deterministic quality verification and transparent delivery logistics.
           </p>
         </div>
 

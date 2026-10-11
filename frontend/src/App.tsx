@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppLayout } from './layouts/AppLayout';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -16,39 +18,43 @@ import { NotFoundPage } from './pages/NotFoundPage';
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public Landing & Marketing */}
-        <Route path="/" element={<LandingPage />} />
+      <AuthProvider>
+        <Routes>
+          {/* Public Landing & Marketing */}
+          <Route path="/" element={<LandingPage />} />
 
-        {/* Authentication Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+          {/* Authentication Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-        {/* Internal Application Workspace under /app */}
-        <Route path="/app" element={<AppLayout />}>
-          <Route index element={<Navigate to="/app/dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="suppliers" element={<SuppliersPage />} />
-          <Route path="demands" element={<DemandsPage />} />
-          <Route path="allocations" element={<AllocationsPage />} />
-          <Route path="deliveries" element={<DeliveriesPage />} />
-          <Route path="impact" element={<ImpactPage />} />
-          <Route path="settings" element={<SettingsPage />} />
+          {/* Protected Internal Application Workspace under /app */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/app" element={<AppLayout />}>
+              <Route index element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="suppliers" element={<SuppliersPage />} />
+              <Route path="demands" element={<DemandsPage />} />
+              <Route path="allocations" element={<AllocationsPage />} />
+              <Route path="deliveries" element={<DeliveriesPage />} />
+              <Route path="impact" element={<ImpactPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Route>
+
+          {/* Legacy Root Path Redirects to /app/* */}
+          <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+          <Route path="/suppliers" element={<Navigate to="/app/suppliers" replace />} />
+          <Route path="/demands" element={<Navigate to="/app/demands" replace />} />
+          <Route path="/allocations" element={<Navigate to="/app/allocations" replace />} />
+          <Route path="/deliveries" element={<Navigate to="/app/deliveries" replace />} />
+          <Route path="/impact" element={<Navigate to="/app/impact" replace />} />
+          <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+
+          {/* Catch-all Not Found */}
           <Route path="*" element={<NotFoundPage />} />
-        </Route>
-
-        {/* Legacy Root Path Redirects to /app/* */}
-        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
-        <Route path="/suppliers" element={<Navigate to="/app/suppliers" replace />} />
-        <Route path="/demands" element={<Navigate to="/app/demands" replace />} />
-        <Route path="/allocations" element={<Navigate to="/app/allocations" replace />} />
-        <Route path="/deliveries" element={<Navigate to="/app/deliveries" replace />} />
-        <Route path="/impact" element={<Navigate to="/app/impact" replace />} />
-        <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
-
-        {/* Catch-all Not Found */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 };

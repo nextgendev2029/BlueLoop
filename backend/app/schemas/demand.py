@@ -35,3 +35,13 @@ class DemandListResponse(BaseModel):
         default=True,
         description="True indicates response contains synthetic demonstration fixtures.",
     )
+
+
+class DemandRequestCreate(BaseModel):
+    facility_name: str = Field(..., min_length=2, description="Consumer plant or application name")
+    intended_use: IntendedUse = Field(..., description="Target process use (cooling, boiler, etc.)")
+    required_volume_kl: float = Field(..., gt=0.0, description="Volume needed in kL")
+    max_price_per_kl: Optional[float] = Field(None, ge=0.0, description="Maximum acceptable price/kL")
+    total_budget: Optional[float] = Field(None, ge=0.0, description="Total procurement budget")
+    max_distance_km: Optional[float] = Field(None, gt=0.0, description="Acceptable logistics radius")
+    quality_limits: QualityLimits = Field(..., description="Rigid chemical tolerance parameters")

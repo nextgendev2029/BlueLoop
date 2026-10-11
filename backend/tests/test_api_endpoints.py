@@ -2,10 +2,14 @@
 Automated Integration Tests for BlueLoop REST API Endpoints
 """
 
+from datetime import datetime, timezone, timedelta
 from fastapi.testclient import TestClient
+from app.core.config import settings
 from app.main import app
+from app.repositories.memory import get_repository_container
 
 client = TestClient(app)
+client.cookies.set(settings.session_cookie_name, "blueloop-test-admin-token")
 
 
 def test_list_suppliers_endpoint():

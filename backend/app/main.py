@@ -13,6 +13,7 @@ from app.api.v1.router import api_v1_router
 from app.core.config import settings
 from app.core.errors import BlueLoopError, EntityNotFoundError, InvalidConstraintError
 from app.core.seeds import seed_demonstration_data
+from app.db.sqlite import init_db
 
 
 def create_application() -> FastAPI:
@@ -42,9 +43,12 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Initialize durable SQLite persistence layer
+    init_db()
+
     # Seed demonstration fixtures for local MVP
     if settings.use_synthetic_data:
-        seed_demonstration_data()
+        seed_demonstration_data(force_reset=False)
 
     # Domain error handlers
     @application.exception_handler(EntityNotFoundError)

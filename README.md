@@ -1,4 +1,4 @@
-# BlueLoop — Water Reuse Intelligence & Procurement Optimisation Platform
+# BlueLoop - Water Reuse Intelligence & Procurement Optimisation Platform
 
 [![Platform](https://img.shields.io/badge/Platform-BlueLoop-0f766e.svg)](https://github.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)
@@ -8,7 +8,7 @@
 
 > **Environmental Hacks / AWS Bharat Builds Tour Hackathon**  
 > **Track:** Heat and Water  
-> **Deployment Approach:** Ship It — Deploying on Amazon Web Services (AWS)
+> **Deployment Approach:** Ship It - Deploying on Amazon Web Services (AWS)
 
 ---
 

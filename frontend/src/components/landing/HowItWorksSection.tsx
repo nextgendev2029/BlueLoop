@@ -7,7 +7,7 @@ export const HowItWorksSection: React.FC = () => {
       step: '01',
       title: 'Discover Available Supply',
       description:
-        'Treatment facilities publish periodic batch listings with accredited laboratory test profiles—pH, TDS, TSS, COD, BOD, and heavy metals.',
+        'Treatment facilities publish periodic batch listings with accredited laboratory test profiles-pH, TDS, TSS, COD, BOD, and heavy metals.',
       icon: Search,
       highlight: 'Explicit water grades (A–D)',
     },

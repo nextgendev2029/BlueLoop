@@ -41,7 +41,10 @@ from app.services.cost import CostCalculator
 from app.services.geo import GeoDistanceCalculator, haversine_distance_km
 from app.services.impact import ImpactCalculator
 
+from app.core.config import settings
+
 client = TestClient(app)
+client.cookies.set(settings.session_cookie_name, "blueloop-test-admin-token")
 
 
 # =============================================================================

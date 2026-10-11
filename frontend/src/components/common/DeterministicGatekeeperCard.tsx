@@ -85,7 +85,7 @@ export const DeterministicGatekeeperCard: React.FC = () => {
         <div>
           <span className="text-[#69736B] block">Evaluated Candidate Listing:</span>
           <span className="font-semibold text-[#202A24]">
-            SYNTH-LIST-01 — CETP Maraimalai Stream 01-A (Tertiary Polished)
+            SYNTH-LIST-01 - CETP Maraimalai Stream 01-A (Tertiary Polished)
           </span>
           <span className="text-[11px] text-[#69736B] block mt-0.5">
             Lab Certificate: <span className="font-mono text-[#174D3A]">SYNTH-CERT-01 (Synthetic Demonstration Record)</span>
@@ -94,7 +94,7 @@ export const DeterministicGatekeeperCard: React.FC = () => {
         <div>
           <span className="text-[#69736B] block">Consumer Intake Specification:</span>
           <span className="font-semibold text-[#202A24]">
-            SYNTH-DEM-01 — Precision Auto Assembly (Evaporative Cooling Tower)
+            SYNTH-DEM-01 - Precision Auto Assembly (Evaporative Cooling Tower)
           </span>
           <span className="text-[11px] text-[#69736B] block mt-0.5">
             Compliance Policy: <span className="font-mono text-[#397FA3]">Fail-Closed Strict Tolerance</span>
@@ -134,7 +134,7 @@ export const DeterministicGatekeeperCard: React.FC = () => {
                       {row.parameter_name}
                     </td>
                     <td className="py-2.5 px-3 font-mono text-[#202A24]">
-                      {row.measured_value !== null ? row.measured_value : '—'}{' '}
+                      {row.measured_value !== null ? row.measured_value : '-'}{' '}
                       <span className="text-[10px] text-[#69736B]">{row.unit}</span>
                     </td>
                     <td className="py-2.5 px-3 font-mono text-[#69736B]">

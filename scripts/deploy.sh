@@ -59,7 +59,7 @@ echo "✓ Frontend built successfully into frontend/dist/."
 if [ "$MODE" == "dry-run" ]; then
   echo ""
   echo "=============================================================================="
-  echo "✓ DRY RUN SUCCESSFUL — All artifacts compiled and verified."
+  echo "✓ DRY RUN SUCCESSFUL - All artifacts compiled and verified."
   echo "  No live AWS resources were created or modified."
   echo ""
   echo "  To execute live deployment, run:"
